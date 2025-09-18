@@ -12,26 +12,34 @@ class Amandemen extends Model
     protected $table = 'amandemen';
 
     protected $fillable = [
-        'nama_amandemen',
-        'kode_amandemen',
+        'no_kontrak', //temp
+        'tgl_kontrak',
+        'judul_kontrak',
+        'nilai_kontrak', //temp
+        'amandemen_ke',
+        'lingkup',
+        'vendor', //temp
+        'tgl_nodin_amandemen',
+        'tgl_spa',
+        'tgl_tanggapan',
+        'rab_amandemen',
+        'no_amandemen',
+        'tgl_amandemen',
+        'nilai_amandemen',
+        'progress',
+        'status',
+        'keterangan',
+        'pic',
         'pengadaan_id',
-        'jenis_amandemen',
-        'nilai_perubahan',
-        'tanggal_amandemen',
-        'tanggal_efektif',
-        'alasan_amandemen',
-        'pic_amandemen',
-        'status_approval',
-        'dokumen_pendukung',
-        'revisi_ke',
-        'dampak_waktu',
-        'dampak_biaya',
-        'keterangan_tambahan'
+        // 'kontrak_id'
     ];
 
     protected $casts = [
-        'tanggal_amandemen' => 'date',
-        'tanggal_efektif' => 'date',
+        'tgl_kontrak' => 'date',
+        'tgl_nodin_amandemen' => 'date',
+        'tgl_spa' => 'date',
+        'tgl_tanggapan' => 'date',
+        'tgl_amandemen' => 'date',
         'nilai_perubahan' => 'decimal:2'
     ];
 

@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('amandemen', function (Blueprint $table) {
             $table->id();
-            // nomor kontrak dari tabel kontrak
+            $table->string('no_kontrak');// nomor kontrak dari tabel kontrak
             $table->date('tgl_kontrak');
             $table->string('judul_kontrak');
-            // Nilai kontrak dari tabel kontrak
+            $table->bigInteger('nilai_kontrak');// Nilai kontrak dari tabel kontrak
             $table->string('amandemen_ke');
-            // Vendor dari tabel kontrak
+            $table->string('vendor');// Vendor dari tabel kontrak
             $table->string('lingkup')->nullable();
-            $table->date('  tgl_nodin_amandemen')->nullable();
+            $table->date('tgl_nodin_amandemen')->nullable();
             $table->date('tgl_spa')->nullable();        //spa = surat persetujuan amandemen
             $table->date('tgl_tanggapan')->nullable();
             $table->bigInteger('rab_amandemen')->nullable();
@@ -28,8 +28,8 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->string('keterangan')->nullable();
             $table->string('pic')->nullable();          //person in charge
-            $table->foreignId('pengadaan_id')->constrained('pengadaan')->onDelete('cascade');
-            $table->foreignId('kontrak_id')->constrained('kontrak')->onDelete('cascade');
+            // $table->foreignId('pengadaan_id')->constrained('pengadaan')->onDelete('cascade');
+            // $table->foreignId('kontrak_id')->constrained('kontrak')->onDelete('cascade');
             $table->timestamps();
         });
     }

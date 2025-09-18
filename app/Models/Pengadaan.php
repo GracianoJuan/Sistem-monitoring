@@ -12,26 +12,40 @@ class Pengadaan extends Model
     protected $table = 'pengadaan';
 
     protected $fillable = [
-        'nama_pengadaan',
-        'kode_pengadaan',
-        'jenis_pengadaan',
+        'nama_pekerjaan',
+        'tgl_nodin',
+        'tgl_dokumen_lengkap',
+        'pengguna',
+        'jenis',
+        'metode',
+        'rab',
+        'tgl_kebutuhan',
+        'progress',
+        'vendor', //temp
+        'tgl_kontrak',
+        'no_perjanjian', //temp
         'nilai_kontrak',
-        'tanggal_mulai',
-        'tanggal_selesai',
-        'penyedia_jasa',
-        'pic_pengadaan',
+        'mulai_kontrak',
+        'akhir_kontrak',
+        'jangka_waktu',
         'status',
-        'lokasi',
-        'departemen',
-        'kategori',
-        'metode_pengadaan',
-        'mata_anggaran',
-        'keterangan'
+        'keterangan',
+        'pic',
+        'saving',
+        'selisih_hari',
+        'form_idd',
+        'penilaian_id'
+        // 'kontrak_id'
     ];
 
     protected $casts = [
-        'tanggal_mulai' => 'date',
-        'tanggal_selesai' => 'date',
+        'tgl_nodin' => 'date',
+        'tgl_dokumen_lengkap' => 'date',
+        'tgl_kebutuhan' => 'date',
+        'tgl_kontrak' => 'date',
+        'mulai_kontrak' => 'date',
+        'akhir_kontrak' => 'date',
+        'selisih_hari' => 'integer',
         'nilai_kontrak' => 'decimal:2'
     ];
 }

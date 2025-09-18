@@ -16,7 +16,7 @@ class PengadaanController extends Controller
     public function store(Request $request)
     {
         try {
-            $validatedPengadaan = $request->validate([
+            $validate = $request->validate([
                 'nama_pengadaan' => 'required|string|max:255',
                 'tgl_nodin' => 'required|date',
                 'tgl_dokumen_lengkap' => 'nullable|string',
@@ -24,12 +24,12 @@ class PengadaanController extends Controller
                 'jenis' => 'required|numeric',
                 'metode' => 'required|string',
                 'rab' => 'nullable|numeric',
-                'tgl_kebutuhan' => 'nullable|date',
+                'tgl_kebutuhan' => 'nullable|numeric',
                 'progress' => 'required|string',
-                // Vendor dari tabel kontrak
+                'vendor' => 'nullable|string|max:255', // Vendor dari tabel kontrak
                 'tgl_kontrak' => 'nullable|date',
-                // Nomor perjanjian dari tabel kontrak (no_kontrak)
-                // nilai kontrak dari tabel kontrak (nilai_kontrak)
+                'no_kontrak' => 'nullable|string|max:255', // Nomor perjanjian dari tabel kontrak (no_kontrak)
+                'nilai_kontrak' => 'nullable|numeric', // nilai kontrak dari tabel kontrak (nilai_kontrak)
                 'mulai_kontrak' => 'nullable|date',
                 'akhir_kontrak' => 'required|date',
                 'jangka_waktu' => 'nullable|string',
@@ -42,15 +42,13 @@ class PengadaanController extends Controller
                 'penilaian_id' => 'nullable|boolean',
             ]);
 
-            $validatedKontrak = $request->validate([
-                'no_kontrak' => 'nullable|string|max:255',
-                'nilai_kontrak' => 'nullable|numeric',
-                'vendor' => 'nullable|string|max:255',
-            ]);
+            // $validatedKontrak = $request->validate([
+            //     'no_kontrak' => 'nullable|string|max:255',
+            //     'nilai_kontrak' => 'nullable|numeric',
+            //     'vendor' => 'nullable|string|max:255',
+            // ]);
 
-            $addPengadaan = Pengadaan::create($validatedPengadaan);
-            $addKontrak = Kontrak::create($validatedKontrak);
-            return ($addPengadaan & $addKontrak);
+            return Pengadaan::create($validate);;
         } catch (\Throwable $th) {
             //throw $th;
         }
@@ -63,7 +61,7 @@ class PengadaanController extends Controller
 
     public function update(Request $request, Pengadaan $pengadaan, Kontrak $kontrak)
     {
-        $validatedPengadaan = $request->validate([
+        $validate = $request->validate([
             'nama_pengadaan' => 'required|string|max:255',
             'tgl_nodin' => 'required|date',
             'tgl_dokumen_lengkap' => 'nullable|string',
@@ -73,10 +71,10 @@ class PengadaanController extends Controller
             'rab' => 'nullable|numeric',
             'tgl_kebutuhan' => 'nullable|numeric',
             'progress' => 'required|string',
-            // Vendor dari tabel kontrak
+            'vendor' => 'nullable|string|max:255', // Vendor dari tabel kontrak
             'tgl_kontrak' => 'nullable|date',
-            // Nomor perjanjian dari tabel kontrak (no_kontrak)
-            // nilai kontrak dari tabel kontrak (nilai_kontrak)
+            'no_kontrak' => 'nullable|string|max:255', // Nomor perjanjian dari tabel kontrak (no_kontrak)
+            'nilai_kontrak' => 'nullable|numeric', // nilai kontrak dari tabel kontrak (nilai_kontrak)
             'mulai_kontrak' => 'nullable|date',
             'akhir_kontrak' => 'required|date',
             'jangka_waktu' => 'nullable|string',
@@ -89,13 +87,13 @@ class PengadaanController extends Controller
             'penilaian_id' => 'nullable|boolean',
         ]);
 
-        $validatedKontrak = $request->validate([
-            'no_kontrak' => 'nullable|string|max:255',
-            'nilai_kontrak' => 'nullable|numeric',
-            'vendor' => 'nullable|string|max:255',
-        ]);
-        $pengadaan->update($validatedPengadaan);
-        $kontrak->update($validatedKontrak);
+        // $validatedKontrak = $request->validate([
+        //     'no_kontrak' => 'nullable|string|max:255',
+        //     'nilai_kontrak' => 'nullable|numeric',
+        //     'vendor' => 'nullable|string|max:255',
+        // ]);
+        $pengadaan->update($validate);
+
         return $pengadaan;
     }
 

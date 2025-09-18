@@ -15,13 +15,13 @@ class AmandemenController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // 'kode_amandemen' => 'required|string|unique:amandemen',
-            // Nomor kotrak dari tabel kontrak
+            // 'kode_amandemen' => 'required|string|unique:amandemen,kode_amandemen,' . $amandemen->id,
+            'no_kontrak' => 'reqiored|string',// Nomor kotrak dari tabel kontrak
             'tgl_kontrak' => 'required|date',
             'judul_kontrak' => 'required|string|max:255',
-            // Nilai kontrak dari tabel kontrak
+            'nilai_kotrak' => 'nullable|biginteger',// Nilai kontrak dari tabel kontrak
             'amandemen_ke' => 'nullable|string',
-            // Vendor dari tabel kontrak
+            'vendor' => 'required|string',// Vendor dari tabel kontrak
             'lingkup' => 'nullable|string',
             'tgl_nodin_amandemen' => 'nullable|date',
             'tgl_spa' => 'nullable|date',
@@ -49,12 +49,12 @@ class AmandemenController extends Controller
     {
         $validated = $request->validate([
             // 'kode_amandemen' => 'required|string|unique:amandemen,kode_amandemen,' . $amandemen->id,
-            // Nomor kotrak dari tabel kontrak
+            'no_kontrak' => 'reqiored|string',// Nomor kotrak dari tabel kontrak
             'tgl_kontrak' => 'required|date',
             'judul_kontrak' => 'required|string|max:255',
-            // Nilai kontrak dari tabel kontrak
+            'nilai_kotrak' => 'nullable|biginteger',// Nilai kontrak dari tabel kontrak
             'amandemen_ke' => 'nullable|string',
-            // Vendor dari tabel kontrak
+            'vendor' => 'required|string',// Vendor dari tabel kontrak
             'lingkup' => 'nullable|string',
             'tgl_nodin_amandemen' => 'nullable|date',
             'tgl_spa' => 'nullable|date',

@@ -20,10 +20,10 @@ return new class extends Migration
             $table->bigInteger('rab')->nullable();          
             $table->date('tgl_kebutuhan')->nullable();
             $table->string('progress');
-            // Vendor dari tabel kontrak
+            $table->string('vendor'); // Vendor dari tabel kontrak
             $table->date('tgl_kontrak')->nullable();
-            // Nomor perjanjian dari tabel kontrak (no_kontrak)
-            // nilai kontrak dari tabel kontrak (nilai_kontrak)
+            $table->string('no_perjanjian');// Nomor perjanjian dari tabel kontrak (no_kontrak)
+            $table->bigInteger('nilai_kontrak');    // nilai kontrak dari tabel kontrak (nilai_kontrak)
             $table->date('mulai_kontrak')->nullable();
             $table->date('akhir_kontrak')->nullable();
             $table->string('jangka_waktu')->nullable();
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->integer('selisih_hari')->nullable();
             $table->boolean('form_idd')->nullable();
             $table->boolean('penilaian_id')->nullable();
-            $table->foreignId('kontrak_id')->constrained('kontrak')->onDelete('cascade');   
+            // $table->foreignId('kontrak_id')->constrained('kontrak')->onDelete('cascade');   
             $table->timestamps();
         });
     }

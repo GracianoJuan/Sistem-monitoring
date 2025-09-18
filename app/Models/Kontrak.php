@@ -14,4 +14,8 @@ class Kontrak extends Model
         'tgl_kontrak',
         'nilai_kontrak'
     ];
+
+    protected $casts = [
+        'tgl_kontrak' => 'date'
+    ];
 }

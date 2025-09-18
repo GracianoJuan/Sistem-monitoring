@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
 
 // Fixed Column Table Component
-const FixedColumnTable = ({ 
-  data, 
-  columns, 
+const FixedColumnTable = ({
+  data,
+  columns,
   fixedColumns = 2,
-  onEdit, 
-  onDelete, 
+  onEdit,
+  onDelete,
   onView,
-  loading = false 
+  loading = false
 }) => {
   const fixedCols = columns.slice(0, fixedColumns);
   const scrollableCols = columns.slice(fixedColumns);
@@ -245,18 +245,18 @@ const Dashboard = () => {
       setPengadaanData([
         {
           id: 1,
-          nama_pengadaan: 'Pembangunan Kantor',
+          nama_pekerjaan: 'Pembangunan Kantor',
           tgl_nodin: '2024-02-01',
           tgl_dokumen_lengkap: '2024-02-01',
           pengguna: 'PBH',
-          vendor: 'PT Budi',
           jenis: 'Pengadaan Pekerjaan Konstruksi',
           metode: 'Pengadaan Langsung',
           rab: 1500000000,
           tgl_kebutuhan: '2024-02-01',
           progress: 'Kontrak',
+          vendor: 'PT Budi',
           tgl_kontrak: '2024-02-01',
-          no_kontrak: '13/bpbj/2025',
+          no_perjanjian: '13/bpbj/2025',
           nilai_kontrak: 2000000000,
           mulai_kontrak: '2024-02-01',
           akhir_kontrak: '2024-02-05',
@@ -265,25 +265,25 @@ const Dashboard = () => {
           keterangan: 'Pembangunan kantor cabang baru',
           pic: 'Pembangunan kantor cabang baru',
           saving: 35,
-          selisih_hari: akhir_kontrak-mulai_kontrak,
+          selisih_hari: 23,
           form_idd: true,
           penilaian_id: true
 
         },
         {
           id: 2,
-          nama_pengadaan: 'Pembangunan Kantor',
+          nama_pekerjaan: 'Pembangunan Kantor',
           tgl_nodin: '2024-02-01',
           tgl_dokumen_lengkap: '2024-02-01',
           pengguna: 'PBH',
-          vendor: 'PT Budi',
           jenis: 'Pengadaan Pekerjaan Konstruksi',
           metode: 'Pengadaan Langsung',
           rab: 1500000000,
           tgl_kebutuhan: '2024-02-01',
           progress: 'Kontrak',
+          vendor: 'PT Budi',
           tgl_kontrak: '2024-02-01',
-          no_kontrak: '13/bpbj/2025',
+          no_perjanjian: '13/bpbj/2025',
           nilai_kontrak: 2000000000,
           mulai_kontrak: '2024-02-01',
           akhir_kontrak: '2024-02-05',
@@ -292,15 +292,232 @@ const Dashboard = () => {
           keterangan: 'Pembangunan kantor cabang baru',
           pic: 'Pembangunan kantor cabang baru',
           saving: 35,
-          selisih_hari: akhir_kontrak-mulai_kontrak,
+          selisih_hari: 23,
           form_idd: true,
           penilaian_id: true
-        }
+        },
+        {
+          id: 3,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baruPembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 4,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 5,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 6,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 7,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 8,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 9,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
+        {
+          id: 10,
+          nama_pekerjaan: 'Pembangunan Kantor',
+          tgl_nodin: '2024-02-01',
+          tgl_dokumen_lengkap: '2024-02-01',
+          pengguna: 'PBH',
+          jenis: 'Pengadaan Pekerjaan Konstruksi',
+          metode: 'Pengadaan Langsung',
+          rab: 1500000000,
+          tgl_kebutuhan: '2024-02-01',
+          progress: 'Kontrak',
+          vendor: 'PT Budi',
+          tgl_kontrak: '2024-02-01',
+          no_perjanjian: '13/bpbj/2025',
+          nilai_kontrak: 2000000000,
+          mulai_kontrak: '2024-02-01',
+          akhir_kontrak: '2024-02-05',
+          jangka_waktu: '3 bulan',
+          status: 'done',
+          keterangan: 'Pembangunan kantor cabang baru',
+          pic: 'Pembangunan kantor cabang baru',
+          saving: 35,
+          selisih_hari: 23,
+          form_idd: true,
+          penilaian_id: true
+
+        },
       ]);
 
       setAmandemenData([
         {
           id: 1,
+          no_kontrak: 'fehfehfiif8348',
           tgl_kontrak: '2024-02-01',
           judul_kontrak: 'Penambahan Kuantitas',
           nilai_kontrak: 50000000,
@@ -329,48 +546,62 @@ const Dashboard = () => {
     { key: 'tgl_nodin', header: 'Tanggal Nodin AMS' },
     { key: 'tgl_dokumen_lengkap', header: 'Tanggal Dok diterima lengkap' },
     { key: 'pengguna', header: 'Pengguna' },
-    { key: 'vendor', header: 'Vendor' },
     { key: 'jenis', header: 'Jenis Pengadaan' },
     { key: 'metode', header: 'Metode Pengadaan' },
     { key: 'rab', header: 'Nilai RAB (Exclude PPN)', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val) },
     { key: 'tgl_kebutuhan', header: 'Keterangan' },
     { key: 'progress', header: 'Progress' },
+    { key: 'vendor', header: 'Vendor' },
     { key: 'tgl_kontrak', header: 'Tanggal Kontrak/ SPK' },
-    { key: 'no_kontrak', header: 'Nomor Perjanjian/SPK' },
-    { key: 'nilai_kontrak', header: 'Nilai Kontrak (exc PPN)', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val)  },
+    { key: 'no_perjanjian', header: 'Nomor Perjanjian/SPK' },
+    { key: 'nilai_kontrak', header: 'Nilai Kontrak (exc PPN)', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val) },
     { key: 'mulai_kontrak', header: 'Mulai Kontrak' },
     { key: 'akhir_kontrak', header: 'Akhir Kontrak' },
     { key: 'jangka_waktu', header: 'Jangka waktu' },
-    { key: 'status', header: 'Status Dokumen' },
+    {
+      key: 'status', header: 'Status Dokumen', render: (val) => (
+        <span className={`px-2 py-1 rounded-full text-xs ${val === 'done' ? 'bg-green-100 text-green-800' :
+          val === 'Progress' ? 'bg-blue-100 text-blue-800' :
+            'bg-gray-100 text-gray-800'
+          }`}>
+          {val}
+        </span>
+      )
+    },
     { key: 'keterangan', header: 'PIC' },
     { key: 'pic', header: 'Keterangan' },
-    { key: 'saving', header: 'saving' },
+    {
+      key: 'saving',
+      header: 'Saving',
+      render: (val) => new Intl.NumberFormat('en-US', { style: 'percent' }).format(val / 100)
+    },    
     { key: 'selisih_hari', header: 'Selisih Hari' },
     { key: 'form_idd', header: 'Form IDD' },
     { key: 'penilaian_id', header: 'Penilaian IDD' },
-    { key: 'status', header: 'Status', render: (val) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        val === 'Aktif' ? 'bg-green-100 text-green-800' :
-        val === 'Progress' ? 'bg-blue-100 text-blue-800' :
-        'bg-gray-100 text-gray-800'
-      }`}>
-        {val}
-      </span>
-    )}
+    // {
+    //   key: 'status', header: 'Status', render: (val) => (
+    //     <span className={`px-2 py-1 rounded-full text-xs ${val === 'Aktif' ? 'bg-green-100 text-green-800' :
+    //       val === 'Progress' ? 'bg-blue-100 text-blue-800' :
+    //         'bg-gray-100 text-gray-800'
+    //       }`}>
+    //       {val}
+    //     </span>
+    //   )
+    // }
   ];
 
   const amandemenColumns = [
     { key: 'no_kontrak', header: 'Nomor Kontrak/ SPK' },
     { key: 'tgl_kontrak', header: 'Tanggal Kontrak' },
     { key: 'judul_kontrak', header: 'Judul Kontrak/ SPK' },
-    { key: 'nilai_kontrak', header: 'Nilai Kontrak/ SPK' },
+    { key: 'nilai_kontrak', header: 'Nilai Kontrak/ SPK', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val) },
     { key: 'amandemen_ke', header: 'Amendemen Ke' },
     { key: 'vendor', header: 'Vendor' },
     { key: 'lingkup', header: 'Lingkup Amendemen' },
     { key: 'tgl_nodin_amandemen', header: 'Tanggal Nodin Permintaan Amendemen' },
     { key: 'tgl_spa', header: 'Tanggal Surat Permintaan Amendemen' },
     { key: 'tgl_tanggapan', header: 'Tanggal Tanggapan (Surat/ Notulen)' },
-    { key: 'rab_amandemen', header: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN' },
+    { key: 'rab_amandemen', header: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val) },
     { key: 'no_amandemen', header: 'Nomor Amandemen' },
     { key: 'tgl_amandemen', header: 'Tanggal Amandemen' },
     { key: 'nilai_amandemen', header: 'Nilai Amandemen exclude PPN' },
@@ -378,61 +609,52 @@ const Dashboard = () => {
     { key: 'status', header: 'Status Dokumen' },
     { key: 'keterangan', header: 'Keterangan ' },
     { key: 'pic', header: 'PIC' },
-    { key: 'nilai_perubahan', header: 'Nilai Perubahan', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val) },
-    { key: 'status_approval', header: 'Status', render: (val) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        val === 'Approved' ? 'bg-green-100 text-green-800' :
-        val === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-        'bg-red-100 text-red-800'
-      }`}>
-        {val}
-      </span>
-    )},
+    { key: 'nilai_perubahan', header: 'Nilai Perubahan', render: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val) }
   ];
 
   const pengadaanFormFields = [
     { key: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
-    { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'select', options: ['Barang', 'Jasa', 'Konstruksi'], required: true },
+    { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true },
     { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date', required: true },
     { key: 'pengguna', label: 'Pengguna', required: true },
-    { key: 'vendor', label: 'Vendor', type: 'number', required: true },
-    { key: 'jenis', label: 'Status', type: 'select', options: ['Aktif', 'Progress', 'Selesai', 'Dibatalkan'], required: true },
+    { key: 'vendor', label: 'Vendor', required: true },
+    { key: 'jenis', label: 'Jenis Pengadaan', type: 'select', options: ['Pengadaan Barang', 'Pengadaan Pekerjaan Konstruksi', 'Jasa Konsultan', 'Pengadaan Jasa Lainnya'], required: true },
     { key: 'metode', label: 'Metode Pengadaan', type: 'select', options: ['Aktif', 'Progress', 'Selesai', 'Dibatalkan'], required: true },
-    { key: 'rab', label: 'Nilai RAB (Exclude PPN)', required: true },
+    { key: 'rab', label: 'Nilai RAB (Exclude PPN)', type: 'number', required: false },
     { key: 'progress', label: 'Progress', type: 'select', options: ['Tender', 'Tender Terbuka', 'Penunjukan Langsung'], required: true },
-    { key: 'tgl_kontrak', label: 'Tanggal Kontrak/ SPK', type: 'textarea', fullWidth: true },
-    { key: 'no_kontrak', label: 'Nomor Perjanjian/SPK', type: 'date', required: true },
-    { key: 'nilai_kontrak', label: 'Nilai Kontrak (exc PPN)', type: 'textarea', fullWidth: true },
-    { key: 'mulai_kontrak', label: 'Mulai Kontrakk', required: true },
-    { key: 'akhir_kontrak', label: 'Akhir Kontrak', type: 'textarea', fullWidth: true },
-    { key: 'jangka_waktu', label: 'Jangka waktu', required: true },
-    { key: 'status', label: 'Status Dokumen', type: 'textarea', fullWidth: true },
+    { key: 'tgl_kontrak', label: 'Tanggal Kontrak/ SPK', type: 'date', fullWidth: true },
+    { key: 'no_perjanjian', label: 'Nomor Perjanjian/SPK', type: 'textarea', fullWidth: true , required: true },
+    { key: 'nilai_kontrak', label: 'Nilai Kontrak (exc PPN)', type: 'number' },
+    { key: 'mulai_kontrak', label: 'Mulai Kontrakk', type: 'date' },
+    { key: 'akhir_kontrak', label: 'Akhir Kontrak', type: 'date' },
+    { key: 'jangka_waktu', label: 'Jangka waktu' },
+    { key: 'status', label: 'Status Dokumen', type: 'select', options: ['Done', 'Unknown'], fullWidth: true },
     { key: 'keterangan', label: 'Keterangan', type: 'textarea', fullWidth: true },
-    { key: 'pic', label: 'PIC', type: 'textarea', fullWidth: true },
-    { key: 'saving', label: 'saving', type: 'select', options: ['CAPEX', 'OPEX'], required: true },
-    { key: 'selisih_hari', label: 'Selisih Hari', type: 'textarea', fullWidth: true },
-    { key: 'form_idd', label: 'Form IDD', type: 'textarea', fullWidth: true },
-    { key: 'penilaian_id', label: 'Penilaian IDD', type: 'textarea', fullWidth: true },
+    { key: 'pic', label: 'PIC'},
+    { key: 'saving', label: 'saving', type: 'number'},
+    { key: 'selisih_hari', label: 'Selisih Hari' },
+    { key: 'form_idd', label: 'Form IDD' },
+    { key: 'penilaian_id', label: 'Penilaian IDD' },
   ];
 
   const amandemenFormFields = [
-    { key: 'no_kontrak', label: 'Nomor Kontrak/ SPK Amandemen', required: true },
-    { key: 'tgl_kontrak', label: 'Tanggal Kontrak', required: true },
-    { key: 'judul_kontrak', label: 'Judul Kontrak/ SPK', type: 'number', required: true },
-    { key: 'nilai_kontrak', label: 'Nilai Kontrak/ SPK', type: 'select', options: ['Penambahan Kuantitas', 'Pengurangan Kuantitas', 'Perubahan Spesifikasi', 'Perpanjangan Waktu'], required: true },
+    { key: 'no_kontrak', label: 'Nomor Kontrak/ SPK Amandemen', type: 'textarea', required: true },
+    { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date', required: true },
+    { key: 'judul_kontrak', label: 'Judul Kontrak/ SPK', required: true },
+    { key: 'nilai_kontrak', label: 'Nilai Kontrak/ SPK', type: 'number' },
     { key: 'amandemen_ke', label: 'Amendemen Ke', type: 'number', required: true },
-    { key: 'vendor', label: 'Vendor', type: 'date', required: true },
-    { key: 'lingkup', label: 'Lingkup Amendemen', type: 'date', required: true },
-    { key: 'tgl_nodin_amandemen', label: 'Tanggal Nodin Permintaan Amendemen', type: 'textarea', required: true, fullWidth: true },
-    { key: 'tgl_spa', label: 'Tanggal Surat Permintaan Amendemen', required: true },
-    { key: 'tgl_tanggapan', label: 'Tanggal Tanggapan (Surat/ Notulen)', type: 'select', options: ['Pending', 'Approved', 'Rejected'], required: true },
-    { key: 'rab_amandemen', label: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN' },
-    { key: 'no_amandemen', label: 'Nomor Amandemen', type: 'number', required: true },
-    { key: 'tgl_amandemen', label: 'Tanggal Amandemen' },
-    { key: 'nilai_amandemen', label: 'Nilai Amandemen exclude PPN' },
+    { key: 'vendor', label: 'Vendor', required: true },
+    { key: 'lingkup', label: 'Lingkup Amendemen' },
+    { key: 'tgl_nodin_amandemen', label: 'Tanggal Nodin Permintaan Amendemen', type: 'date' },
+    { key: 'tgl_spa', label: 'Tanggal Surat Permintaan Amendemen', type: 'date' },
+    { key: 'tgl_tanggapan', label: 'Tanggal Tanggapan (Surat/ Notulen)', type: 'date' },
+    { key: 'rab_amandemen', label: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN', type: 'number' },
+    { key: 'no_amandemen', label: 'Nomor Amandemen' },
+    { key: 'tgl_amandemen', label: 'Tanggal Amandemen', type: 'date' },
+    { key: 'nilai_amandemen', label: 'Nilai Amandemen exclude PPN', type: 'number' },
     { key: 'progress', label: 'Progress' },
     { key: 'status', label: 'Status Dokumen' },
-    { key: 'keterangan', label: 'Keterangan' },
+    { key: 'keterangan', label: 'Keterangan', type: 'textarea', fullWidth: true  },
     { key: 'pic', label: 'PIC' }
   ];
 
@@ -476,7 +698,7 @@ const Dashboard = () => {
         id: Date.now(),
         ...formData
       };
-      
+
       if (activeTab === 'pengadaan') {
         setPengadaanData(prev => [...prev, newItem]);
       } else {
@@ -484,16 +706,16 @@ const Dashboard = () => {
       }
     } else if (modalState.mode === 'edit') {
       if (activeTab === 'pengadaan') {
-        setPengadaanData(prev => prev.map(p => 
+        setPengadaanData(prev => prev.map(p =>
           p.id === modalState.item.id ? { ...p, ...formData } : p
         ));
       } else {
-        setAmandemenData(prev => prev.map(a => 
+        setAmandemenData(prev => prev.map(a =>
           a.id === modalState.item.id ? { ...a, ...formData } : a
         ));
       }
     }
-    
+
     setModalState({ isOpen: false, mode: null, item: null });
   };
 
@@ -524,21 +746,19 @@ const Dashboard = () => {
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => setActiveTab('pengadaan')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'pengadaan'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'pengadaan'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 Data Pengadaan
               </button>
               <button
                 onClick={() => setActiveTab('amandemen')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'amandemen'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'amandemen'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 Data Amandemen
               </button>
