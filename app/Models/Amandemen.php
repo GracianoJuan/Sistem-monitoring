@@ -1,3 +1,4 @@
+// app/Models/Amandemen.php
 <?php
 
 namespace App\Models;
@@ -10,15 +11,15 @@ class Amandemen extends Model
     use HasFactory;
 
     protected $table = 'amandemen';
-
+    
     protected $fillable = [
-        'no_kontrak', //temp
+        'no_kontrak',
         'tgl_kontrak',
         'judul_kontrak',
-        'nilai_kontrak', //temp
+        'nilai_kontrak',
         'amandemen_ke',
+        'vendor',
         'lingkup',
-        'vendor', //temp
         'tgl_nodin_amandemen',
         'tgl_spa',
         'tgl_tanggapan',
@@ -30,8 +31,7 @@ class Amandemen extends Model
         'status',
         'keterangan',
         'pic',
-        'pengadaan_id',
-        // 'kontrak_id'
+        'nilai_perubahan'
     ];
 
     protected $casts = [
@@ -40,11 +40,9 @@ class Amandemen extends Model
         'tgl_spa' => 'date',
         'tgl_tanggapan' => 'date',
         'tgl_amandemen' => 'date',
-        'nilai_perubahan' => 'decimal:2'
+        'nilai_kontrak' => 'bigInteger',
+        'rab_amandemen' => 'bigInteger',
+        'nilai_amandemen' => 'bigInteger',
+        'nilai_perubahan' => 'bigInteger',
     ];
-
-    public function pengadaan()
-    {
-        return $this->belongsTo(Pengadaan::class);
-    }
 }

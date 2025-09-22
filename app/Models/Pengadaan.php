@@ -1,3 +1,4 @@
+// app/Models/Pengadaan.php
 <?php
 
 namespace App\Models;
@@ -10,20 +11,20 @@ class Pengadaan extends Model
     use HasFactory;
 
     protected $table = 'pengadaan';
-
+    
     protected $fillable = [
         'nama_pekerjaan',
         'tgl_nodin',
         'tgl_dokumen_lengkap',
-        'pengguna',
         'jenis',
         'metode',
         'rab',
         'tgl_kebutuhan',
         'progress',
-        'vendor', //temp
+        'vendor',
+        'pengguna',
         'tgl_kontrak',
-        'no_perjanjian', //temp
+        'no_perjanjian',
         'nilai_kontrak',
         'mulai_kontrak',
         'akhir_kontrak',
@@ -35,17 +36,18 @@ class Pengadaan extends Model
         'selisih_hari',
         'form_idd',
         'penilaian_id'
-        // 'kontrak_id'
     ];
 
     protected $casts = [
         'tgl_nodin' => 'date',
         'tgl_dokumen_lengkap' => 'date',
-        'tgl_kebutuhan' => 'date',
         'tgl_kontrak' => 'date',
         'mulai_kontrak' => 'date',
         'akhir_kontrak' => 'date',
-        'selisih_hari' => 'integer',
-        'nilai_kontrak' => 'decimal:2'
+        'rab' => 'bigInteger',
+        'nilai_kontrak' => 'bigInteger',
+        'saving' => 'bigInteger',
+        'form_idd' => 'boolean',
+        'penilaian_id' => 'boolean',
     ];
 }

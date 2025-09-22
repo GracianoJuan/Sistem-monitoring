@@ -1,0 +1,248 @@
+// resources/js/Config/tableColumns.js
+import { createColumnHelper } from '@tanstack/react-table';
+import { PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
+
+const columnHelper = createColumnHelper();
+
+export const createPengadaanColumns = (onEdit, onDelete, onView) => [
+  columnHelper.accessor('nama_pekerjaan', {
+    header: 'Nama Pekerjaan',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue()}
+      </div>
+    ),
+  }),
+  columnHelper.accessor('tgl_nodin', {
+    header: 'Tanggal Nodin AMS',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('tgl_dokumen_lengkap', {
+    header: 'Tanggal Dok Lengkap',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('pengguna', {
+    header: 'Pengguna',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('jenis', {
+    header: 'Jenis Pengadaan',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue()}
+      </div>
+    ),
+  }),
+  columnHelper.accessor('metode', {
+    header: 'Metode Pengadaan',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('rab', {
+    header: 'Nilai RAB',
+    cell: ({ getValue }) => getValue() 
+      ? new Intl.NumberFormat('id-ID', { 
+          style: 'currency', 
+          currency: 'IDR' 
+        }).format(getValue())
+      : '-',
+  }),
+  columnHelper.accessor('tgl_kebutuan', {
+    header: 'Tanggal Kebutuhan',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('progress', {
+    header: 'Progress',
+    cell: ({ getValue }) => (
+      <span className={`px-2 py-1 rounded-full text-xs ${
+        getValue() === 'Kontrak' ? 'bg-green-100 text-green-800' :
+        getValue() === 'Tender' ? 'bg-blue-100 text-blue-800' :
+        'bg-gray-100 text-gray-800'
+      }`}>
+        {getValue()}
+      </span>
+    ),
+  }),
+  columnHelper.accessor('vendor', {
+    header: 'Vendor',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('tgl_kontrak', {
+    header: 'Vendor',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('no_perjanjian', {
+    header: 'Nomor Perjanjian',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('nilai_kontrak', {
+    header: 'Nilai Kontrak',
+    cell: ({ getValue }) => getValue() 
+    ? new Intl.NumberFormat('id-ID', { 
+      style: 'currency', 
+      currency: 'IDR' 
+    }).format(getValue())
+    : '-',
+  }),
+  columnHelper.accessor('mulai_kontrak', {
+    header: 'Mulai Kontrak',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('akhir_kontrak', {
+    header: 'Akhir Kontrak',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('jangka_waktu', {
+    header: 'Jangka Waktu',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('status', {
+    header: 'Status Dokumen',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('keterangan', {
+    header: 'Keterangan',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('pic', {
+    header: 'PIC',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('saving', {
+    header: 'Saving',
+    cell: ({ getValue }) => getValue() 
+    ? new Intl.NumberFormat('en-EN', { 
+      style: 'percent'
+    }).format(getValue()/100)
+    : '-',
+  }),
+  columnHelper.accessor('selisih_hari', {
+    header: 'Selisih Hari',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('form_idd', {
+    header: 'Form IDD',
+    cell: ({ getValue }) => (
+      <span className={`px-2 py-1 rounded-full text-xs ${
+        getValue() === true ? 'bg-green-100 text-green-800' :
+        getValue() === false || null ? 'bg-blue-100 text-blue-800' :
+        'bg-gray-100 text-gray-800'
+      }`}>
+        {getValue() === true ? 'sudah':'belum'}
+      </span>
+    ),
+  }),
+  columnHelper.accessor('penilaian_idd', {
+    header: 'Penilaian IDD',
+    cell: ({ getValue }) => (
+      <span className={`px-2 py-1 rounded-full text-xs ${
+        getValue() === true ? 'bg-green-100 text-green-800' :
+        getValue() === false || null ? 'bg-blue-100 text-blue-800' :
+        'bg-gray-100 text-gray-800'
+      }`}>
+        {getValue() === true ? 'sudah':'belum'}
+      </span>
+    ),
+  }),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <div className="flex space-x-1">
+        <button
+          onClick={() => onView(row.original)}
+          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+          title="View"
+        >
+          <EyeIcon size={14} />
+        </button>
+        <button
+          onClick={() => onEdit(row.original)}
+          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
+          title="Edit"
+        >
+          <PencilIcon size={14} />
+        </button>
+        <button
+          onClick={() => onDelete(row.original)}
+          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+          title="Delete"
+        >
+          <TrashIcon size={14} />
+        </button>
+      </div>
+    ),
+  }),
+];
+
+export const createAmandemenColumns = (onEdit, onDelete, onView) => [
+  columnHelper.accessor('no_kontrak', {
+    header: 'No Kontrak',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue() || '-'}
+      </div>
+    ),
+  }),
+  columnHelper.accessor('tgl_kontrak', {
+    header: 'Tanggal Kontrak',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('judul_kontrak', {
+    header: 'Judul Kontrak',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue() || '-'}
+      </div>
+    ),
+  }),
+  columnHelper.accessor('nilai_kontrak', {
+    header: 'Nilai Kontrak',
+    cell: ({ getValue }) => getValue() 
+      ? new Intl.NumberFormat('id-ID', { 
+          style: 'currency', 
+          currency: 'IDR' 
+        }).format(getValue())
+      : '-',
+  }),
+  columnHelper.accessor('amandemen_ke', {
+    header: 'Amandemen Ke',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('vendor', {
+    header: 'Vendor',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('progress', {
+    header: 'Progress',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <div className="flex space-x-1">
+        <button
+          onClick={() => onView(row.original)}
+          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+          title="View"
+        >
+          <EyeIcon size={14} />
+        </button>
+        <button
+          onClick={() => onEdit(row.original)}
+          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
+          title="Edit"
+        >
+          <PencilIcon size={14} />
+        </button>
+        <button
+          onClick={() => onDelete(row.original)}
+          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+          title="Delete"
+        >
+          <TrashIcon size={14} />
+        </button>
+      </div>
+    ),
+  }),
+];

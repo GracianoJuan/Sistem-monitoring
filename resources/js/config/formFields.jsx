@@ -1,0 +1,43 @@
+// resources/js/Config/formFields.js
+export const pengadaanFormFields = [
+  { key: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
+  { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true },
+  { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date', required: true },
+  { key: 'pengguna', label: 'Pengguna', required: true },
+  { key: 'vendor', label: 'Vendor', required: true },
+  { key: 'jenis', label: 'Jenis Pengadaan', type: 'select', options: ['Pengadaan Barang', 'Pengadaan Pekerjaan Konstruksi', 'Jasa Konsultan', 'Pengadaan Jasa Lainnya'], required: true },
+  { key: 'metode', label: 'Metode Pengadaan', type: 'select', options: ['Pengadaan Langsung', 'Tender Terbuka', 'Penunjukan Langsung'], required: true },
+  { key: 'rab', label: 'Nilai RAB (Exclude PPN)', type: 'number' },
+  { key: 'progress', label: 'Progress', type: 'select', options: ['Tender', 'Kontrak', 'Selesai'], required: true },
+  { key: 'tgl_kontrak', label: 'Tanggal Kontrak/ SPK', type: 'date' },
+  { key: 'no_perjanjian', label: 'Nomor Perjanjian/SPK', fullWidth: true, required: true },
+  { key: 'nilai_kontrak', label: 'Nilai Kontrak (exc PPN)', type: 'number' },
+  { key: 'mulai_kontrak', label: 'Mulai Kontrak', type: 'date' },
+  { key: 'akhir_kontrak', label: 'Akhir Kontrak', type: 'date' },
+  { key: 'jangka_waktu', label: 'Jangka waktu' },
+  { key: 'status', label: 'Status Dokumen', type: 'select', options: ['done', 'progress'] },
+  { key: 'keterangan', label: 'Keterangan', type: 'textarea', fullWidth: true },
+  { key: 'pic', label: 'PIC' },
+];
+
+export const amandemenFormFields = [
+  { key: 'no_kontrak', label: 'Nomor Kontrak/ SPK', required: true },
+  { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date', required: true },
+  { key: 'judul_kontrak', label: 'Judul Kontrak/ SPK', required: true },
+  { key: 'nilai_kontrak', label: 'Nilai Kontrak/ SPK', type: 'number' },
+  { key: 'amandemen_ke', label: 'Amendemen Ke', type: 'number', required: true },
+  { key: 'vendor', label: 'Vendor', required: true },
+  { key: 'lingkup', label: 'Lingkup Amendemen' },
+  { key: 'tgl_nodin_amandemen', label: 'Tanggal Nodin Permintaan Amendemen', type: 'date' },
+  { key: 'tgl_spa', label: 'Tanggal Surat Permintaan Amendemen', type: 'date' },
+  { key: 'tgl_tanggapan', label: 'Tanggal Tanggapan (Surat/ Notulen)', type: 'date' },
+  { key: 'rab_amandemen', label: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN', type: 'number' },
+  { key: 'no_amandemen', label: 'Nomor Amandemen' },
+  { key: 'tgl_amandemen', label: 'Tanggal Amandemen', type: 'date' },
+  { key: 'nilai_amandemen', label: 'Nilai Amandemen exclude PPN', type: 'number' },
+  { key: 'progress', label: 'Progress' },
+  { key: 'status', label: 'Status Dokumen' },
+  { key: 'keterangan', label: 'Keterangan', type: 'textarea', fullWidth: true },
+  { key: 'pic', label: 'PIC' },
+  { key: 'nilai_perubahan', label: 'Nilai Perubahan', type: 'number' }
+];
