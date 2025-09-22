@@ -1,4 +1,3 @@
-// app/Models/Pengadaan.php
 <?php
 
 namespace App\Models;

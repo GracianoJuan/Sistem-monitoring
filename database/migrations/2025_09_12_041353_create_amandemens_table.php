@@ -28,8 +28,6 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->string('keterangan')->nullable();
             $table->string('pic')->nullable();          //person in charge
-            // $table->foreignId('pengadaan_id')->constrained('pengadaan')->onDelete('cascade');
-            // $table->foreignId('kontrak_id')->constrained('kontrak')->onDelete('cascade');
             $table->timestamps();
         });
     }

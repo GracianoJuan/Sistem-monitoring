@@ -11,7 +11,7 @@ class PengadaanController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $pengadaan = Pengadaan::orderBy('created_at', 'desc')->get();
+            $pengadaan = Pengadaan::orderBy('id', 'desc')->get();
             return response()->json($pengadaan);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch data'], 500);
@@ -42,7 +42,7 @@ class PengadaanController extends Controller
                 'keterangan' => 'nullable|string',
                 'pic' => 'nullable|string',
                 'saving' => 'nullable|numeric',
-                'selisih_hari' => 'nullable|numeric',
+                'selisih_hari' => 'nullable|string',
                 'form_idd' => 'nullable|boolean',
                 'penilaian_id' => 'nullable|boolean'
             ]);

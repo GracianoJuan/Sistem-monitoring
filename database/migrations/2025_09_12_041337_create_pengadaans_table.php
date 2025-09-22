@@ -34,7 +34,6 @@ return new class extends Migration
             $table->integer('selisih_hari')->nullable();
             $table->boolean('form_idd')->nullable();
             $table->boolean('penilaian_id')->nullable();
-            // $table->foreignId('kontrak_id')->constrained('kontrak')->onDelete('cascade');   
             $table->timestamps();
         });
     }

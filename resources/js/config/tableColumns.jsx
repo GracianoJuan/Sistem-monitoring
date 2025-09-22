@@ -1,6 +1,7 @@
 // resources/js/Config/tableColumns.js
 import { createColumnHelper } from '@tanstack/react-table';
 import { PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
+import dayjs from 'dayjs';
 
 const columnHelper = createColumnHelper();
 
@@ -39,11 +40,11 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('rab', {
     header: 'Nilai RAB',
-    cell: ({ getValue }) => getValue() 
-      ? new Intl.NumberFormat('id-ID', { 
-          style: 'currency', 
-          currency: 'IDR' 
-        }).format(getValue())
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      }).format(getValue())
       : '-',
   }),
   columnHelper.accessor('tgl_kebutuan', {
@@ -53,11 +54,10 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('progress', {
     header: 'Progress',
     cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        getValue() === 'Kontrak' ? 'bg-green-100 text-green-800' :
+      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === 'Kontrak' ? 'bg-green-100 text-green-800' :
         getValue() === 'Tender' ? 'bg-blue-100 text-blue-800' :
-        'bg-gray-100 text-gray-800'
-      }`}>
+          'bg-gray-100 text-gray-800'
+        }`}>
         {getValue()}
       </span>
     ),
@@ -76,12 +76,12 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('nilai_kontrak', {
     header: 'Nilai Kontrak',
-    cell: ({ getValue }) => getValue() 
-    ? new Intl.NumberFormat('id-ID', { 
-      style: 'currency', 
-      currency: 'IDR' 
-    }).format(getValue())
-    : '-',
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      }).format(getValue())
+      : '-',
   }),
   columnHelper.accessor('mulai_kontrak', {
     header: 'Mulai Kontrak',
@@ -109,11 +109,11 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('saving', {
     header: 'Saving',
-    cell: ({ getValue }) => getValue() 
-    ? new Intl.NumberFormat('en-EN', { 
-      style: 'percent'
-    }).format(getValue()/100)
-    : '-',
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('en-EN', {
+        style: 'percent'
+      }).format(getValue() / 100)
+      : '-',
   }),
   columnHelper.accessor('selisih_hari', {
     header: 'Selisih Hari',
@@ -122,24 +122,22 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('form_idd', {
     header: 'Form IDD',
     cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        getValue() === true ? 'bg-green-100 text-green-800' :
+      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' :
         getValue() === false || null ? 'bg-blue-100 text-blue-800' :
-        'bg-gray-100 text-gray-800'
-      }`}>
-        {getValue() === true ? 'sudah':'belum'}
+          'bg-gray-100 text-gray-800'
+        }`}>
+        {getValue() === true ? 'sudah' : 'belum'}
       </span>
     ),
   }),
   columnHelper.accessor('penilaian_idd', {
     header: 'Penilaian IDD',
     cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        getValue() === true ? 'bg-green-100 text-green-800' :
+      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' :
         getValue() === false || null ? 'bg-blue-100 text-blue-800' :
-        'bg-gray-100 text-gray-800'
-      }`}>
-        {getValue() === true ? 'sudah':'belum'}
+          'bg-gray-100 text-gray-800'
+        }`}>
+        {getValue() === true ? 'sudah' : 'belum'}
       </span>
     ),
   }),
@@ -185,7 +183,8 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('tgl_kontrak', {
     header: 'Tanggal Kontrak',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
   }),
   columnHelper.accessor('judul_kontrak', {
     header: 'Judul Kontrak',
@@ -197,11 +196,11 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('nilai_kontrak', {
     header: 'Nilai Kontrak',
-    cell: ({ getValue }) => getValue() 
-      ? new Intl.NumberFormat('id-ID', { 
-          style: 'currency', 
-          currency: 'IDR' 
-        }).format(getValue())
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      }).format(getValue())
       : '-',
   }),
   columnHelper.accessor('amandemen_ke', {
@@ -212,8 +211,51 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
     header: 'Vendor',
     cell: ({ getValue }) => getValue() || '-',
   }),
+  columnHelper.accessor('lingkup', {
+    header: 'Lingkup Amandemen',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('tgl_spa', {
+    header: 'Tanggal Nodin Permintaan Amendemen',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+  }),
+  columnHelper.accessor('tgl_tanggapan', {
+    header: 'Tanggal Tanggapan (Surat/ Notulen)',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+  }),
+  columnHelper.accessor('rab_amandemen', {
+    header: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('no_amandemen', {
+    header: 'Nomor Amandemen',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('tgl_amandemen', {
+    header: 'Tanggal Amandemen',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+  }),
+  columnHelper.accessor('nilai_amandemen', {
+    header: 'Nilai Amandemen exclude PPN',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
   columnHelper.accessor('progress', {
     header: 'Progress',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('status', {
+    header: 'Status Dokumen',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('keterangan', {
+    header: 'Keterangan',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('pic', {
+    header: 'PIC',
     cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.display({

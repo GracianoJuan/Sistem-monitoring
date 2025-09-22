@@ -1,4 +1,3 @@
-// app/Models/Amandemen.php
 <?php
 
 namespace App\Models;
@@ -9,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Amandemen extends Model
 {
     use HasFactory;
-
     protected $table = 'amandemen';
+    public $timestamps = true;
     
     protected $fillable = [
         'no_kontrak',
@@ -30,8 +29,7 @@ class Amandemen extends Model
         'progress',
         'status',
         'keterangan',
-        'pic',
-        'nilai_perubahan'
+        'pic'
     ];
 
     protected $casts = [
@@ -40,9 +38,8 @@ class Amandemen extends Model
         'tgl_spa' => 'date',
         'tgl_tanggapan' => 'date',
         'tgl_amandemen' => 'date',
-        'nilai_kontrak' => 'bigInteger',
-        'rab_amandemen' => 'bigInteger',
-        'nilai_amandemen' => 'bigInteger',
-        'nilai_perubahan' => 'bigInteger',
+        'nilai_kontrak' => 'integer',  // Changed from bigInteger to integer
+        'rab_amandemen' => 'integer',
+        'nilai_amandemen' => 'integer'
     ];
 }

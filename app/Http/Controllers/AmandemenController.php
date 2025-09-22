@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Amandemen;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class AmandemenController extends Controller
 {
     public function index(): JsonResponse
     {
         try {
-            $amandemen = Amandemen::orderBy('created_at', 'desc')->get();
+            $amandemen = Amandemen::orderBy('id', 'desc')->get();
             return response()->json($amandemen);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch data'], 500);
+            return response()->json(['error' => 'Failed to fetch data', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -22,12 +23,12 @@ class AmandemenController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_kontrak' => 'reqiored|string', // Nomor kotrak dari tabel kontrak
+                'no_kontrak' => 'required|string',  // Fixed typo
                 'tgl_kontrak' => 'required|date',
                 'judul_kontrak' => 'required|string|max:255',
-                'nilai_kotrak' => 'nullable|biginteger', // Nilai kontrak dari tabel kontrak
+                'nilai_kontrak' => 'nullable|integer',  // Fixed field name and type
                 'amandemen_ke' => 'nullable|string',
-                'vendor' => 'required|string', // Vendor dari tabel kontrak
+                'vendor' => 'required|string',
                 'lingkup' => 'nullable|string',
                 'tgl_nodin_amandemen' => 'nullable|date',
                 'tgl_spa' => 'nullable|date',
@@ -47,7 +48,7 @@ class AmandemenController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to create data'], 500);
+            return response()->json(['error' => 'Failed to create data', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -60,20 +61,20 @@ class AmandemenController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_kontrak' => 'reqiored|string', // Nomor kotrak dari tabel kontrak
+                'no_kontrak' => 'required|string',  // Fixed typo
                 'tgl_kontrak' => 'required|date',
                 'judul_kontrak' => 'required|string|max:255',
-                'nilai_kotrak' => 'nullable|biginteger', // Nilai kontrak dari tabel kontrak
+                'nilai_kontrak' => 'nullable|integer',  // Fixed field name and type
                 'amandemen_ke' => 'nullable|string',
-                'vendor' => 'required|string', // Vendor dari tabel kontrak
+                'vendor' => 'required|string',
                 'lingkup' => 'nullable|string',
                 'tgl_nodin_amandemen' => 'nullable|date',
                 'tgl_spa' => 'nullable|date',
                 'tgl_tanggapan' => 'nullable|date',
-                'rab_amandemen' => 'nullable|integer',
+                'rab_amandemen' => 'nullable|integer',  // Fixed type
                 'no_amandemen' => 'required|string',
                 'tgl_amandemen' => 'required|date',
-                'nilai_amandemen' => 'nullable|integer',
+                'nilai_amandemen' => 'nullable|integer',  // Fixed type
                 'progress' => 'nullable|string',
                 'status' => 'nullable|string',
                 'keterangan' => 'nullable|string',
@@ -85,7 +86,7 @@ class AmandemenController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to update data'], 500);
+            return response()->json(['error' => 'Failed to update data', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -95,7 +96,7 @@ class AmandemenController extends Controller
             $amandemen->delete();
             return response()->json(['message' => 'Data deleted successfully']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete data'], 500);
+            return response()->json(['error' => 'Failed to delete data', 'message' => $e->getMessage()], 500);
         }
     }
 }
