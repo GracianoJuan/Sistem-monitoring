@@ -1,4 +1,4 @@
-// resources/js/Pages/Dashboard.jsx (Main Dashboard Component)
+// resources/js/Pages/Dashboard.jsx (Fixed Delete Function)
 import React, { useState, useEffect } from 'react';
 import { PlusIcon } from 'lucide-react';
 import DataTable from '../components/DataTable';
@@ -66,23 +66,6 @@ const Dashboard = () => {
     });
   };
 
-  const handleDelete = async (item) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        if (activeTab === 'pengadaan') {
-          await apiService.deletePengadaan(item.id);
-          setPengadaanData(prev => prev.filter(p => p.id !== item.id));
-        } else {
-          await apiService.deleteAmandemen(item.id);
-          setAmandemenData(prev => prev.filter(a => a.id !== item.id));
-        }
-        alert('Item deleted successfully!');
-      } catch (error) {
-        alert('Error deleting item. Please try again.');
-      }
-    }
-  };
-
   const handleSubmit = async (formData) => {
     setFormLoading(true);
     try {
@@ -107,13 +90,74 @@ const Dashboard = () => {
           ));
         }
       }
-      
+
       setModalState({ isOpen: false, mode: null, item: null });
       alert('Data saved successfully!');
+
+      // Refresh data to ensure consistency
+      await loadData();
+
     } catch (error) {
+      console.error('Submit error:', error);
       alert('Error saving data. Please try again.');
     } finally {
       setFormLoading(false);
+    }
+  };
+
+  // FIXED: Improved delete function with better error handling
+  const handleDelete = async (item) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      // Show loading state
+      setLoading(true);
+
+      try {
+        console.log(`Attempting to delete ${activeTab} with ID:`, item.id);
+
+        let deleteResponse;
+        if (activeTab === 'pengadaan') {
+          deleteResponse = await apiService.deletePengadaan(item.id);
+          console.log('Delete response:', deleteResponse);
+
+          // Only update frontend state if backend deletion was successful
+          if (deleteResponse) {
+            setPengadaanData(prev => prev.filter(p => p.id !== item.id));
+          }
+        } else {
+          deleteResponse = await apiService.deleteAmandemen(item.id);
+          console.log('Delete response:', deleteResponse);
+
+          // Only update frontend state if backend deletion was successful
+          if (deleteResponse) {
+            setAmandemenData(prev => prev.filter(a => a.id !== item.id));
+          }
+        }
+
+        alert('Item deleted successfully!');
+
+        // Always refresh data from server to ensure consistency
+        await loadData();
+
+      } catch (error) {
+        console.error('Delete error:', error);
+
+        // More detailed error message
+        let errorMessage = 'Error deleting item. ';
+        if (error.response) {
+          errorMessage += `Server responded with status ${error.response.status}: ${error.response.data?.message || error.response.statusText}`;
+        } else if (error.request) {
+          errorMessage += 'No response from server. Please check your connection.';
+        } else {
+          errorMessage += error.message;
+        }
+
+        alert(errorMessage);
+
+        // Refresh data anyway to show current state
+        await loadData();
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -123,7 +167,7 @@ const Dashboard = () => {
 
   const currentData = activeTab === 'pengadaan' ? pengadaanData : amandemenData;
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
-  
+
   // Create columns with action handlers
   const pengadaanColumns = createPengadaanColumns(handleEdit, handleDelete, handleView);
   const amandemenColumns = createAmandemenColumns(handleEdit, handleDelete, handleView);
@@ -173,6 +217,7 @@ const Dashboard = () => {
           <button
             onClick={handleCreate}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
+            disabled={loading}
           >
             <PlusIcon size={20} />
             <span>Add New {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
@@ -201,10 +246,10 @@ const Dashboard = () => {
                       {field.label}
                     </label>
                     <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                      {field.type === 'number' && modalState.item?.[field.key] ? 
-                        new Intl.NumberFormat('id-ID', { 
-                          style: 'currency', 
-                          currency: 'IDR' 
+                      {field.type === 'number' && modalState.item?.[field.key] ?
+                        new Intl.NumberFormat('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR'
                         }).format(modalState.item[field.key]) :
                         modalState.item?.[field.key] || '-'
                       }

@@ -67,7 +67,7 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
     cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('tgl_kontrak', {
-    header: 'Vendor',
+    header: 'Tanggal Kontrak',
     cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('no_perjanjian', {

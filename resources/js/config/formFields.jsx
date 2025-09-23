@@ -1,7 +1,6 @@
-// resources/js/Config/formFields.js
 export const pengadaanFormFields = [
   { key: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
-  { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true },
+  { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true,    },
   { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date', required: true },
   { key: 'pengguna', label: 'Pengguna', required: true },
   { key: 'vendor', label: 'Vendor', required: true },
@@ -21,7 +20,7 @@ export const pengadaanFormFields = [
   { key: 'saving', label: 'saving', type: 'number'},
   { key: 'selisih_hari', label: 'Selisih Hari'},
   { key: 'form_idd', label: 'Form IDD', type: 'checkbox'},
-  { key: 'penilaian_id', label: 'Penilaian IDD', type: 'checkbox'},
+  { key: 'penilaian_idd', label: 'Penilaian IDD', type: 'checkbox'},
 ];
 
 export const amandemenFormFields = [

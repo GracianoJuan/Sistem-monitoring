@@ -1,7 +1,5 @@
-// resources/js/Services/ApiService.js
 import axios from 'axios';
 
-// Get CSRF token for Laravel
 const csrfToken = document.head.querySelector('meta[name="csrf-token"]')?.content;
 
 const apiClient = axios.create({
@@ -13,8 +11,35 @@ const apiClient = axios.create({
   },
 });
 
+apiClient.interceptors.request.use(
+  (config) => {
+    console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`, config.data);
+    return config;
+  },
+  (error) => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+apiClient.interceptors.response.use(
+  (response) => {
+    console.log(`Response from ${response.config.url}:`, response.status, response.data);
+    return response;
+  },
+  (error) => {
+    console.error('Response error:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
+    return Promise.reject(error);
+  }
+);
+
 export const apiService = {
-  // Pengadaan endpoints
   async getPengadaanData() {
     try {
       const response = await apiClient.get('/pengadaan');
@@ -47,15 +72,26 @@ export const apiService = {
 
   async deletePengadaan(id) {
     try {
-      await apiClient.delete(`/pengadaan/${id}`);
-      return true;
+      console.log(`Attempting to delete pengadaan with ID: ${id}`);
+      const response = await apiClient.delete(`/pengadaan/${id}`);
+      console.log('Delete pengadaan successful:', response.status, response.data);
+      
+      return response.data || { success: true, message: 'Deleted successfully' };
     } catch (error) {
-      console.error('Error deleting pengadaan:', error);
-      throw error;
+      console.error('Error deleting pengadaan:', {
+        id,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+      
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
+      throw new Error(`Failed to delete pengadaan (ID: ${id}): ${errorMessage}`);
     }
   },
 
-  // Amandemen endpoints
+
   async getAmandemenData() {
     try {
       const response = await apiClient.get('/amandemen');
@@ -88,11 +124,22 @@ export const apiService = {
 
   async deleteAmandemen(id) {
     try {
-      await apiClient.delete(`/amandemen/${id}`);
-      return true;
+      console.log(`Attempting to delete amandemen with ID: ${id}`);
+      const response = await apiClient.delete(`/amandemen/${id}`);
+      console.log('Delete amandemen successful:', response.status, response.data);
+      
+      return response.data || { success: true, message: 'Deleted successfully' };
     } catch (error) {
-      console.error('Error deleting amandemen:', error);
-      throw error;
+      console.error('Error deleting amandemen:', {
+        id,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+      
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
+      throw new Error(`Failed to delete amandemen (ID: ${id}): ${errorMessage}`);
     }
   }
 };

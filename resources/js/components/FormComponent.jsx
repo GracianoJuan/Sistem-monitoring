@@ -32,7 +32,9 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
     } catch (error) {
       console.error('Form submission error:', error);
     }
-  };
+  }
+  
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -47,9 +49,8 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
               <textarea
                 value={formData[field.key]}
                 onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors[field.key] ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 rows={4}
                 required={field.required}
               />
@@ -57,9 +58,8 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
               <select
                 value={formData[field.key]}
                 onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors[field.key] ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 required={field.required}
               >
                 <option value="">Select {field.label}</option>
@@ -67,19 +67,27 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
+            ) : field.type === 'date' ? (
+              <input
+                type='date'
+                value={formData[field.key]}
+                onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                required={field.required}
+              />
             ) : (
               <input
                 type={field.type || 'text'}
                 value={formData[field.key]}
                 onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors[field.key] ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 required={field.required}
               />
             )}
             {errors[field.key] && (
-              <p className="mt-1 text-sm text-red-600">{errors[field.key]}</p>
+              <p claassName="mt-1 text-sm text-red-600">{errors[field.key]}</p>
             )}
           </div>
         ))}
