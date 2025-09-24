@@ -1,4 +1,3 @@
-// resources/js/Config/tableColumns.js
 import { createColumnHelper } from '@tanstack/react-table';
 import { PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
 import dayjs from 'dayjs';

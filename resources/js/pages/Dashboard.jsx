@@ -105,10 +105,8 @@ const Dashboard = () => {
     }
   };
 
-  // FIXED: Improved delete function with better error handling
   const handleDelete = async (item) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
-      // Show loading state
       setLoading(true);
 
       try {
@@ -119,7 +117,6 @@ const Dashboard = () => {
           deleteResponse = await apiService.deletePengadaan(item.id);
           console.log('Delete response:', deleteResponse);
 
-          // Only update frontend state if backend deletion was successful
           if (deleteResponse) {
             setPengadaanData(prev => prev.filter(p => p.id !== item.id));
           }
@@ -127,7 +124,6 @@ const Dashboard = () => {
           deleteResponse = await apiService.deleteAmandemen(item.id);
           console.log('Delete response:', deleteResponse);
 
-          // Only update frontend state if backend deletion was successful
           if (deleteResponse) {
             setAmandemenData(prev => prev.filter(a => a.id !== item.id));
           }
@@ -135,13 +131,11 @@ const Dashboard = () => {
 
         alert('Item deleted successfully!');
 
-        // Always refresh data from server to ensure consistency
         await loadData();
 
       } catch (error) {
         console.error('Delete error:', error);
 
-        // More detailed error message
         let errorMessage = 'Error deleting item. ';
         if (error.response) {
           errorMessage += `Server responded with status ${error.response.status}: ${error.response.data?.message || error.response.statusText}`;

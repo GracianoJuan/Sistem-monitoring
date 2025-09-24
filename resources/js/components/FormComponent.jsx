@@ -1,5 +1,5 @@
 // resources/js/Components/Form/FormComponent.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) => {
   const [formData, setFormData] = useState(() => {
@@ -76,7 +76,7 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
                   }`}
                 required={field.required}
               />
-            ) : (
+            )   : (
               <input
                 type={field.type || 'text'}
                 value={formData[field.key]}
@@ -86,7 +86,7 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
                 required={field.required}
               />
             )}
-            {errors[field.key] && (
+              {errors[field.key] && (
               <p claassName="mt-1 text-sm text-red-600">{errors[field.key]}</p>
             )}
           </div>

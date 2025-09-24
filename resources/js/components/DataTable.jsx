@@ -1,6 +1,5 @@
 // resources/js/Components/Table/DataTable.jsx
 import React, { useState } from 'react';
-import { PencilIcon, TrashIcon, EyeIcon } from 'lucide-react';
 import {
     useReactTable,
     getCoreRowModel,
