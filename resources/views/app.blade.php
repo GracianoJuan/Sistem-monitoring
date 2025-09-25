@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pengadaan & Amandemen Dashboard</title>
     @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/main.jsx'])
+    @vite(['resources/js/main.jsx'])
 </head>
 
 <body>

@@ -12,4 +12,8 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],  
+    // build: {
+    //     manifest: 'manifest.json'
+    // }
+    
 });

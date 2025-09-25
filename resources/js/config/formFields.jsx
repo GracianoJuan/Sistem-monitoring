@@ -28,7 +28,7 @@ export const amandemenFormFields = [
   { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date'},
   { key: 'judul_kontrak', label: 'Judul Kontrak/ SPK', required: true },
   { key: 'nilai_kontrak', label: 'Nilai Kontrak/ SPK', type: 'number'},
-  { key: 'amandemen_ke', label: 'Amendemen Ke', type: 'number', required: true },
+  { key: 'amandemen_ke', label: 'Amendemen Ke', required: true },
   { key: 'vendor', label: 'Vendor', required: true },
   { key: 'lingkup', label: 'Lingkup Amendemen'},
   { key: 'tgl_nodin_amandemen', label: 'Tanggal Nodin Permintaan Amendemen', type: 'date'},

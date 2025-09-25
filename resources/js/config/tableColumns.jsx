@@ -226,7 +226,12 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('rab_amandemen', {
     header: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      }).format(getValue())
+      : '-',
   }),
   columnHelper.accessor('no_amandemen', {
     header: 'Nomor Amandemen',
@@ -239,7 +244,12 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('nilai_amandemen', {
     header: 'Nilai Amandemen exclude PPN',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      }).format(getValue())
+      : '-',
   }),
   columnHelper.accessor('progress', {
     header: 'Progress',
