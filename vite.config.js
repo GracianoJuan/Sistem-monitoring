@@ -12,8 +12,19 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],  
-    // build: {
-    //     manifest: 'manifest.json'
-    // }
+    build: {
+        manifest: 'manifest.json',
+        emptyOutDir: true,
+        outDir: 'public/build',
+        rollupOptions: {
+            input: 'resources/js/main.jsx',
+            output: {
+                chunkFileNames: 'assets/[name]-[hash].js',
+                entryFileNames: 'assets/[name]-[hash].js',
+                assetFileNames: 'assets/[name]-[hash].[ext]'
+            }
+        },
+    }
+
     
 });
