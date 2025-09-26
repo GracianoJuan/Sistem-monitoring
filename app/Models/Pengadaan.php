@@ -34,7 +34,7 @@ class Pengadaan extends Model
         'saving',
         'selisih_hari',
         'form_idd',
-        'penilaian_id'
+        'penilaian_idd'
     ];
 
     protected $casts = [
@@ -43,10 +43,10 @@ class Pengadaan extends Model
         'tgl_kontrak' => 'date',
         'mulai_kontrak' => 'date',
         'akhir_kontrak' => 'date',
-        'rab' => 'bigInteger',
-        'nilai_kontrak' => 'bigInteger',
-        'saving' => 'bigInteger',
-        'form_idd' => 'boolean',
-        'penilaian_id' => 'boolean',
+        'rab' => 'integer',
+        'nilai_kontrak' => 'integer',
+        'saving' => 'integer',
+        'form_idd' => 'boolean',    
+        'penilaian_idd' => 'boolean',
     ];
 }

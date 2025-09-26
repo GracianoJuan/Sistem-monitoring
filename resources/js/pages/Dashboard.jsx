@@ -231,7 +231,10 @@ const Dashboard = ({ user, session }) => {
                     {field.label}
                   </label>
                   <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                    {field.type === 'number' && modalState.item?.[field.key] ?
+                    {field.type === 'number' && field.note === 'percent' && modalState.item?.[field.key] ?
+                      new Intl.NumberFormat('en-EN', {
+                        style: 'percent'
+                      }).format(modalState.item[field.key]/100) : field.type === 'number' && modalState.item?.[field.key] ?
                       new Intl.NumberFormat('id-ID', {
                         style: 'currency',
                         currency: 'IDR'

@@ -16,7 +16,7 @@ class PengadaanController extends Controller
             $pengadaan = Pengadaan::orderBy('id', 'desc')->get();
             return response()->json($pengadaan);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch data'], 500);
+            return response()->json(['error' => 'Failed to fetch data', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -24,29 +24,29 @@ class PengadaanController extends Controller
     {
         try {
             $validated = $request->validate([
-                'nama_pengadaan' => 'required|string|max:255',
+                'nama_pekerjaan' => 'required|string|max:255',
                 'tgl_nodin' => 'required|date',
                 'tgl_dokumen_lengkap' => 'nullable|string',
                 'pengguna' => 'required|string',
-                'jenis' => 'required|numeric',
+                'jenis' => 'required|string',
                 'metode' => 'required|string',
-                'rab' => 'nullable|numeric',
-                'tgl_kebutuhan' => 'nullable|numeric',
+                'rab' => 'nullable|integer',
+                'tgl_kebutuhan' => 'nullable|date',
                 'progress' => 'required|string',
                 'vendor' => 'nullable|string|max:255',
                 'tgl_kontrak' => 'nullable|date',
-                'no_kontrak' => 'nullable|string|max:255',
-                'nilai_kontrak' => 'nullable|numeric',
+                'no_perjanjian' => 'nullable|string|max:255',
+                'nilai_kontrak' => 'nullable|integer',
                 'mulai_kontrak' => 'nullable|date',
                 'akhir_kontrak' => 'required|date',
                 'jangka_waktu' => 'nullable|string',
                 'status' => 'nullable|string',
                 'keterangan' => 'nullable|string',
                 'pic' => 'nullable|string',
-                'saving' => 'nullable|numeric',
-                'selisih_hari' => 'nullable|string',
+                'saving' => 'nullable|integer',
+                'selisih_hari' => 'nullable|integer',
                 'form_idd' => 'nullable|boolean',
-                'penilaian_id' => 'nullable|boolean'
+                'penilaian_idd' => 'nullable|boolean'
             ]);
 
             $pengadaan = Pengadaan::create($validated);
@@ -54,7 +54,7 @@ class PengadaanController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to create data'], 500);
+            return response()->json(['error' => 'Failed to create data', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -67,29 +67,29 @@ class PengadaanController extends Controller
     {
         try {
             $validated = $request->validate([
-                'nama_pengadaan' => 'required|string|max:255',
+                'nama_pekerjaan' => 'required|string|max:255',
                 'tgl_nodin' => 'required|date',
-                'tgl_dokumen_lengkap' => 'nullable|string',
+                'tgl_dokumen_lengkap' => 'nullable|date',
                 'pengguna' => 'required|string',
-                'jenis' => 'required|numeric',
+                'jenis' => 'required|string',
                 'metode' => 'required|string',
-                'rab' => 'nullable|numeric',
-                'tgl_kebutuhan' => 'nullable|numeric',
+                'rab' => 'nullable|integer',
+                'tgl_kebutuhan' => 'nullable|date',
                 'progress' => 'required|string',
                 'vendor' => 'nullable|string|max:255',
                 'tgl_kontrak' => 'nullable|date',
                 'no_kontrak' => 'nullable|string|max:255',
-                'nilai_kontrak' => 'nullable|numeric',
+                'nilai_kontrak' => 'nullable|integer',
                 'mulai_kontrak' => 'nullable|date',
                 'akhir_kontrak' => 'required|date',
                 'jangka_waktu' => 'nullable|string',
                 'status' => 'nullable|string',
                 'keterangan' => 'nullable|string',
                 'pic' => 'nullable|string',
-                'saving' => 'nullable|numeric',
-                'selisih_hari' => 'nullable|numeric',
+                'saving' => 'nullable|integer',
+                'selisih_hari' => 'nullable|integer',
                 'form_idd' => 'nullable|boolean',
-                'penilaian_id' => 'nullable|boolean'
+                'penilaian_idd' => 'nullable|boolean'
             ]);
 
             $pengadaan = Pengadaan::find($id);

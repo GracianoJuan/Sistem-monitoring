@@ -1,4 +1,5 @@
 // resources/js/Components/Form/FormComponent.jsx
+import dayjs from 'dayjs';
 import { useState } from 'react';
 
 const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) => {
@@ -33,8 +34,8 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
       console.error('Form submission error:', error);
     }
   }
-  
-  
+
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -67,16 +68,26 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
+            ) : field.type === 'checkbox' ? (
+              <div><input
+                type="checkbox"
+                id={field.key}
+                checked={!!formData[field.key]}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, [field.key]: e.target.checked }))
+                }
+                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              /> <label htmlFor={field.key}>Sudah</label></div>
             ) : field.type === 'date' ? (
               <input
                 type='date'
-                value={formData[field.key]}
+                value={dayjs(formData[field.key]).format('YYYY-MM-DD')}
                 onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
                   }`}
                 required={field.required}
               />
-            )   : (
+            ) : (
               <input
                 type={field.type || 'text'}
                 value={formData[field.key]}
@@ -86,8 +97,8 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
                 required={field.required}
               />
             )}
-              {errors[field.key] && (
-              <p claassName="mt-1 text-sm text-red-600">{errors[field.key]}</p>
+            {errors[field.key] && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.key]}</p>
             )}
           </div>
         ))}

@@ -1,10 +1,10 @@
 export const pengadaanFormFields = [
   { key: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
-  { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true,    },
-  { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date', required: true },
+  { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true},
+  { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date'},
   { key: 'pengguna', label: 'Pengguna', required: true },
   { key: 'vendor', label: 'Vendor', required: true },
-  { key: 'jenis', label: 'Status', type: 'select', options: ['Aktif', 'Progress', 'Selesai', 'Dibatalkan'], required: true },
+  { key: 'jenis', label: 'Jenis', type: 'select', options: ['Aktif', 'Progress', 'Selesai', 'Dibatalkan'], required: true },
   { key: 'metode', label: 'Metode Pengadaan', type: 'select', options: ['Pengadaan Langsung', 'Seleksi Terbatas', 'Penunjukan Langsung'], required: true },
   { key: 'rab', label: 'Nilai RAB (Exclude PPN)', type: 'number',required: true },
   { key: 'progress', label: 'Progress', type: 'select', options: ['Kontrak', 'Selesai', 'Aanwijzing'], required: true },
@@ -17,14 +17,14 @@ export const pengadaanFormFields = [
   { key: 'status', label: 'Status Dokumen'},
   { key: 'keterangan', label: 'Keterangan', type: 'textarea', fullWidth: true },
   { key: 'pic', label: 'PIC'},
-  { key: 'saving', label: 'saving', type: 'number'},
+  { key: 'saving', label: 'saving', type: 'number', note: 'percent'},
   { key: 'selisih_hari', label: 'Selisih Hari'},
   { key: 'form_idd', label: 'Form IDD', type: 'checkbox'},
   { key: 'penilaian_idd', label: 'Penilaian IDD', type: 'checkbox'},
 ];
 
 export const amandemenFormFields = [
-  { key: 'no_kontrak', label: 'Nomor Kontrak/ SPK Amandemen', required: true },
+  { key: 'no_kontrak', label: 'Nomor Kontrak/ SPK Amandemen', type:'textarea', required: true },
   { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date'},
   { key: 'judul_kontrak', label: 'Judul Kontrak/ SPK', required: true },
   { key: 'nilai_kontrak', label: 'Nilai Kontrak/ SPK', type: 'number'},
@@ -40,6 +40,6 @@ export const amandemenFormFields = [
   { key: 'nilai_amandemen', label: 'Nilai Amandemen exclude PPN', type: 'number' },
   { key: 'progress', label: 'Progress' },
   { key: 'status', label: 'Status Dokumen' },
-  { key: 'keterangan', label: 'Keterangan' },
+  { key: 'keterangan', label: 'Keterangan',  type: 'textarea', fullWidth: true},
   { key: 'pic', label: 'PIC' }
 ];

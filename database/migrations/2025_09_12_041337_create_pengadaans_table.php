@@ -33,7 +33,7 @@ return new class extends Migration
             $table->integer('saving')->nullable();
             $table->integer('selisih_hari')->nullable();
             $table->boolean('form_idd')->nullable();
-            $table->boolean('penilaian_id')->nullable();
+            $table->boolean('penilaian_idd')->nullable();
             $table->timestamps();
         });
     }

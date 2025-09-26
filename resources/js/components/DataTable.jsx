@@ -89,7 +89,7 @@ const DataTable = ({ data, columns, loading }) => {
                                                             : ''
                                                     }
                                                 >
-                                                    <span className="truncate">
+                                                    <span className="text-wrap">
                                                         {flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()
@@ -126,6 +126,7 @@ const DataTable = ({ data, columns, loading }) => {
                                         >
                                             <div className="min-h-[20px] flex items-center">
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                
                                             </div>
                                         </td>
                                     ))}

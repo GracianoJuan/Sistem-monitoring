@@ -15,11 +15,13 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('tgl_nodin', {
     header: 'Tanggal Nodin AMS',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('tgl_dokumen_lengkap', {
     header: 'Tanggal Dok Lengkap',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('pengguna', {
     header: 'Pengguna',
@@ -38,7 +40,7 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
     cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('rab', {
-    header: 'Nilai RAB',
+    header: 'Nilai RAB ',
     cell: ({ getValue }) => getValue()
       ? new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -48,7 +50,8 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('tgl_kebutuan', {
     header: 'Tanggal Kebutuhan',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('progress', {
     header: 'Progress',
@@ -67,7 +70,8 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('tgl_kontrak', {
     header: 'Tanggal Kontrak',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('no_perjanjian', {
     header: 'Nomor Perjanjian',
@@ -84,11 +88,13 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('mulai_kontrak', {
     header: 'Mulai Kontrak',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('akhir_kontrak', {
     header: 'Akhir Kontrak',
-    cell: ({ getValue }) => getValue() || '-',
+    cell: ({ getValue }) =>
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('jangka_waktu', {
     header: 'Jangka Waktu',
@@ -121,22 +127,18 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('form_idd', {
     header: 'Form IDD',
     cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' :
-        getValue() === false || null ? 'bg-blue-100 text-blue-800' :
-          'bg-gray-100 text-gray-800'
+      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
         }`}>
-        {getValue() === true ? 'sudah' : 'belum'}
+        {getValue() === true ? 'Sudah' : 'Belum'}
       </span>
     ),
   }),
   columnHelper.accessor('penilaian_idd', {
     header: 'Penilaian IDD',
     cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' :
-        getValue() === false || null ? 'bg-blue-100 text-blue-800' :
-          'bg-gray-100 text-gray-800'
+      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' :'bg-blue-100 text-blue-800'
         }`}>
-        {getValue() === true ? 'sudah' : 'belum'}
+        {getValue() === true ? 'Sudah' : 'Belum'}
       </span>
     ),
   }),
@@ -183,7 +185,7 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('tgl_kontrak', {
     header: 'Tanggal Kontrak',
     cell: ({ getValue }) =>
-      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('judul_kontrak', {
     header: 'Judul Kontrak',
@@ -217,12 +219,12 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('tgl_spa', {
     header: 'Tanggal Nodin Permintaan Amendemen',
     cell: ({ getValue }) =>
-      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('tgl_tanggapan', {
     header: 'Tanggal Tanggapan (Surat/ Notulen)',
     cell: ({ getValue }) =>
-      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('rab_amandemen', {
     header: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN',
@@ -240,7 +242,7 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('tgl_amandemen', {
     header: 'Tanggal Amandemen',
     cell: ({ getValue }) =>
-      getValue() ? dayjs(getValue()).format('DD-MM-YYYY') : '-',
+      getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('nilai_amandemen', {
     header: 'Nilai Amandemen exclude PPN',
