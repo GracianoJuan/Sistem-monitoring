@@ -24,11 +24,12 @@ class AmandemenController extends Controller
     {
         try {
             $validated = $request->validate([
+                // 'no_bantex' => 'nullable|integer',
                 'no_kontrak' => 'required|string',
                 'tgl_kontrak' => 'required|date',
                 'judul_kontrak' => 'required|string|max:255',
                 'nilai_kontrak' => 'nullable|integer',
-                'amandemen_ke' => 'nullable|string',
+                'amandemen_ke' => 'required|string',
                 'vendor' => 'required|string',
                 'lingkup' => 'nullable|string',
                 'tgl_nodin_amandemen' => 'nullable|date',
@@ -62,6 +63,7 @@ class AmandemenController extends Controller
     {
         try {
             $validated = $request->validate([
+                // 'no_bantex' => 'nullable|integer',
                 'no_kontrak' => 'required|string',
                 'tgl_kontrak' => 'required|date',
                 'judul_kontrak' => 'required|string|max:255',

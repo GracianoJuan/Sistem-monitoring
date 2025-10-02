@@ -1,4 +1,3 @@
-// resources/js/Pages/Login.jsx
 import React, { useState } from 'react';
 import { EyeIcon, EyeOff , UserPlusIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -281,8 +280,8 @@ const Login = () => {
 
   // Login Page
   return (
-    <div className="min-h-screen bg-blue-200 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-lg w-full space-y-8 border-1 p-8 rounded-2xl shadow-2xl bg-white">
+    <div className="min-h-screen bg-blue-300 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-lg w-full space-y-8 border-sm p-8 rounded-2xl shadow-md bg-white">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             {mode === 'login' && 'Sign in to your account'}

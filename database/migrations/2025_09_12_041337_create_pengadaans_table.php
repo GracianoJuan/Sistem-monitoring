@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('pengadaan', function (Blueprint $table) {
             $table->id();
+            // $table->integer('no_bantex')->nullable();
             $table->string('nama_pekerjaan');
             $table->date('tgl_nodin');
             $table->date('tgl_dokumen_lengkap')->nullable();
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->string('metode');
             $table->bigInteger('rab')->nullable();          
             $table->date('tgl_kebutuhan')->nullable();
-            $table->string('progress');
+            $table->string('progress')->nullable();
             $table->string('vendor'); // Vendor dari tabel kontrak
             $table->date('tgl_kontrak')->nullable();
             $table->string('no_perjanjian');// Nomor perjanjian dari tabel kontrak (no_kontrak)

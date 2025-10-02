@@ -1,4 +1,3 @@
-// resources/js/Components/Table/DataTable.jsx
 import React, { useState } from 'react';
 import {
     useReactTable,
@@ -6,8 +5,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    flexRender,
-    createColumnHelper,
+    flexRender
 } from '@tanstack/react-table';
 
 const DataTable = ({ data, columns, loading }) => {
@@ -17,6 +15,12 @@ const DataTable = ({ data, columns, loading }) => {
         pageIndex: 0,
         pageSize: 10,
     });
+
+    // Helper function to check if column should have word wrap
+    const shouldWrapColumn = (columnId) => {
+        const wrapColumns = ['no_kontrak', 'no_perjanjian', 'no_amandemen'];
+        return wrapColumns.includes(columnId);
+    };
 
     const table = useReactTable({
         data: data || [],
@@ -70,12 +74,13 @@ const DataTable = ({ data, columns, loading }) => {
                                     {headerGroup.headers.map((header, index) => (
                                         <th
                                             key={header.id}
-                                            className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200 bg-gray-50 ${index < 2 ? 'sticky left-0 z-20 shadow-r' : 'min-w-[150px]'
-                                                } ${index === 0 ? 'left-0' : index === 1 ? 'left-[200px]' : ''
+                                            className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200 bg-gray-50 ${index < 3 ? 'sticky left-0 z-20 shadow-r ' : 'min-w-[150px]'
+                                                } ${index === 0 ? 'left-0' : index === 1 ? 'left-[200px]' : index === 2 ? 'left-[300px]': ''
                                                 }`}
                                             style={{
-                                                minWidth: index < 2 ? '200px' : '150px',
-                                                maxWidth: index < 2 ? '300px' : '250px',
+                                                minWidth: index < 3 ? '200px' : '150px',
+                                                maxWidth: index < 3 ? '300px' : '250px',
+                                                top: 0,
                                             }}
                                         >
                                             {header.isPlaceholder ? null : (
@@ -96,11 +101,32 @@ const DataTable = ({ data, columns, loading }) => {
                                                         )}
                                                     </span>
                                                     <span className="flex-shrink-0">
-                                                        {{
-                                                            asc: '🔼',
-                                                            desc: '🔽',
-                                                        }[header.column.getIsSorted()] ?? (header.column.getCanSort() ? '↕️' : null)}
+                                                        {header.column.getIsSorted() ? (
+                                                            header.column.getIsSorted() === 'asc' ? (
+                                                                /* Up arrow (ascending) */
+                                                                <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                                    <title>Sorted ascending</title>
+                                                                    <path d="M5 12.5L10 7.5L15 12.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                                                                </svg>
+                                                            ) : (
+                                                                /* Down arrow (descending) */
+                                                                <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                                    <title>Sorted descending</title>
+                                                                    <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                                                                </svg>
+                                                            )
+                                                        ) : (
+                                                            header.column.getCanSort() ? (
+                                                                /* Neutral sort hint (both chevrons faint) */
+                                                                <svg className="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                                    <title>Sortable</title>
+                                                                    <path d="M5 8.5L10 3.5L15 8.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                                                                    <path d="M5 11.5L10 16.5L15 11.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                                                                </svg>
+                                                            ) : null
+                                                        )}
                                                     </span>
+
                                                 </div>
                                             )}
                                         </th>
@@ -116,17 +142,20 @@ const DataTable = ({ data, columns, loading }) => {
                                     {row.getVisibleCells().map((cell, index) => (
                                         <td
                                             key={cell.id}
-                                            className={`px-4 py-3 text-sm text-gray-900 border-r border-gray-100 ${index < 2 ? 'sticky left-0 bg-white z-10 shadow-r' : ''
-                                                } ${index === 0 ? 'left-0' : index === 1 ? 'left-[200px]' : ''
+                                            className={`px-4 py-3 text-sm text-gray-900 border-r border-gray-100 ${index < 3 ? 'sticky left-0 bg-white z-10 shadow-r' : ''
+                                                } ${index === 0 ? 'left-0' : index === 1 ? 'left-[200px]' : index === 2 ? 'left-[300px]' : ''
                                                 }`}
                                             style={{
-                                                minWidth: index < 2 ? '200px' : '150px',
-                                                maxWidth: index < 2 ? '300px' : '250px',
+                                                minWidth: index < 3 ? '200px' : '100px',
+                                                maxWidth: index < 3 ? '300px' : '250px',
                                             }}
                                         >
-                                            <div className="min-h-[20px] flex items-center">
+                                            <div className={`min-h-[20px] flex items-center ${shouldWrapColumn(cell.column.id)
+                                                    ? 'break-all whitespace-normal word-break'
+                                                    : ''
+                                                }`}
+                                                style={shouldWrapColumn(cell.column.id) ? { wordBreak: 'break-all' } : {}}>
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                
                                             </div>
                                         </td>
                                     ))}

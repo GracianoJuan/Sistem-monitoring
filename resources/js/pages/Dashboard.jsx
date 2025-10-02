@@ -1,5 +1,4 @@
-// Updated Dashboard.jsx - Remove the header section
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { PlusIcon } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import { Modal } from '../components/Modal';
@@ -8,6 +7,7 @@ import { apiService } from '../services/ApiServices';
 import { createPengadaanColumns, createAmandemenColumns } from '../config/tableColumns';
 import { pengadaanFormFields, amandemenFormFields } from '../config/formFields';
 import dayjs from 'dayjs';
+import ExportButton from '../components/ExportButton';
 
 const Dashboard = ({ user, session }) => {
   const [activeTab, setActiveTab] = useState('pengadaan');
@@ -21,7 +21,6 @@ const Dashboard = ({ user, session }) => {
     item: null
   });
 
-  // Load data on component mount and tab change
   useEffect(() => {
     loadData();
   }, [activeTab]);
@@ -106,6 +105,7 @@ const Dashboard = ({ user, session }) => {
     }
   };
 
+
   const handleDelete = async (item) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       setLoading(true);
@@ -160,6 +160,8 @@ const Dashboard = ({ user, session }) => {
     setModalState({ isOpen: false, mode: null, item: null });
   };
 
+
+
   const currentData = activeTab === 'pengadaan' ? pengadaanData : amandemenData;
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
 
@@ -171,6 +173,10 @@ const Dashboard = ({ user, session }) => {
   return (
     // Remove the header section and outer container styling
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      <div className='bg-gray-200 shadow-sm p-2'>
+        Statistik
+      </div>
       {/* Tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
@@ -198,7 +204,7 @@ const Dashboard = ({ user, session }) => {
       </div>
 
       {/* Action Button */}
-      <div className="mb-6">
+      <div className="mb-4">
         <button
           onClick={handleCreate}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
@@ -234,13 +240,13 @@ const Dashboard = ({ user, session }) => {
                     {field.type === 'number' && field.note === 'percent' && modalState.item?.[field.key] ?
                       new Intl.NumberFormat('en-EN', {
                         style: 'percent'
-                      }).format(modalState.item[field.key]/100) : field.type === 'number' && modalState.item?.[field.key] ?
-                      new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR'
-                      }).format(modalState.item[field.key]) : field.type === 'date' && modalState.item?.[field.key] ?
-                      dayjs(modalState.item[field.key]).format('DD-MM-YYYY') :
-                      modalState.item?.[field.key] || '-'
+                      }).format(modalState.item[field.key] / 100) : field.type === 'number' && modalState.item?.[field.key] ?
+                        new Intl.NumberFormat('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR'
+                        }).format(modalState.item[field.key]) : field.type === 'date' && modalState.item?.[field.key] ?
+                          dayjs(modalState.item[field.key]).format('DD-MM-YYYY') :
+                          modalState.item?.[field.key] || '-'
                     }
                   </div>
                 </div>
@@ -257,6 +263,11 @@ const Dashboard = ({ user, session }) => {
           />
         )}
       </Modal>
+      <ExportButton
+        data={currentData}
+        fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${dayjs().format('YYYYMMDD')}.xlsx`}
+        fields={currentFormFields}
+      />
     </div>
   );
 };

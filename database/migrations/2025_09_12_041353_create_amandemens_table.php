@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('amandemen', function (Blueprint $table) {
             $table->id();
+            // $table->integer('no_bantex')->nullable();
             $table->string('no_kontrak');// nomor kontrak dari tabel kontrak
             $table->date('tgl_kontrak');
             $table->string('judul_kontrak');
-            $table->bigInteger('nilai_kontrak');// Nilai kontrak dari tabel kontrak
+            $table->bigInteger('nilai_kontrak')->nullable();// Nilai kontrak dari tabel kontrak
             $table->string('amandemen_ke');
             $table->string('vendor');// Vendor dari tabel kontrak
             $table->string('lingkup')->nullable();

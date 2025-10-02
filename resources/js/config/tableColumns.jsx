@@ -13,6 +13,35 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
       </div>
     ),
   }),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <div className="flex space-x-1">
+        <button
+          onClick={() => onView(row.original)}
+          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+          title="View"
+        >
+          <EyeIcon size={14} />
+        </button>
+        <button
+          onClick={() => onEdit(row.original)}
+          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
+          title="Edit"
+        >
+          <PencilIcon size={14} />
+        </button>
+        <button
+          onClick={() => onDelete(row.original)}
+          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+          title="Delete"
+        >
+          <TrashIcon size={14} />
+        </button>
+      </div>
+    ),
+  }),
   columnHelper.accessor('tgl_nodin', {
     header: 'Tanggal Nodin AMS',
     cell: ({ getValue }) =>
@@ -29,11 +58,7 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   }),
   columnHelper.accessor('jenis', {
     header: 'Jenis Pengadaan',
-    cell: ({ getValue }) => (
-      <div className="max-w-xs truncate" title={getValue()}>
-        {getValue()}
-      </div>
-    ),
+    cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('metode', {
     header: 'Metode Pengadaan',
@@ -48,21 +73,14 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
       }).format(getValue())
       : '-',
   }),
-  columnHelper.accessor('tgl_kebutuan', {
+  columnHelper.accessor('tgl_kebutuhan', {
     header: 'Tanggal Kebutuhan',
     cell: ({ getValue }) =>
       getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('progress', {
     header: 'Progress',
-    cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === 'Kontrak' ? 'bg-green-100 text-green-800' :
-        getValue() === 'Tender' ? 'bg-blue-100 text-blue-800' :
-          'bg-gray-100 text-gray-800'
-        }`}>
-        {getValue()}
-      </span>
-    ),
+    cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('vendor', {
     header: 'Vendor',
@@ -142,6 +160,18 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
       </span>
     ),
   }),
+  
+];
+
+export const createAmandemenColumns = (onEdit, onDelete, onView) => [
+  columnHelper.accessor('no_kontrak', {
+    header: 'Nomor Kontrak/SPK',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue() || '-'}
+      </div>
+    ),
+  }),
   columnHelper.display({
     id: 'actions',
     header: 'Actions',
@@ -171,24 +201,13 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
       </div>
     ),
   }),
-];
-
-export const createAmandemenColumns = (onEdit, onDelete, onView) => [
-  columnHelper.accessor('no_kontrak', {
-    header: 'No Kontrak',
-    cell: ({ getValue }) => (
-      <div className="max-w-xs truncate" title={getValue()}>
-        {getValue() || '-'}
-      </div>
-    ),
-  }),
   columnHelper.accessor('tgl_kontrak', {
     header: 'Tanggal Kontrak',
     cell: ({ getValue }) =>
       getValue() ? dayjs(getValue()).format('DD-MMM-YYYY') : '-',
   }),
   columnHelper.accessor('judul_kontrak', {
-    header: 'Judul Kontrak',
+    header: 'Judul Kontrak/SPK',
     cell: ({ getValue }) => (
       <div className="max-w-xs truncate" title={getValue()}>
         {getValue() || '-'}
@@ -196,7 +215,7 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
     ),
   }),
   columnHelper.accessor('nilai_kontrak', {
-    header: 'Nilai Kontrak',
+    header: 'Nilai Kontrak/SPK',
     cell: ({ getValue }) => getValue()
       ? new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -269,33 +288,5 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
     header: 'PIC',
     cell: ({ getValue }) => getValue() || '-',
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => (
-      <div className="flex space-x-1">
-        <button
-          onClick={() => onView(row.original)}
-          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-          title="View"
-        >
-          <EyeIcon size={14} />
-        </button>
-        <button
-          onClick={() => onEdit(row.original)}
-          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
-          title="Edit"
-        >
-          <PencilIcon size={14} />
-        </button>
-        <button
-          onClick={() => onDelete(row.original)}
-          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-          title="Delete"
-        >
-          <TrashIcon size={14} />
-        </button>
-      </div>
-    ),
-  }),
+  
 ];

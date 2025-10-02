@@ -1,4 +1,3 @@
-// resources/js/Components/Modal/Modal.jsx
 const Modal = ({ isOpen, onClose, title, children, size = 'max-w-6xl' }) => {
   if (!isOpen) return null;
 

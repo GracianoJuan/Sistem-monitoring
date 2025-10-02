@@ -24,6 +24,7 @@ class PengadaanController extends Controller
     {
         try {
             $validated = $request->validate([
+                // 'no_bantex' => 'nullable|integer',
                 'nama_pekerjaan' => 'required|string|max:255',
                 'tgl_nodin' => 'required|date',
                 'tgl_dokumen_lengkap' => 'nullable|string',
@@ -67,6 +68,7 @@ class PengadaanController extends Controller
     {
         try {
             $validated = $request->validate([
+                // 'no_bantex' => 'nullable|integer',
                 'nama_pekerjaan' => 'required|string|max:255',
                 'tgl_nodin' => 'required|date',
                 'tgl_dokumen_lengkap' => 'nullable|date',
@@ -75,13 +77,13 @@ class PengadaanController extends Controller
                 'metode' => 'required|string',
                 'rab' => 'nullable|integer',
                 'tgl_kebutuhan' => 'nullable|date',
-                'progress' => 'required|string',
+                'progress' => 'nullable|string',
                 'vendor' => 'nullable|string|max:255',
                 'tgl_kontrak' => 'nullable|date',
                 'no_kontrak' => 'nullable|string|max:255',
                 'nilai_kontrak' => 'nullable|integer',
                 'mulai_kontrak' => 'nullable|date',
-                'akhir_kontrak' => 'required|date',
+                'akhir_kontrak' => 'nullable|date',
                 'jangka_waktu' => 'nullable|string',
                 'status' => 'nullable|string',
                 'keterangan' => 'nullable|string',
