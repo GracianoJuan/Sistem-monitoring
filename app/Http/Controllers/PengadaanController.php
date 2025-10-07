@@ -10,52 +10,64 @@ use Illuminate\Support\Facades\DB;
 
 class PengadaanController extends Controller
 {
+    /**
+     * Validation rules untuk Pengadaan
+     */
+    private function validationRules(): array
+    {
+        return [
+            // 'no_bantex' => 'nullable|integer',
+            'nama_pekerjaan' => 'required|string|max:255',
+            'tgl_nodin' => 'required|date',
+            'tgl_dokumen_lengkap' => 'nullable|date',
+            'pengguna' => 'required|string',
+            'jenis' => 'required|string',
+            'metode' => 'required|string',
+            'rab' => 'nullable|integer|min:0',
+            // 'hpe' => 'nullable|integer|min:0',
+            // 'saving_hpe' => 'nullable|integer',
+            'tgl_kebutuhan' => 'nullable|date',
+            'progress' => 'required|string',
+            'vendor' => 'nullable|string|max:255',
+            'tgl_kontrak' => 'nullable|date',
+            'no_perjanjian' => 'nullable|string|max:255',
+            'nilai_kontrak' => 'nullable|integer|min:0',
+            'mulai_kontrak' => 'nullable|date',
+            'akhir_kontrak' => 'nullable|date|after_or_equal:mulai_kontrak',
+            'jangka_waktu' => 'nullable|string',
+            'status' => 'nullable|string',
+            'keterangan' => 'nullable|string',
+            'pic' => 'nullable|string',
+            'saving' => 'nullable|integer',
+            'selisih_hari' => 'nullable|integer',
+            'form_idd' => 'nullable|boolean',
+            'penilaian_idd' => 'nullable|boolean'
+        ];
+    }
+
     public function index(): JsonResponse
     {
         try {
             $pengadaan = Pengadaan::orderBy('id', 'desc')->get();
             return response()->json($pengadaan);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch data', 'message' => $e->getMessage()], 500);
+            Log::error('Failed to fetch pengadaan: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch data'], 500);
         }
     }
 
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                // 'no_bantex' => 'nullable|integer',
-                'nama_pekerjaan' => 'required|string|max:255',
-                'tgl_nodin' => 'required|date',
-                'tgl_dokumen_lengkap' => 'nullable|string',
-                'pengguna' => 'required|string',
-                'jenis' => 'required|string',
-                'metode' => 'required|string',
-                'rab' => 'nullable|integer',
-                'tgl_kebutuhan' => 'nullable|date',
-                'progress' => 'required|string',
-                'vendor' => 'nullable|string|max:255',
-                'tgl_kontrak' => 'nullable|date',
-                'no_perjanjian' => 'nullable|string|max:255',
-                'nilai_kontrak' => 'nullable|integer',
-                'mulai_kontrak' => 'nullable|date',
-                'akhir_kontrak' => 'required|date',
-                'jangka_waktu' => 'nullable|string',
-                'status' => 'nullable|string',
-                'keterangan' => 'nullable|string',
-                'pic' => 'nullable|string',
-                'saving' => 'nullable|integer',
-                'selisih_hari' => 'nullable|integer',
-                'form_idd' => 'nullable|boolean',
-                'penilaian_idd' => 'nullable|boolean'
-            ]);
-
+            $validated = $request->validate($this->validationRules());
             $pengadaan = Pengadaan::create($validated);
+
             return response()->json($pengadaan, 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to create data', 'message' => $e->getMessage()], 500);
+            Log::error('Failed to create pengadaan: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to create data'], 500);
         }
     }
 
@@ -67,39 +79,18 @@ class PengadaanController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                // 'no_bantex' => 'nullable|integer',
-                'nama_pekerjaan' => 'required|string|max:255',
-                'tgl_nodin' => 'required|date',
-                'tgl_dokumen_lengkap' => 'nullable|date',
-                'pengguna' => 'required|string',
-                'jenis' => 'required|string',
-                'metode' => 'required|string',
-                'rab' => 'nullable|integer',
-                'tgl_kebutuhan' => 'nullable|date',
-                'progress' => 'nullable|string',
-                'vendor' => 'nullable|string|max:255',
-                'tgl_kontrak' => 'nullable|date',
-                'no_kontrak' => 'nullable|string|max:255',
-                'nilai_kontrak' => 'nullable|integer',
-                'mulai_kontrak' => 'nullable|date',
-                'akhir_kontrak' => 'nullable|date',
-                'jangka_waktu' => 'nullable|string',
-                'status' => 'nullable|string',
-                'keterangan' => 'nullable|string',
-                'pic' => 'nullable|string',
-                'saving' => 'nullable|integer',
-                'selisih_hari' => 'nullable|integer',
-                'form_idd' => 'nullable|boolean',
-                'penilaian_idd' => 'nullable|boolean'
-            ]);
+            $pengadaan = Pengadaan::findOrFail($id);
+            $validated = $request->validate($this->validationRules());
 
-            $pengadaan = Pengadaan::find($id);
             $pengadaan->update($validated);
+
             return response()->json($pengadaan);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Data not found'], 404);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
+            Log::error('Failed to update pengadaan: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to update data'], 500);
         }
     }
@@ -107,110 +98,102 @@ class PengadaanController extends Controller
     public function destroy($id): JsonResponse
     {
         try {
-            if (empty($id)) {
-                Log::error('Empty or invalid ID provided');
-                return response()->json(['error' => 'Invalid ID provided'], 400);
-            }
-            
-            $pengadaan = Pengadaan::find($id);
-            
-            if (!$pengadaan) {
-                Log::warning('Pengadaan not found with ID: ' . $id);
-                return response()->json(['error' => 'Data not found'], 404);
-            }    
-            DB::enableQueryLog();
-            try {
-                $result = DB::transaction(function () use ($pengadaan, $id) {
-                    Log::info('Starting database transaction for delete');
-                    
-                    $existsBefore = Pengadaan::where('id', $id)->exists();
-                    Log::info('Record exists before deletion: ' . ($existsBefore ? 'true' : 'false'));
-                    
-                    if (!$existsBefore) {
-                        throw new \Exception('Record does not exist before deletion');
-                    }
-                    
-                    $deleted = $pengadaan->delete();
-                    Log::info('Delete method returned: ' . ($deleted ? 'true' : 'false'));
-                    
-                    if (!$deleted) {
-                        throw new \Exception('Delete method returned false');
-                    }
-                    
-                    $existsAfter = Pengadaan::where('id', $id)->exists();
-                    Log::info('Record exists after deletion: ' . ($existsAfter ? 'true' : 'false'));
-                    
-                    if ($existsAfter) {
-                        throw new \Exception('Record still exists after deletion');
-                    }
-                    
-                    return true;
-                });
-                
-                $queries = DB::getQueryLog();
-                Log::info('Executed queries during delete:', $queries);
-                
-                if ($result) {
-                    Log::info('=== DELETE OPERATION SUCCESSFUL ===');
-                    return response()->json(['message' => 'Data deleted successfully']);
-                } else {
-                    Log::error('Transaction completed but result was false');
-                    return response()->json(['error' => 'Delete operation failed - unknown reason'], 500);
-                }
-                
-            } catch (\Exception $transactionError) {
-                Log::error('Transaction error during delete:', [
-                    'id' => $id,
-                    'error' => $transactionError->getMessage(),
-                    'trace' => $transactionError->getTraceAsString()
-                ]);
-                
-                $queries = DB::getQueryLog();
-                Log::info('Executed queries during failed delete:', $queries);
-                
-                return response()->json([
-                    'error' => 'Delete operation failed', 
-                    'details' => $transactionError->getMessage()
-                ], 500);
-            }
-            
-        } catch (\Exception $e) {
-            Log::error('=== DELETE OPERATION FAILED ===');
-            Log::error('Exception during delete operation:', [
-                'id' => $id,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            // Get executed queries for debugging
-            if (DB::logging()) {
-                $queries = DB::getQueryLog();
-                Log::info('Executed queries during exception:', $queries);
-            }
-            
+            $pengadaan = Pengadaan::findOrFail($id);
+
+            DB::transaction(function () use ($pengadaan) {
+                $pengadaan->delete();
+            });
+
+            Log::info("Pengadaan deleted successfully", ['id' => $id]);
+
             return response()->json([
-                'error' => 'Failed to delete data', 
-                'message' => $e->getMessage()
+                'success' => true,
+                'message' => 'Data deleted successfully'
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data not found'
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete pengadaan', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete data'
             ], 500);
         }
     }
-    
+
     public function checkConstraints($id): JsonResponse
     {
         try {
-            $pengadaan = Pengadaan::find($id);
-            if (!$pengadaan) {
-                return response()->json(['error' => 'Record not found'], 404);
-            }
+            $pengadaan = Pengadaan::findOrFail($id);
             $constraints = [];
-            return response()->json([
-                'record' => $pengadaan,
-                'constraints' => $constraints,
-                'can_delete' => empty($constraints)
-            ]);
 
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'record' => $pengadaan,
+                    'constraints' => $constraints,
+                    'can_delete' => empty($constraints)
+                ]
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Record not found'
+            ], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Failed to check constraints: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check constraints'
+            ], 500);
+        }
+    }
+
+    public function dataStats(): JsonResponse
+    {
+        try {
+            // Hitung total progress yang selesai
+            $totalProgress = Pengadaan::where('progress', 'Selesai')->count();
+
+            // Hitung total saving dengan query yang lebih efisien
+            $stats = Pengadaan::whereNotNull('rab')
+                ->whereNotNull('nilai_kontrak')
+                ->selectRaw('
+                    SUM(rab) as total_rab, 
+                    SUM(nilai_kontrak) as total_kontrak
+                ')
+                ->first();
+
+            $totalRab = $stats->total_rab ?? 0;
+            $totalKontrak = $stats->total_kontrak ?? 0;
+
+            // Hitung persentase saving
+            $totalSaving = $totalRab > 0
+                ? round((($totalRab - $totalKontrak) / $totalRab) * 100, 2)
+                : 0;
+
+            return response()->json([
+                [
+                    'total_progress' => $totalProgress,
+                    'total_saving_percentage' => $totalSaving,
+                    'total_rab' => $totalRab,
+                    'total_kontrak' => $totalKontrak,
+                    'total_saving_nominal' => $totalRab - $totalKontrak
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch stats: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch statistics'
+            ], 500);
         }
     }
 }

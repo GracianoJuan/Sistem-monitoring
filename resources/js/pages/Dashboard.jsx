@@ -13,6 +13,7 @@ const Dashboard = ({ user, session }) => {
   const [activeTab, setActiveTab] = useState('pengadaan');
   const [pengadaanData, setPengadaanData] = useState([]);
   const [amandemenData, setAmandemenData] = useState([]);
+  const [statsData, setStatsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [modalState, setModalState] = useState({
@@ -28,6 +29,8 @@ const Dashboard = ({ user, session }) => {
   const loadData = async () => {
     setLoading(true);
     try {
+      const stats = await apiService.getStats();
+      setStatsData(stats);
       if (activeTab === 'pengadaan') {
         const data = await apiService.getPengadaanData();
         setPengadaanData(data);
@@ -107,7 +110,8 @@ const Dashboard = ({ user, session }) => {
 
 
   const handleDelete = async (item) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
+    // if (PopUp.confirm('Apakah anda yakin anda akan menghapus data ini?'))
+    if (window.confirm('Apakah anda yakin anda akan menghapus data ini?')) {
       setLoading(true);
 
       try {
@@ -156,11 +160,20 @@ const Dashboard = ({ user, session }) => {
     }
   };
 
+
   const handleCloseModal = () => {
     setModalState({ isOpen: false, mode: null, item: null });
   };
 
+  
 
+  const stats = () => [
+    { label: 'Pengadaan Selesai', value: '0' },
+    { label: 'Total Saving RAB', value: '0' },
+    { label: 'Total Saving HPE', value: '0' }
+  ]
+  
+  // const stats = apiService.getStats();
 
   const currentData = activeTab === 'pengadaan' ? pengadaanData : amandemenData;
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
@@ -174,9 +187,23 @@ const Dashboard = ({ user, session }) => {
     // Remove the header section and outer container styling
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      <div className='bg-gray-200 shadow-sm p-2'>
-        Statistik
+      {/* Total progress and saving statistics */}
+      <div className='bg-gray-200 shadow-sm p-2 border-1 mb-2'>
+
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-lg font-semibold'>
+          <div className=''>
+            Pengadaan Selesai <span className='text-7xl block'>0</span> <span className=''>dari total 6 pengadaan</span>
+          </div>
+          <div>
+            Total Saving RAB <span className='block text-7xl'>0%</span>
+          </div>
+          <div>
+            Total Saving HPE <span className='block text-7xl'>0</span>
+          </div>
+        </div>
       </div>
+
+
       {/* Tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">

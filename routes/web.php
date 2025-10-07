@@ -31,4 +31,5 @@ Route::prefix('api')->group(function () {
             'user_email' => $request->input('auth_user_email')
         ]);
     });
+    Route::get('/stats', [PengadaanController::class, 'dataStats']);
 });

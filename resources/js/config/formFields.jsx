@@ -1,4 +1,5 @@
 export const pengadaanFormFields = [
+  // { key: 'no_bantex', label: 'Nomor Bantex', type: 'number'},
   { key: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
   { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true},
   { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date'},
@@ -9,6 +10,7 @@ export const pengadaanFormFields = [
   ], required: true },
   { key: 'rab', label: 'Nilai RAB (Exclude PPN)', type: 'number'},
   // { key: 'hpe', label: 'HPE', type: 'number'},
+  // { key: 'saving_hpe', label: 'Saving HPE', type: 'number'},
 
   { key: 'tgl_kebutuhan', label: 'Tanggal Kebutuhan', type: 'date'},
   { key: 'progress', label: 'Progress', type: 'select', options: [

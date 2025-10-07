@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('pengguna');
             $table->string('jenis');
             $table->string('metode');
-            $table->bigInteger('rab')->nullable();          
+            $table->bigInteger('rab')->nullable();
+            // $table->bigInteger('hpe')->nullable();
             $table->date('tgl_kebutuhan')->nullable();
             $table->string('progress')->nullable();
             $table->string('vendor'); // Vendor dari tabel kontrak

@@ -1,9 +1,9 @@
-// resources/js/components/MainApp.jsx
 import React from 'react';
 import { useAuth } from './contexts/AuthContext';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import LoadingSpinner from './components/LoadingSpinner';
+import logo from './misc/logo.png'
 
 const App = () => {
     const { user, loading, isAuthenticated, login, logout } = useAuth();
@@ -21,6 +21,7 @@ const App = () => {
             <nav className="bg-blue-600 shadow-sm border-b-1-blue">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
+                        <img src={logo} alt="" className='sm:max-w-1/5 lg:w-1/8'/>
                         <div className="flex items-center">
                             <h1 className="text-xl font-semibold text-white">
                                 Dashboard Pengadaan & Amandemen

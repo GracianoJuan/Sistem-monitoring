@@ -1,4 +1,3 @@
-// resources/js/services/ApiService.js
 import axios from 'axios';
 import { supabase } from '../lib/supabase';
 
@@ -178,6 +177,16 @@ export const apiService = {
       // Re-throw with more context
       const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
       throw new Error(`Failed to delete amandemen (ID: ${id}): ${errorMessage}`);
+    }
+  },
+
+  async getStats(){
+    try {
+      const response = await apiClient.get('/stats');
+      return response.data;
+    } catch (error) {
+      console.error('Error processing the statistic :', error);
+      throw error;
     }
   }
 };

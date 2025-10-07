@@ -73,6 +73,23 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
       }).format(getValue())
       : '-',
   }),
+  //   columnHelper.accessor('hpe', {
+  //     header: 'HPE',
+  //     cell: ({ getValue }) => getValue()
+  //       ? new Intl.NumberFormat('id-ID', {
+  //         style: 'currency',
+  //         currency: 'IDR'
+  //       }).format(getValue())
+  //       : '-',
+  // }),
+  // columnHelper.accessor('saving_hpe', {
+  //   header: 'Saving HPE',
+  //   cell: ({ getValue }) => getValue()
+  //     ? new Intl.NumberFormat('en-EN', {
+  //       style:'percent'
+  //     }).format(getValue())
+  //     : '-',
+  // }),
   columnHelper.accessor('tgl_kebutuhan', {
     header: 'Tanggal Kebutuhan',
     cell: ({ getValue }) =>
@@ -154,13 +171,13 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
   columnHelper.accessor('penilaian_idd', {
     header: 'Penilaian IDD',
     cell: ({ getValue }) => (
-      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' :'bg-blue-100 text-blue-800'
+      <span className={`px-2 py-1 rounded-full text-xs ${getValue() === true ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
         }`}>
         {getValue() === true ? 'Sudah' : 'Belum'}
       </span>
     ),
   }),
-  
+
 ];
 
 export const createAmandemenColumns = (onEdit, onDelete, onView) => [
@@ -198,6 +215,7 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
         >
           <TrashIcon size={14} />
         </button>
+        <button></button>
       </div>
     ),
   }),
@@ -288,5 +306,5 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
     header: 'PIC',
     cell: ({ getValue }) => getValue() || '-',
   }),
-  
+
 ];
