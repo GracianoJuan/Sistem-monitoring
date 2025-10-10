@@ -1,23 +1,27 @@
 export const pengadaanFormFields = [
-  // { key: 'no_bantex', label: 'Nomor Bantex', type: 'number'},
+  { key: 'no_bantex', label: 'Nomor Bantex', type: 'number'},
   { key: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
   { key: 'tgl_nodin', label: 'Tanggal Nodin AMS', type: 'date', required: true},
   { key: 'tgl_dokumen_lengkap', label: 'Tanggal Dok diterima lengkap', type: 'date'},
-  { key: 'pengguna', label: 'Pengguna', required: true },
-  { key: 'jenis', label: 'Jenis',required: true },
+  { key: 'pengguna', label: 'Pengguna', type: 'select', options: [
+    'AKT', 'CRS', 'K3KL', 'KS RENKO', 'LEGAL', 'MHC', 'MRK', 'MUM', 'PBH', 'PETA','RKM','TIG'
+  ]
+    ,required: true },
+  { key: 'jenis', label: 'Jenis', type: 'select', options: [
+    'Jasa Konsultan', 'Jasa Konsultan Asing', 'Pengadaan Barang', 'Pengadaan Jasa', 'Pengadaan Jasa Lainnya', 'Pengadaan Jasa Lainnya (Sewa)'  ]
+    , required: true },
   { key: 'metode', label: 'Metode Pengadaan', type: 'select', options: [
     'Pengadaan Langsung','Penunjukan Langsung', 'Tender Terbatas', 'Seleksi Terbatas', 'Tender Umum', 'Seleksi Umum'
   ], required: true },
   { key: 'rab', label: 'Nilai RAB (Exclude PPN)', type: 'number'},
-  // { key: 'hpe', label: 'HPE', type: 'number'},
-  // { key: 'saving_hpe', label: 'Saving HPE', type: 'number'},
-
+  { key: 'hpe', label: 'HPE', type: 'number'},
+  { key: 'saving_hpe', label: 'Saving HPE', type: 'number', note: 'percent'},
   { key: 'tgl_kebutuhan', label: 'Tanggal Kebutuhan', type: 'date'},
   { key: 'progress', label: 'Progress', type: 'select', options: [
-    '','Review KAK', 'Penusunan HPE HPS RKS', 'Undangan', 'Pendaftaran','Aanwijzing', 'Pemasukan Dokumen', 'Pembukaan Dokumen', 'Evaluasi', 'Pembukaan Dokumen Sampul 1',
+    'Review KAK', 'Penusunan HPE HPS RKS', 'Undangan', 'Pendaftaran','Aanwijzing', 'Pemasukan Dokumen', 'Pembukaan Dokumen', 'Evaluasi', 'Pembukaan Dokumen Sampul 1',
     'Evaluasi Sampul 1', 'Pembukaan Dokumen Sampul 2', 'Evaluasi Sampul 2', 'Klarifikasi & Negosiasi', 'Penetapan Penyedia', 'Pengumuman', 'Draft Kontrak/ SPK',
     'Finalisasi Kontrak/ SPK', 'Selesai'
-  ], required: true },
+  ]},
   { key: 'vendor', label: 'Vendor', required: true },
   { key: 'tgl_kontrak', label: 'Tanggal Kontrak/ SPK', type: 'date'},
   { key: 'no_perjanjian', label: 'Nomor Perjanjian/SPK', type: 'textarea', required: true },
@@ -35,6 +39,7 @@ export const pengadaanFormFields = [
 ];
 
 export const amandemenFormFields = [
+  { key: 'no_bantex', label: 'Nomor Bantex', type:'number'},
   { key: 'no_kontrak', label: 'Nomor Kontrak/SPK', type:'textarea', required: true },
   { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date', required: true},
   { key: 'judul_kontrak', label: 'Judul Kontrak/SPK', required: true },

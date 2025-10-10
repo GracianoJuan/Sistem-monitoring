@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useState, useEffect, use } from 'react';
 
-const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) => {
+
+const FormComponent = ({ item, mode, fields, onSubmit, onCancel, loading = false }) => {
   const [formData, setFormData] = useState(() => {
     const initial = {};
     fields.forEach(field => {
@@ -9,26 +10,70 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
     });
     return initial;
   });
-
+  
+  // useEffect to show date data on edit Form
+  useEffect(() => {
+    if (item && mode === 'edit') {
+      const initialData = {};
+      fields.forEach(field => {
+        if (field.type === 'date' && item[field.key]) {
+          initialData[field.key] = dayjs(item[field.key]).format('YYYY-MM-DD');
+        } else {
+          initialData[field.key] = item[field.key] || '';
+        }
+      });
+      setFormData(initialData);
+    }
+  }, [item, mode]);
+  
   const networkdays = function (startDate, endDate) {
     var startDate = typeof startDate == 'object' ? startDate : new Date(startDate);
     var endDate = typeof endDate == 'object' ? endDate : new Date(endDate);
     if (endDate > startDate) {
       var days = Math.ceil((endDate.setHours(23, 59, 59, 999) - startDate.setHours(0, 0, 0, 1)) / (86400 * 1000));
       var weeks = Math.floor(Math.ceil((endDate.setHours(23, 59, 59, 999) - startDate.setHours(0, 0, 0, 1)) / (86400 * 1000)) / 7);
-
+      
       days = days - (weeks * 2);
       days = startDate.getDay() - endDate.getDay() > 1 ? days - 2 : days;
       days = startDate.getDay() == 0 && endDate.getDay() != 6 ? days - 1 : days;
       days = endDate.getDay() == 6 && startDate.getDay() != 0 ? days - 1 : days;
-
+      
       return days;
     }
     return null;
   };
+  const savingCalc = function (rab, nilai) {
+    if (rab > 0) {
+      return  Math.round((rab - nilai) / rab * 100);
+    }
+    return 0;
+  };
+  
 
+  useEffect(() => {
+    if (formData['rab'] && formData['nilai_kontrak']) {
+      const saving = savingCalc(formData['rab'], formData['nilai_kontrak']);
+      setFormData(prev => ({ ...prev, 'saving': saving || 0 }));
+    }
+  }, [formData['rab'], formData['nilai_kontrak']]);
+
+  useEffect(() => {
+    if (formData['rab'] && formData['hpe']) {
+      const savingHpe = savingCalc(formData['rab'], formData['hpe']);
+      setFormData(prev => ({ ...prev, 'saving_hpe': savingHpe || 0 }));
+    }
+  }, [formData['rab'], formData['hpe']]);
+
+  // Auto calculate selisih_hari
+  useEffect(() => {
+    if (formData['tgl_nodin'] && formData['tgl_kontrak']) {
+      const selisih = networkdays(formData['tgl_nodin'], formData['tgl_kontrak']);
+      setFormData(prev => ({ ...prev, 'selisih_hari': selisih || 0 }));
+    }
+  }, [formData['tgl_nodin'], formData['tgl_kontrak']]);
+  
   const [errors, setErrors] = useState({});
-
+  
   const validateForm = () => {
     const newErrors = {};
     fields.forEach(field => {
@@ -97,26 +142,16 @@ const FormComponent = ({ item, fields, onSubmit, onCancel, loading = false }) =>
             ) : field.type === 'date' ? (
               <input
                 type='date'
-                value={dayjs(formData[field.key]).format('YYYY-MM-DD')}
-                onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                required={field.required}
-              />
-            ) : field.type === 'number' && field.key === 'selisih hari' ? (
-              <input
-                type='date'
                 value={formData[field.key]}
-                defaultValue={formData[field.key]}
                 onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'}`}
                 required={field.required}
               />
+
             ) : (
               <input
                 type={field.type || 'text'}
-                value={formData[field.key]} 
+                value={formData[field.key]}
                 // Need to fix automated change on selisih_hari and saving
                 onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'

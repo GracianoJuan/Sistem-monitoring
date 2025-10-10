@@ -7,20 +7,27 @@ import { apiService } from '../services/ApiServices';
 import { createPengadaanColumns, createAmandemenColumns } from '../config/tableColumns';
 import { pengadaanFormFields, amandemenFormFields } from '../config/formFields';
 import dayjs from 'dayjs';
-import ExportButton from '../components/ExportButton';
+import { ExportButton, ExportAll } from '../components/ExportExcel';
+import { confirm, CustomAlert } from '../components/DialogComponent';
 
 const Dashboard = ({ user, session }) => {
   const [activeTab, setActiveTab] = useState('pengadaan');
   const [pengadaanData, setPengadaanData] = useState([]);
   const [amandemenData, setAmandemenData] = useState([]);
-  const [statsData, setStatsData] = useState([]);
+  const [statsData, setStatsData] = useState({ data: { total_progress: 0, total_saving_percentage: 0, total_saving_hpe_percentage: 0, total_saving_hpe_nominal: 0, total_saving_nominal: 0 } });
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [modalState, setModalState] = useState({
     isOpen: false,
     mode: null,
     item: null
+  }); // create , edit, view
+  const [alertState, setAlert] = useState({
+    show: false,
+    message: '',
+    type: '',
   });
+
 
   useEffect(() => {
     loadData();
@@ -95,14 +102,14 @@ const Dashboard = ({ user, session }) => {
       }
 
       setModalState({ isOpen: false, mode: null, item: null });
-      alert('Data saved successfully!');
+      showAlert('Data saved successfully!', 'success');
 
       // Refresh data to ensure consistency
       await loadData();
 
     } catch (error) {
       console.error('Submit error:', error);
-      alert('Error saving data. Please try again.');
+      showAlert('Error saving data. Please try again.', 'error');
     } finally {
       setFormLoading(false);
     }
@@ -110,8 +117,8 @@ const Dashboard = ({ user, session }) => {
 
 
   const handleDelete = async (item) => {
-    // if (PopUp.confirm('Apakah anda yakin anda akan menghapus data ini?'))
-    if (window.confirm('Apakah anda yakin anda akan menghapus data ini?')) {
+    const confirmed = await confirm('Apakah anda yakin anda akan menghapus data ini?');
+    if (confirmed) {
       setLoading(true);
 
       try {
@@ -133,8 +140,7 @@ const Dashboard = ({ user, session }) => {
             setAmandemenData(prev => prev.filter(a => a.id !== item.id));
           }
         }
-
-        alert('Item deleted successfully!');
+        showAlert('Berhasil dihapus!', 'success');
 
         await loadData();
 
@@ -150,7 +156,7 @@ const Dashboard = ({ user, session }) => {
           errorMessage += error.message;
         }
 
-        alert(errorMessage);
+        showAlert(errorMessage, 'error');
 
         // Refresh data anyway to show current state
         await loadData();
@@ -165,15 +171,10 @@ const Dashboard = ({ user, session }) => {
     setModalState({ isOpen: false, mode: null, item: null });
   };
 
-  
+  const showAlert = (message, type) => {
+    setAlert({ show: true, message, type });
+  }
 
-  const stats = () => [
-    { label: 'Pengadaan Selesai', value: '0' },
-    { label: 'Total Saving RAB', value: '0' },
-    { label: 'Total Saving HPE', value: '0' }
-  ]
-  
-  // const stats = apiService.getStats();
 
   const currentData = activeTab === 'pengadaan' ? pengadaanData : amandemenData;
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
@@ -186,19 +187,42 @@ const Dashboard = ({ user, session }) => {
   return (
     // Remove the header section and outer container styling
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* here will be the notification */}
+      <CustomAlert
+        message={alertState.message}
+        type={alertState.type}
+        show={alertState.show}
+        onClose={() => setAlert({ show: false, message: '', type: '' })}
+      />
 
       {/* Total progress and saving statistics */}
-      <div className='bg-gray-200 shadow-sm p-2 border-1 mb-2'>
+      <div className='p-2 border-0 mb-2'>
 
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-lg font-semibold'>
-          <div className=''>
-            Pengadaan Selesai <span className='text-7xl block'>0</span> <span className=''>dari total 6 pengadaan</span>
+          <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
+            Pengadaan Selesai <span className='text-7xl block'>{statsData.data.total_selesai}</span> <span className=''>dari total {statsData.data.total_pengadaan} pengadaan</span>
           </div>
-          <div>
-            Total Saving RAB <span className='block text-7xl'>0%</span>
+          <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
+            Total Saving RAB <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
+              style: 'percent'
+            }).format(statsData.data.total_saving_percentage / 100)}</span>
+            <span>
+              {new Intl.NumberFormat('en-EN', {
+                style: 'currency',
+                currency: 'IDR'
+              }).format(statsData.data.total_saving_nominal)}
+            </span>
           </div>
-          <div>
-            Total Saving HPE <span className='block text-7xl'>0</span>
+          <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
+            Total Saving HPE <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
+              style: 'percent'
+            }).format(statsData.data.total_saving_hpe_percentage / 100)}</span>
+            <span>
+              {new Intl.NumberFormat('en-EN', {
+                style: 'currency',
+                currency: 'IDR'
+              }).format(statsData.data.total_saving_hpe_nominal)}
+            </span>
           </div>
         </div>
       </div>
@@ -272,8 +296,8 @@ const Dashboard = ({ user, session }) => {
                           style: 'currency',
                           currency: 'IDR'
                         }).format(modalState.item[field.key]) : field.type === 'date' && modalState.item?.[field.key] ?
-                          dayjs(modalState.item[field.key]).format('DD-MM-YYYY') :
-                          modalState.item?.[field.key] || '-'
+                          dayjs(modalState.item[field.key]).format('DD-MM-YYYY') : field.type === 'checkbox' ?
+                            modalState.item?.[field.key] ? 'Sudah' : 'Belum' : modalState.item?.[field.key] || '-'
                     }
                   </div>
                 </div>
@@ -283,6 +307,7 @@ const Dashboard = ({ user, session }) => {
         ) : (
           <FormComponent
             item={modalState.item}
+            mode={modalState.mode}
             fields={currentFormFields}
             onSubmit={handleSubmit}
             onCancel={handleCloseModal}
@@ -290,11 +315,22 @@ const Dashboard = ({ user, session }) => {
           />
         )}
       </Modal>
-      <ExportButton
-        data={currentData}
-        fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${dayjs().format('YYYYMMDD')}.xlsx`}
-        fields={currentFormFields}
-      />
+      <div className='flex gap-2'>
+        <ExportButton
+          data={currentData}
+          fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${dayjs().format('YYYYMMDD')}.xlsx`}
+          fields={currentFormFields}
+          showAlert={showAlert}
+        />
+        <ExportAll
+          PengadaanData={pengadaanData}
+          AmandemenData={amandemenData}
+          fileName={`Data_Pengadaan_dan_Amandemen_${dayjs().format('YYYYMMDD')}.xlsx`}
+          fields={currentFormFields}
+          showAlert={showAlert}
+        />
+      </div>
+
     </div>
   );
 };

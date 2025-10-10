@@ -13,32 +13,32 @@ class AmandemenController extends Controller
     private function validationRules(): array
     {
         return [
-            // 'no_bantex' => 'nullable|integer',
-                'no_kontrak' => 'required|string',
-                'tgl_kontrak' => 'required|date',
-                'judul_kontrak' => 'required|string|max:255',
-                'nilai_kontrak' => 'nullable|integer|min:0',
-                'amandemen_ke' => 'nullable|string',
-                'vendor' => 'required|string',
-                'lingkup' => 'nullable|string',
-                'tgl_nodin_amandemen' => 'nullable|date',
-                'tgl_spa' => 'nullable|date',
-                'tgl_tanggapan' => 'nullable|date',
-                'rab_amandemen' => 'nullable|integer|min:0',
-                'no_amandemen' => 'required|string',
-                'tgl_amandemen' => 'required|date',
-                'nilai_amandemen' => 'nullable|integer|min:0',
-                'progress' => 'nullable|string',
-                'status' => 'nullable|string',
-                'keterangan' => 'nullable|string',
-                'pic' => 'nullable|string'
+            'no_bantex' => 'nullable|integer|min:0',
+            'no_kontrak' => 'required|string',
+            'tgl_kontrak' => 'required|date',
+            'judul_kontrak' => 'required|string|max:255',
+            'nilai_kontrak' => 'nullable|integer|min:0',
+            'amandemen_ke' => 'nullable|string',
+            'vendor' => 'required|string',
+            'lingkup' => 'nullable|string',
+            'tgl_nodin_amandemen' => 'nullable|date',
+            'tgl_spa' => 'nullable|date',
+            'tgl_tanggapan' => 'nullable|date',
+            'rab_amandemen' => 'nullable|integer|min:0',
+            'no_amandemen' => 'required|string',
+            'tgl_amandemen' => 'required|date',
+            'nilai_amandemen' => 'nullable|integer|min:0',
+            'progress' => 'nullable|string',
+            'status' => 'nullable|string',
+            'keterangan' => 'nullable|string',
+            'pic' => 'nullable|string'
         ];
     }
 
     public function index(): JsonResponse
     {
         try {
-            $amandemen = Amandemen::orderBy('id', 'desc')->get();
+            $amandemen = Amandemen::orderBy('no_bantex', 'asc')->get();
             return response()->json($amandemen);
         } catch (\Exception $e) {
             Log::error('Failed to fetch pengadaan: ' . $e->getMessage());

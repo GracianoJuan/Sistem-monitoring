@@ -12,6 +12,7 @@ class Amandemen extends Model
     public $timestamps = true;
     
     protected $fillable = [
+        // 'no_bantex',
         'no_kontrak',
         'tgl_kontrak',
         'judul_kontrak',
@@ -33,6 +34,7 @@ class Amandemen extends Model
     ];
 
     protected $casts = [
+        'no_bantex' => 'integer',
         'tgl_kontrak' => 'date',
         'tgl_nodin_amandemen' => 'date',
         'tgl_spa' => 'date',

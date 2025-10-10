@@ -5,14 +5,6 @@ import dayjs from 'dayjs';
 const columnHelper = createColumnHelper();
 
 export const createPengadaanColumns = (onEdit, onDelete, onView) => [
-  columnHelper.accessor('nama_pekerjaan', {
-    header: 'Nama Pekerjaan',
-    cell: ({ getValue }) => (
-      <div className="max-w-xs truncate" title={getValue()}>
-        {getValue()}
-      </div>
-    ),
-  }),
   columnHelper.display({
     id: 'actions',
     header: 'Actions',
@@ -39,6 +31,18 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
         >
           <TrashIcon size={14} />
         </button>
+      </div>
+    ),
+  }),
+  columnHelper.accessor('no_bantex', {
+    header: 'Nomor Bantex',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('nama_pekerjaan', {
+    header: 'Nama Pekerjaan',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue()}
       </div>
     ),
   }),
@@ -73,23 +77,23 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
       }).format(getValue())
       : '-',
   }),
-  //   columnHelper.accessor('hpe', {
-  //     header: 'HPE',
-  //     cell: ({ getValue }) => getValue()
-  //       ? new Intl.NumberFormat('id-ID', {
-  //         style: 'currency',
-  //         currency: 'IDR'
-  //       }).format(getValue())
-  //       : '-',
-  // }),
-  // columnHelper.accessor('saving_hpe', {
-  //   header: 'Saving HPE',
-  //   cell: ({ getValue }) => getValue()
-  //     ? new Intl.NumberFormat('en-EN', {
-  //       style:'percent'
-  //     }).format(getValue())
-  //     : '-',
-  // }),
+    columnHelper.accessor('hpe', {
+      header: 'HPE',
+      cell: ({ getValue }) => getValue()
+        ? new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(getValue())
+        : '-',
+  }),
+  columnHelper.accessor('saving_hpe', {
+    header: 'Saving HPE',
+    cell: ({ getValue }) => getValue()
+      ? new Intl.NumberFormat('en-EN', {
+        style:'percent'
+      }).format(getValue())
+      : '-',
+  }),
   columnHelper.accessor('tgl_kebutuhan', {
     header: 'Tanggal Kebutuhan',
     cell: ({ getValue }) =>
@@ -181,14 +185,6 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
 ];
 
 export const createAmandemenColumns = (onEdit, onDelete, onView) => [
-  columnHelper.accessor('no_kontrak', {
-    header: 'Nomor Kontrak/SPK',
-    cell: ({ getValue }) => (
-      <div className="max-w-xs truncate" title={getValue()}>
-        {getValue() || '-'}
-      </div>
-    ),
-  }),
   columnHelper.display({
     id: 'actions',
     header: 'Actions',
@@ -216,6 +212,18 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
           <TrashIcon size={14} />
         </button>
         <button></button>
+      </div>
+    ),
+  }),
+  columnHelper.accessor('no_bantex', {
+    header: 'Nomor Bantex',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
+  columnHelper.accessor('no_kontrak', {
+    header: 'Nomor Kontrak/SPK',
+    cell: ({ getValue }) => (
+      <div className="max-w-xs truncate" title={getValue()}>
+        {getValue() || '-'}
       </div>
     ),
   }),

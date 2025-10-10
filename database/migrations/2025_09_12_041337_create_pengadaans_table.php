@@ -1,5 +1,4 @@
 <?php
-// database/migrations/2024_01_01_000001_create_pengadaan_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -11,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('pengadaan', function (Blueprint $table) {
             $table->id();
-            // $table->integer('no_bantex')->nullable();
+            $table->integer('no_bantex')->nullable();
             $table->string('nama_pekerjaan');
             $table->date('tgl_nodin');
             $table->date('tgl_dokumen_lengkap')->nullable();
@@ -19,13 +18,14 @@ return new class extends Migration
             $table->string('jenis');
             $table->string('metode');
             $table->bigInteger('rab')->nullable();
-            // $table->bigInteger('hpe')->nullable();
+            $table->bigInteger('hpe')->nullable();
+            $table->integer('saving_hpe')->nullable();
             $table->date('tgl_kebutuhan')->nullable();
             $table->string('progress')->nullable();
-            $table->string('vendor'); // Vendor dari tabel kontrak
+            $table->string('vendor');
             $table->date('tgl_kontrak')->nullable();
-            $table->string('no_perjanjian');// Nomor perjanjian dari tabel kontrak (no_kontrak)
-            $table->bigInteger('nilai_kontrak');    // nilai kontrak dari tabel kontrak (nilai_kontrak)
+            $table->string('no_perjanjian');
+            $table->bigInteger('nilai_kontrak')->nullable();
             $table->date('mulai_kontrak')->nullable();
             $table->date('akhir_kontrak')->nullable();
             $table->string('jangka_waktu')->nullable();

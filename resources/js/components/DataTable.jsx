@@ -16,7 +16,6 @@ const DataTable = ({ data, columns, loading }) => {
         pageSize: 10,
     });
 
-    // Helper function to check if column should have word wrap
     const shouldWrapColumn = (columnId) => {
         const wrapColumns = ['no_kontrak', 'no_perjanjian', 'no_amandemen'];
         return wrapColumns.includes(columnId);
@@ -59,7 +58,7 @@ const DataTable = ({ data, columns, loading }) => {
                     value={globalFilter ?? ''}
                     onChange={(e) => setGlobalFilter(e.target.value)}
                     className="w-full max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Search all columns..."
+                    placeholder="Cari di semua kolom..."
                 />
             </div>
 
@@ -68,25 +67,31 @@ const DataTable = ({ data, columns, loading }) => {
                 <div className="overflow-auto max-h-[70vh] border-gray-200">
                     <table className="min-w-full divide-y divide-gray-200">
                         {/* Sticky Header */}
-                        <thead className="bg-gray-50 sticky top-0 z-10">
+                        <thead className="bg-gray-50 sticky top-0 z-30">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header, index) => (
                                         <th
                                             key={header.id}
-                                            className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200 bg-gray-50 ${index < 3 ? 'sticky left-0 z-20 shadow-r ' : 'min-w-[150px]'
-                                                } ${index === 0 ? 'left-0' : index === 1 ? 'left-[200px]' : index === 2 ? 'left-[300px]': ''
-                                                }`}
+                                            className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200 bg-gray-50 ${
+                                                index < 3 ? 'sticky shadow-r' : 'min-w-[150px]'
+                                            }`}
                                             style={{
-                                                minWidth: index < 3 ? '200px' : '150px',
-                                                maxWidth: index < 3 ? '300px' : '250px',
+                                                minWidth: index <= 1 ? '100px' :index > 1 && index < 3 ? '250px' : '150px',
+                                                maxWidth: index <= 1 ? '100px' :index > 0 && index < 3 ? '250px' : '250px',
+                                                left: index === 0 ? '0px' : index === 1 ? '100px' : index === 2 ? '200px' : undefined,
                                                 top: 0,
+                                                zIndex: index < 3 ? 40 : 30,
+                                                backgroundColor: '#f9fafb',
                                             }}
                                         >
                                             {header.isPlaceholder ? null : (
                                                 <div
-                                                    className={`flex items-center space-x-1 ${header.column.getCanSort() ? 'cursor-pointer select-none hover:bg-gray-100 p-1 rounded' : ''
-                                                        }`}
+                                                    className={`flex items-center space-x-1 ${
+                                                        header.column.getCanSort() 
+                                                            ? 'cursor-pointer select-none hover:bg-gray-100 p-1 rounded' 
+                                                            : ''
+                                                    }`}
                                                     onClick={header.column.getToggleSortingHandler()}
                                                     title={
                                                         typeof header.column.columnDef.header === 'string'
@@ -103,13 +108,11 @@ const DataTable = ({ data, columns, loading }) => {
                                                     <span className="flex-shrink-0">
                                                         {header.column.getIsSorted() ? (
                                                             header.column.getIsSorted() === 'asc' ? (
-                                                                /* Up arrow (ascending) */
                                                                 <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                                     <title>Sorted ascending</title>
                                                                     <path d="M5 12.5L10 7.5L15 12.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
                                                                 </svg>
                                                             ) : (
-                                                                /* Down arrow (descending) */
                                                                 <svg className="w-4 h-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                                     <title>Sorted descending</title>
                                                                     <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
@@ -117,7 +120,6 @@ const DataTable = ({ data, columns, loading }) => {
                                                             )
                                                         ) : (
                                                             header.column.getCanSort() ? (
-                                                                /* Neutral sort hint (both chevrons faint) */
                                                                 <svg className="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                                     <title>Sortable</title>
                                                                     <path d="M5 8.5L10 3.5L15 8.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
@@ -126,7 +128,6 @@ const DataTable = ({ data, columns, loading }) => {
                                                             ) : null
                                                         )}
                                                     </span>
-
                                                 </div>
                                             )}
                                         </th>
@@ -142,19 +143,25 @@ const DataTable = ({ data, columns, loading }) => {
                                     {row.getVisibleCells().map((cell, index) => (
                                         <td
                                             key={cell.id}
-                                            className={`px-4 py-3 text-sm text-gray-900 border-r border-gray-100 ${index < 3 ? 'sticky left-0 bg-white z-10 shadow-r' : ''
-                                                } ${index === 0 ? 'left-0' : index === 1 ? 'left-[200px]' : index === 2 ? 'left-[300px]' : ''
-                                                }`}
+                                            className={`px-4 py-3 text-sm text-gray-900 border-r border-gray-100 ${
+                                                index < 3 ? 'sticky bg-white shadow-r' : ''
+                                            }`}
                                             style={{
-                                                minWidth: index < 3 ? '200px' : '100px',
-                                                maxWidth: index < 3 ? '300px' : '250px',
+                                                minWidth: index <= 1 ? '100px' :index > 1 && index < 3 ? '250px' : '150px',
+                                                maxWidth: index <= 1 ? '100px' :index > 0 && index < 3 ? '250px' : '250px',
+                                                left: index === 0 ? '0px' : index === 1 ? '100px' : index === 2 ? '200px' : undefined,
+                                                zIndex: index < 3 ? 10 : 1,
+                                                backgroundColor: index < 3 ? '#ffffff' : undefined,
                                             }}
                                         >
-                                            <div className={`min-h-[20px] flex items-center ${shouldWrapColumn(cell.column.id)
-                                                    ? 'break-all whitespace-normal word-break'
-                                                    : ''
+                                            <div 
+                                                className={`min-h-[20px] flex items-center ${
+                                                    shouldWrapColumn(cell.column.id)
+                                                        ? 'break-all whitespace-normal word-break'
+                                                        : ''
                                                 }`}
-                                                style={shouldWrapColumn(cell.column.id) ? { wordBreak: 'break-all' } : {}}>
+                                                style={shouldWrapColumn(cell.column.id) ? { wordBreak: 'break-all' } : {}}
+                                            >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </div>
                                         </td>

@@ -16,7 +16,7 @@ class PengadaanController extends Controller
     private function validationRules(): array
     {
         return [
-            // 'no_bantex' => 'nullable|integer',
+            'no_bantex' => 'nullable|integer|min:0',
             'nama_pekerjaan' => 'required|string|max:255',
             'tgl_nodin' => 'required|date',
             'tgl_dokumen_lengkap' => 'nullable|date',
@@ -24,10 +24,10 @@ class PengadaanController extends Controller
             'jenis' => 'required|string',
             'metode' => 'required|string',
             'rab' => 'nullable|integer|min:0',
-            // 'hpe' => 'nullable|integer|min:0',
-            // 'saving_hpe' => 'nullable|integer',
+            'hpe' => 'nullable|integer|min:0',
+            'saving_hpe' => 'nullable|integer',
             'tgl_kebutuhan' => 'nullable|date',
-            'progress' => 'required|string',
+            'progress' => 'nullable|string',
             'vendor' => 'nullable|string|max:255',
             'tgl_kontrak' => 'nullable|date',
             'no_perjanjian' => 'nullable|string|max:255',
@@ -48,7 +48,7 @@ class PengadaanController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $pengadaan = Pengadaan::orderBy('id', 'desc')->get();
+            $pengadaan = Pengadaan::orderBy('no_bantex', 'asc')->get();
             return response()->json($pengadaan);
         } catch (\Exception $e) {
             Log::error('Failed to fetch pengadaan: ' . $e->getMessage());
@@ -67,7 +67,7 @@ class PengadaanController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Failed to create pengadaan: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to create data'], 500);
+            return response()->json(['error' => 'Failed to create data', $e], 500);
         }
     }
 
@@ -167,25 +167,32 @@ class PengadaanController extends Controller
                 ->whereNotNull('nilai_kontrak')
                 ->selectRaw('
                     SUM(rab) as total_rab, 
-                    SUM(nilai_kontrak) as total_kontrak
+                    SUM(nilai_kontrak) as total_kontrak,
+                    SUM(hpe) as total_hpe
                 ')
                 ->first();
 
             $totalRab = $stats->total_rab ?? 0;
             $totalKontrak = $stats->total_kontrak ?? 0;
+            $totalHpe = $stats->total_hpe ?? 0;
 
             // Hitung persentase saving
             $totalSaving = $totalRab > 0
                 ? round((($totalRab - $totalKontrak) / $totalRab) * 100, 2)
                 : 0;
+            
+            $totalSavingHpe = $totalHpe > 0
+                ? round((($totalRab - $totalHpe) / $totalRab) * 100, 2)
+                : 0;
 
             return response()->json([
-                [
-                    'total_progress' => $totalProgress,
+                'data' => [
+                    'total_selesai' => $totalProgress,
+                    'total_pengadaan' => Pengadaan::count(),
                     'total_saving_percentage' => $totalSaving,
-                    'total_rab' => $totalRab,
-                    'total_kontrak' => $totalKontrak,
-                    'total_saving_nominal' => $totalRab - $totalKontrak
+                    'total_saving_nominal' => $totalRab - $totalKontrak,
+                    'total_saving_hpe_percentage' => $totalSavingHpe,
+                    'total_saving_hpe_nominal' => $totalRab - $totalHpe
                 ]
             ]);
         } catch (\Exception $e) {

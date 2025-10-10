@@ -10,16 +10,16 @@ return new class extends Migration
     {
         Schema::create('amandemen', function (Blueprint $table) {
             $table->id();
-            // $table->integer('no_bantex')->nullable();
-            $table->string('no_kontrak');// nomor kontrak dari tabel kontrak
+            $table->integer('no_bantex')->nullable();
+            $table->string('no_kontrak');
             $table->date('tgl_kontrak');
             $table->string('judul_kontrak');
-            $table->bigInteger('nilai_kontrak')->nullable();// Nilai kontrak dari tabel kontrak
+            $table->bigInteger('nilai_kontrak')->nullable();
             $table->string('amandemen_ke');
-            $table->string('vendor');// Vendor dari tabel kontrak
+            $table->string('vendor');
             $table->string('lingkup')->nullable();
             $table->date('tgl_nodin_amandemen')->nullable();
-            $table->date('tgl_spa')->nullable();        //spa = surat persetujuan amandemen
+            $table->date('tgl_spa')->nullable();
             $table->date('tgl_tanggapan')->nullable();
             $table->bigInteger('rab_amandemen')->nullable();
             $table->string('no_amandemen');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('progress')->nullable();
             $table->string('status')->nullable();
             $table->string('keterangan')->nullable();
-            $table->string('pic')->nullable();          //person in charge
+            $table->string('pic')->nullable();
             $table->timestamps();
         });
     }

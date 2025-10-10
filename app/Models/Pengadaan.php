@@ -12,13 +12,15 @@ class Pengadaan extends Model
     protected $table = 'pengadaan';
     
     protected $fillable = [
+        'no_bantex',
         'nama_pekerjaan',
         'tgl_nodin',
         'tgl_dokumen_lengkap',
         'jenis',
         'metode',
         'rab',
-        // 'hpe',
+        'hpe',
+        'saving_hpe',
         'tgl_kebutuhan',
         'progress',
         'vendor',
@@ -39,13 +41,15 @@ class Pengadaan extends Model
     ];
 
     protected $casts = [
+        'no_bantex' => 'integer',
         'tgl_nodin' => 'date',
         'tgl_dokumen_lengkap' => 'date',
         'tgl_kontrak' => 'date',
         'mulai_kontrak' => 'date',
         'akhir_kontrak' => 'date',
         'rab' => 'integer',
-        // 'hpe' => 'integer',
+        'hpe' => 'integer',
+        'saving_hpe' => 'integer',
         'nilai_kontrak' => 'integer',
         'saving' => 'integer',
         'form_idd' => 'boolean',    
