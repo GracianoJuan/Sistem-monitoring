@@ -18,8 +18,7 @@ export const pengadaanFormFields = [
   { key: 'saving_hpe', label: 'Saving HPE', type: 'number', note: 'percent'},
   { key: 'tgl_kebutuhan', label: 'Tanggal Kebutuhan', type: 'date'},
   { key: 'progress', label: 'Progress', type: 'select', options: [
-    'Review KAK', 'Penusunan HPE HPS RKS', 'Undangan', 'Pendaftaran','Aanwijzing', 'Pemasukan Dokumen', 'Pembukaan Dokumen', 'Evaluasi', 'Pembukaan Dokumen Sampul 1',
-    'Evaluasi Sampul 1', 'Pembukaan Dokumen Sampul 2', 'Evaluasi Sampul 2', 'Klarifikasi & Negosiasi', 'Penetapan Penyedia', 'Pengumuman', 'Draft Kontrak/ SPK',
+    'Review KAK', 'Penusunan HPE HPS RKS', 'Undangan', 'Pendaftaran','Aanwijzing', 'Pemasukan Dokumen', 'Pembukaan Dokumen', 'Evaluasi', 'Klarifikasi & Negosiasi', 'Penetapan Penyedia', 'Pengumuman', 'Draft Kontrak/ SPK',
     'Finalisasi Kontrak/ SPK', 'Selesai'
   ]},
   { key: 'vendor', label: 'Vendor', required: true },

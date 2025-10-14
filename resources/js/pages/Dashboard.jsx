@@ -9,12 +9,13 @@ import { pengadaanFormFields, amandemenFormFields } from '../config/formFields';
 import dayjs from 'dayjs';
 import { ExportButton, ExportAll } from '../components/ExportExcel';
 import { confirm, CustomAlert } from '../components/DialogComponent';
+import StatsComponent from '../components/StatsComponent';
 
 const Dashboard = ({ user, session }) => {
   const [activeTab, setActiveTab] = useState('pengadaan');
   const [pengadaanData, setPengadaanData] = useState([]);
   const [amandemenData, setAmandemenData] = useState([]);
-  const [statsData, setStatsData] = useState({ data: { total_progress: 0, total_saving_percentage: 0, total_saving_hpe_percentage: 0, total_saving_hpe_nominal: 0, total_saving_nominal: 0 } });
+  const [statsData, setStatsData] = useState({});
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [modalState, setModalState] = useState({
@@ -185,9 +186,7 @@ const Dashboard = ({ user, session }) => {
   const currentColumns = activeTab === 'pengadaan' ? pengadaanColumns : amandemenColumns;
 
   return (
-    // Remove the header section and outer container styling
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* here will be the notification */}
       <CustomAlert
         message={alertState.message}
         type={alertState.type}
@@ -195,40 +194,8 @@ const Dashboard = ({ user, session }) => {
         onClose={() => setAlert({ show: false, message: '', type: '' })}
       />
 
-      {/* Total progress and saving statistics */}
-      <div className='p-2 border-0 mb-2'>
+      {statsData?.data && <StatsComponent data={statsData.data} />}
 
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-lg font-semibold'>
-          <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
-            Pengadaan Selesai <span className='text-7xl block'>{statsData.data.total_selesai}</span> <span className=''>dari total {statsData.data.total_pengadaan} pengadaan</span>
-          </div>
-          <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
-            Total Saving RAB <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
-              style: 'percent'
-            }).format(statsData.data.total_saving_percentage / 100)}</span>
-            <span>
-              {new Intl.NumberFormat('en-EN', {
-                style: 'currency',
-                currency: 'IDR'
-              }).format(statsData.data.total_saving_nominal)}
-            </span>
-          </div>
-          <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
-            Total Saving HPE <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
-              style: 'percent'
-            }).format(statsData.data.total_saving_hpe_percentage / 100)}</span>
-            <span>
-              {new Intl.NumberFormat('en-EN', {
-                style: 'currency',
-                currency: 'IDR'
-              }).format(statsData.data.total_saving_hpe_nominal)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-
-      {/* Tabs */}
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
@@ -253,8 +220,6 @@ const Dashboard = ({ user, session }) => {
           </nav>
         </div>
       </div>
-
-      {/* Action Button */}
       <div className="mb-4">
         <button
           onClick={handleCreate}

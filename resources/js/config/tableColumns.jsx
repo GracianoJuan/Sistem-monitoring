@@ -91,7 +91,7 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
     cell: ({ getValue }) => getValue()
       ? new Intl.NumberFormat('en-EN', {
         style:'percent'
-      }).format(getValue())
+      }).format(getValue()/100)
       : '-',
   }),
   columnHelper.accessor('tgl_kebutuhan', {

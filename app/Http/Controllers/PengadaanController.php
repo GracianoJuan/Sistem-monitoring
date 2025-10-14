@@ -160,7 +160,7 @@ class PengadaanController extends Controller
     {
         try {
             // Hitung total progress yang selesai
-            $totalProgress = Pengadaan::where('progress', 'Selesai')->count();
+            $totalProgress = Pengadaan::whereNotNull('progress')->get();
 
             // Hitung total saving dengan query yang lebih efisien
             $stats = Pengadaan::whereNotNull('rab')
@@ -171,10 +171,18 @@ class PengadaanController extends Controller
                     SUM(hpe) as total_hpe
                 ')
                 ->first();
+            $statsHpe = Pengadaan::whereNotNull('rab')
+                ->whereNotNull('hpe')
+                ->selectRaw('
+                    SUM(rab) as total_rab, 
+                    SUM(hpe) as total_hpe
+                ')
+                ->first();
 
             $totalRab = $stats->total_rab ?? 0;
             $totalKontrak = $stats->total_kontrak ?? 0;
-            $totalHpe = $stats->total_hpe ?? 0;
+            $totalRabHpe = $statsHpe->total_rab ?? 0;
+            $totalHpe = $statsHpe->total_hpe ?? 0;
 
             // Hitung persentase saving
             $totalSaving = $totalRab > 0
@@ -182,17 +190,33 @@ class PengadaanController extends Controller
                 : 0;
             
             $totalSavingHpe = $totalHpe > 0
-                ? round((($totalRab - $totalHpe) / $totalRab) * 100, 2)
+                ? round((($totalRabHpe - $totalHpe) / $totalRabHpe) * 100, 2)
                 : 0;
 
             return response()->json([
                 'data' => [
-                    'total_selesai' => $totalProgress,
+                    'progress_pengadaan' => [
+                        ['value'=> 'Review KAK','total'=> $totalProgress->where('progress', 'Review KAK')->count()],
+                        ['value'=>'Penusunan HPE HPS RKS','total'=> $totalProgress->where('progress', 'Penusunan HPE HPS RKS')->count()],
+                        ['value'=>'Undangan','total'=> $totalProgress->where('progress', 'Undangan')->count()],
+                        ['value'=>'Pendaftaran','total'=> $totalProgress->where('progress', 'Pendaftaran')->count()],
+                        ['value'=>'Aanwijzing','total'=> $totalProgress->where('progress', 'Aanwijzing')->count()],
+                        ['value'=>'Pemasukan Dokumen','total'=> $totalProgress->where('progress', 'Pemasukan Dokumen')->count()],
+                        ['value'=>'Pembukaan Dokumen','total'=> $totalProgress->where('progress', 'Pembukaan Dokumen')->count()],
+                        ['value'=>'Evaluasi','total'=> $totalProgress->where('progress', 'Evaluasi')->count()],
+                        ['value'=>'Klarifikasi & Negosiasi','total'=> $totalProgress->where('progress', 'Klarifikasi & Negosiasi')->count()],
+                        ['value'=>'Penetapan Penyedia','total'=> $totalProgress->where('progress', 'Penetapan Penyedia')->count()],
+                        ['value'=>'Pengumuman','total'=> $totalProgress->where('progress', 'Pengumuman')->count()],
+                        ['value'=>'Draft Kontrak/ SPK','total'=> $totalProgress->where('progress', 'Draft Kontrak/ SPK')->count()],
+                        ['value'=>'Finalisasi Kontrak/ SPK','total'=> $totalProgress->where('progress', 'Finalisasi Kontrak/ SPK')->count()],
+                        ['value'=>'Selesai','total'=> $totalProgress->where('progress', 'Selesai')->count()],                        
+                    ],
+
                     'total_pengadaan' => Pengadaan::count(),
                     'total_saving_percentage' => $totalSaving,
                     'total_saving_nominal' => $totalRab - $totalKontrak,
                     'total_saving_hpe_percentage' => $totalSavingHpe,
-                    'total_saving_hpe_nominal' => $totalRab - $totalHpe
+                    'total_saving_hpe_nominal' => $totalRabHpe - $totalHpe
                 ]
             ]);
         } catch (\Exception $e) {
