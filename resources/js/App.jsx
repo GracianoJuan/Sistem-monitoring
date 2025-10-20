@@ -1,49 +1,82 @@
+import { useEffect, useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
-import Dashboard from './pages/Dashboard';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import LoadingSpinner from './components/LoadingSpinner';
+import Dashboard from './pages/Dashboard';
+import ManageUsers from './pages/ManageUsers';
+import SidebarComponent from './layout/Sidebar';
+import { useRole } from './contexts/RoleContext';
 
-const App = () => {
-    const { user, loading, isAuthenticated, login, logout } = useAuth();
+function App() {
+  const { user, session, logout, loading: authLoading } = useAuth();
+  const { userRole, loading: roleLoading } = useRole();
 
-    if (loading) {
-        return <LoadingSpinner />;
-    }
-
-    if (!isAuthenticated) {
-        return <Login onLogin={login} />;
-    }
-
+  // Show loading while auth and role are loading
+  if (authLoading || roleLoading) {
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="bg-blue-600 shadow-sm border-b-1-blue">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-
-                        <div className="flex items-center">
-                            <h1 className="text-xl font-semibold text-white">
-                                Dashboard Pengadaan & Amandemen
-                            </h1>
-                        </div>
-
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={logout}
-                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                            >
-                                <svg width="15px" height="15px" className='inline' viewBox="0 0 12.00 12.00" enableBackground="new 0 0 12 12" id="Слой_1" version="1.1" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" fill="#FFFFFF" stroke="#FFFFFF" 
-                                strokeWidth="0.00012000000000000002"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"><polygon fill="#FFFFFF" points="9,2 9,0 1,0 1,12 9,12 9,10 8,10 8,11 2,11 2,1 8,1 8,2 "></polygon><polygon fill="#FFFFFF" points="8.2929688,3.2929688 7.5859375,4 9.0859375,5.5 5,5.5 5,6.5 9.0859375,6.5 7.5859375,8 8.2929688,8.7070313 11,6 "></polygon></g></svg
-                                > 
-                                Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <Dashboard user={user} />
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading...</p>
         </div>
+      </div>
     );
-};
+  }
+
+  // Not logged in - show login page
+  if (!user || !session) {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+
+  // Logged in - show main app with sidebar
+  return (
+    <BrowserRouter>
+      <div className="flex h-screen bg-gray-100">
+        {/* Sidebar */}
+        <SidebarComponent 
+          currentPage="Dashboard" 
+          onLogout={logout} 
+        />
+        
+        {/* Main Content */}
+        <div className="flex-1 ml-64 overflow-auto">
+          <Routes>
+            {/* Dashboard route */}
+            <Route 
+              path="/dashboard" 
+              element={<Dashboard user={user} session={session} handleLogout={logout} />} 
+            />
+            
+            {/* Admin only route */}
+            <Route 
+              path="/admin/users" 
+              element={
+                userRole === 'admin' 
+                  ? <ManageUsers handleLogout={logout} />
+                  : <Navigate to="/dashboard" replace />
+              } 
+            />
+
+            {/* Chart route - placeholder */}
+            <Route 
+              path="/chart" 
+              element={<Dashboard user={user} session={session} handleLogout={logout} />}
+            />
+            
+            {/* Catch all - redirect to dashboard */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </div>
+      </div>
+    </BrowserRouter>
+  );
+}
 
 export default App;

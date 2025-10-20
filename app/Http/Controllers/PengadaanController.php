@@ -227,4 +227,17 @@ class PengadaanController extends Controller
             ], 500);
         }
     }
+
+    public function filtering(): JsonResponse
+    {
+        try {
+            return response()->json([
+                'success' => true
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+    }
 }

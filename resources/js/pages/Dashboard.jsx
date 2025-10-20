@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, Sidebar } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import { Modal } from '../components/Modal';
 import FormComponent from '../components/FormComponent';
@@ -10,8 +10,9 @@ import dayjs from 'dayjs';
 import { ExportButton, ExportAll } from '../components/ExportExcel';
 import { confirm, CustomAlert } from '../components/DialogComponent';
 import StatsComponent from '../components/StatsComponent';
+import SidebarComponent from '../layout/Sidebar';
 
-const Dashboard = ({ user, session }) => {
+const Dashboard = ({ user, session, handleLogout }) => {
   const [activeTab, setActiveTab] = useState('pengadaan');
   const [pengadaanData, setPengadaanData] = useState([]);
   const [amandemenData, setAmandemenData] = useState([]);
@@ -177,6 +178,7 @@ const Dashboard = ({ user, session }) => {
   }
 
 
+
   const currentData = activeTab === 'pengadaan' ? pengadaanData : amandemenData;
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
 
@@ -186,116 +188,137 @@ const Dashboard = ({ user, session }) => {
   const currentColumns = activeTab === 'pengadaan' ? pengadaanColumns : amandemenColumns;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div>
       <CustomAlert
         message={alertState.message}
         type={alertState.type}
         show={alertState.show}
         onClose={() => setAlert({ show: false, message: '', type: '' })}
       />
+      <header className="bg-blue-600 shadow-sm border-b-1-blue">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-white">
+                dadad
+              </h1>
+            </div>
 
-      {statsData?.data && <StatsComponent data={statsData.data} />}
-
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('pengadaan')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'pengadaan'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-            >
-              Data Pengadaan
-            </button>
-            <button
-              onClick={() => setActiveTab('amandemen')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'amandemen'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-            >
-              Data Amandemen
-            </button>
-          </nav>
-        </div>
-      </div>
-      <div className="mb-4">
-        <button
-          onClick={handleCreate}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
-          disabled={loading}
-        >
-          <PlusIcon size={20} />
-          <span>Tambah {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
-        </button>
-      </div>
-
-      {/* Table */}
-      <DataTable
-        data={currentData}
-        columns={currentColumns}
-        loading={loading}
-      />
-
-      {/* Modal */}
-      <Modal
-        isOpen={modalState.isOpen}
-        onClose={handleCloseModal}
-        title={`${modalState.mode === 'create' ? 'Create' : modalState.mode === 'edit' ? 'Edit' : 'View'} ${activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}`}
-      >
-        {modalState.mode === 'view' ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currentFormFields.map((field) => (
-                <div key={field.key} className={field.fullWidth ? 'md:col-span-2' : ''}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {field.label}
-                  </label>
-                  <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                    {field.type === 'number' && field.note === 'percent' && modalState.item?.[field.key] ?
-                      new Intl.NumberFormat('en-EN', {
-                        style: 'percent'
-                      }).format(modalState.item[field.key] / 100) : field.type === 'number' && modalState.item?.[field.key] ?
-                        new Intl.NumberFormat('id-ID', {
-                          style: 'currency',
-                          currency: 'IDR'
-                        }).format(modalState.item[field.key]) : field.type === 'date' && modalState.item?.[field.key] ?
-                          dayjs(modalState.item[field.key]).format('DD-MM-YYYY') : field.type === 'checkbox' ?
-                            modalState.item?.[field.key] ? 'Sudah' : 'Belum' : modalState.item?.[field.key] || '-'
-                    }
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Logout
+              </button>
             </div>
           </div>
-        ) : (
-          <FormComponent
-            item={modalState.item}
-            mode={modalState.mode}
-            fields={currentFormFields}
-            onSubmit={handleSubmit}
-            onCancel={handleCloseModal}
-            loading={formLoading}
-          />
-        )}
-      </Modal>
-      <div className='flex gap-2'>
-        <ExportButton
-          data={currentData}
-          fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${dayjs().format('YYYYMMDD')}.xlsx`}
-          fields={currentFormFields}
-          showAlert={showAlert}
-        />
-        <ExportAll
-          PengadaanData={pengadaanData}
-          AmandemenData={amandemenData}
-          fileName={`Data_Pengadaan_dan_Amandemen_${dayjs().format('YYYYMMDD')}.xlsx`}
-          fields={currentFormFields}
-          showAlert={showAlert}
-        />
-      </div>
+        </div>
+      </header>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {statsData?.data && <StatsComponent data={statsData.data} />}
+        <div className="mb-6">
 
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab('pengadaan')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'pengadaan'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+              >
+                Data Pengadaan
+              </button>
+              <button
+                onClick={() => setActiveTab('amandemen')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'amandemen'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+              >
+                Data Amandemen
+              </button>
+            </nav>
+          </div>
+        </div>
+        <div className="mb-4">
+          <button
+            onClick={handleCreate}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
+            disabled={loading}
+          >
+            <PlusIcon size={20} />
+            <span>Tambah {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
+          </button>
+        </div>
+
+        {/* Table */}
+        <DataTable
+          data={currentData}
+          columns={currentColumns}
+          loading={loading}
+        />
+
+        {/* Modal */}
+        <Modal
+          isOpen={modalState.isOpen}
+          onClose={handleCloseModal}
+          title={`${modalState.mode === 'create' ? 'Create' : modalState.mode === 'edit' ? 'Edit' : 'View'} ${activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}`}
+        >
+          {modalState.mode === 'view' ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentFormFields.map((field) => (
+                  <div key={field.key} className={field.fullWidth ? 'md:col-span-2' : ''}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {field.label}
+                    </label>
+                    <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                      {field.type === 'number' && field.note === 'percent' && modalState.item?.[field.key] ?
+                        new Intl.NumberFormat('en-EN', {
+                          style: 'percent'
+                        }).format(modalState.item[field.key] / 100) : field.type === 'number' && modalState.item?.[field.key] ?
+                          new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR'
+                          }).format(modalState.item[field.key]) : field.type === 'date' && modalState.item?.[field.key] ?
+                            dayjs(modalState.item[field.key]).format('DD-MM-YYYY') : field.type === 'checkbox' ?
+                              modalState.item?.[field.key] ? 'Sudah' : 'Belum' : modalState.item?.[field.key] || '-'
+                      }
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <FormComponent
+              item={modalState.item}
+              mode={modalState.mode}
+              fields={currentFormFields}
+              onSubmit={handleSubmit}
+              onCancel={handleCloseModal}
+              loading={formLoading}
+            />
+          )}
+        </Modal>
+        <div className='flex gap-2'>
+          <ExportButton
+            data={currentData}
+            fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${dayjs().format('YYYYMMDD')}.xlsx`}
+            fields={currentFormFields}
+            showAlert={showAlert}
+          />
+          <ExportAll
+            PengadaanData={pengadaanData}
+            AmandemenData={amandemenData}
+            fileName={`Data_Pengadaan_dan_Amandemen_${dayjs().format('YYYYMMDD')}.xlsx`}
+            fields={currentFormFields}
+            showAlert={showAlert}
+          />
+        </div>
+
+      </div>
     </div>
   );
 };

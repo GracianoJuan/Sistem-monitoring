@@ -1,6 +1,6 @@
 <?php
 
-// Create this file: app/Http/Middleware/SupabaseAuth.php
+// app/Http/Middleware/SupabaseAuth.php
 namespace App\Http\Middleware;
 
 use Closure;
@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Log;
 
 class SupabaseAuth
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next)
     {
         $token = $request->bearerToken();
@@ -27,7 +24,6 @@ class SupabaseAuth
         }
 
         try {
-            // Verify the Supabase JWT token
             $supabaseUrl = env('SUPABASE_URL');
             $supabaseServiceKey = env('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -41,7 +37,6 @@ class SupabaseAuth
             if (!$response->successful()) {
                 Log::warning('Supabase token verification failed', [
                     'status' => $response->status(),
-                    'response' => $response->body()
                 ]);
 
                 return response()->json([
@@ -51,23 +46,24 @@ class SupabaseAuth
             }
 
             $user = $response->json();
+            $userRole = $user['user_metadata']['role'] ?? 'viewer';
 
             // Add user info to request for use in controllers
             $request->merge([
                 'auth_user' => $user,
                 'auth_user_id' => $userId,
-                'auth_user_email' => $userEmail
+                'auth_user_email' => $userEmail,
+                'auth_user_role' => $userRole
             ]);
 
             Log::info('Authenticated request', [
                 'user_email' => $userEmail,
-                'user_id' => $userId,
+                'user_role' => $userRole,
                 'endpoint' => $request->path()
             ]);
         } catch (\Exception $e) {
             Log::error('Supabase authentication error', [
                 'error' => $e->getMessage(),
-                'token' => substr($token, 0, 20) . '...'
             ]);
 
             return response()->json([

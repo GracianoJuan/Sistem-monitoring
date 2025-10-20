@@ -1,12 +1,12 @@
 import { Bar } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
 } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -26,6 +26,7 @@ const options = {
     scales: {
         x: {
             beginAtZero: true
+
         }
     }
 }
@@ -42,10 +43,13 @@ const StatsComponent = (rawData) => {
             },
         ],
     };
-    
+
     return (
         <div className='p-2 border-0 mb-2'>
-            <Bar options={options} data={chartData}></Bar>
+            <div className='max-w-xl'>
+                <Bar options={options} data={chartData}></Bar>
+            </div>
+
             {/* <Bar options={options} data={data}></Bar>  */}
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-lg font-semibold'>
                 {/* <Bar options={options} data={data}></Bar> */}
