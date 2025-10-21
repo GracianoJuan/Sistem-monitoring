@@ -6,10 +6,17 @@ import Dashboard from './pages/Dashboard';
 import ManageUsers from './pages/ManageUsers';
 import SidebarComponent from './layout/Sidebar';
 import { useRole } from './contexts/RoleContext';
+import ChartPage from './pages/Chart';
+import Test from './pages/test';
+import Header from './layout/Header';
+
 
 function App() {
   const { user, session, logout, loading: authLoading } = useAuth();
   const { userRole, loading: roleLoading } = useRole();
+  const [sidebarOpen, setOpen] = useState();
+
+  const canEdit = userRole == 'admin' || userRole == 'editor' ? true : false;
 
   // Show loading while auth and role are loading
   if (authLoading || roleLoading) {
@@ -37,45 +44,55 @@ function App() {
 
   // Logged in - show main app with sidebar
   return (
-    <BrowserRouter>
-      <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
-        <SidebarComponent 
-          currentPage="Dashboard" 
-          onLogout={logout} 
-        />
-        
-        {/* Main Content */}
-        <div className="flex-1 ml-64 overflow-auto">
-          <Routes>
-            {/* Dashboard route */}
-            <Route 
-              path="/dashboard" 
-              element={<Dashboard user={user} session={session} handleLogout={logout} />} 
-            />
-            
-            {/* Admin only route */}
-            <Route 
-              path="/admin/users" 
-              element={
-                userRole === 'admin' 
-                  ? <ManageUsers handleLogout={logout} />
-                  : <Navigate to="/dashboard" replace />
-              } 
-            />
+    <div>
 
-            {/* Chart route - placeholder */}
-            <Route 
-              path="/chart" 
-              element={<Dashboard user={user} session={session} handleLogout={logout} />}
-            />
-            
-            {/* Catch all - redirect to dashboard */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+      <BrowserRouter>
+
+        <div className="flex h-screen bg-gray-100">
+
+          {/* Sidebar */}
+          <SidebarComponent
+            currentPage="Dashboard"
+            onLogout={logout}
+          />
+
+
+          {/* Main Content */}
+          <div className="flex-1 md:ml-64 overflow-auto">
+            <Header title='Dashboard' />
+            <Routes>
+
+              {/* Dashboard route */}
+              <Route
+                path="/dashboard"
+                element={<Dashboard user={user} session={session} canEdit={canEdit} handleLogout={logout} />}
+              />
+
+              {/* Admin only route */}
+              <Route
+                path="/admin/users"
+                element={
+                  userRole === 'admin' 
+                    ? 
+                    // <ManageUsers handleLogout={logout} />
+                  <Test />
+                    : <Navigate to="/dashboard" replace />
+                }
+              />
+
+              {/* Chart route - placeholder */}
+              <Route
+                path="/chart"
+                element={<ChartPage />}
+              />
+
+              {/* Catch all - redirect to dashboard */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </div>
   );
 }
 

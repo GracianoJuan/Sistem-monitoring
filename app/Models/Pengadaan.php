@@ -38,6 +38,7 @@ class Pengadaan extends Model
         'selisih_hari',
         'form_idd',
         'penilaian_idd'
+        // 'penilaian_kinerja'
     ];
 
     protected $casts = [

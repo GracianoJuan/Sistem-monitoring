@@ -188,5 +188,8 @@ export const apiService = {
       console.error('Error processing the statistic :', error);
       throw error;
     }
-  }
+  },
+
+
+  async getAllUsers(){}
 };

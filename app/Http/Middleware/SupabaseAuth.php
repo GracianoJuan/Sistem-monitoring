@@ -30,7 +30,7 @@ class SupabaseAuth
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $supabaseServiceKey,
                 'apikey' => $supabaseServiceKey
-            ])->get($supabaseUrl . '/auth/v1/user', [
+            ])->get($supabaseUrl . '/auth/v1/admin/users', [
                 'access_token' => $token
             ]);
 

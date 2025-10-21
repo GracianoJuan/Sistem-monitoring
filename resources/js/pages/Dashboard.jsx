@@ -10,9 +10,8 @@ import dayjs from 'dayjs';
 import { ExportButton, ExportAll } from '../components/ExportExcel';
 import { confirm, CustomAlert } from '../components/DialogComponent';
 import StatsComponent from '../components/StatsComponent';
-import SidebarComponent from '../layout/Sidebar';
 
-const Dashboard = ({ user, session, handleLogout }) => {
+const Dashboard = ({ canEdit, user, session, handleLogout }) => {
   const [activeTab, setActiveTab] = useState('pengadaan');
   const [pengadaanData, setPengadaanData] = useState([]);
   const [amandemenData, setAmandemenData] = useState([]);
@@ -29,6 +28,7 @@ const Dashboard = ({ user, session, handleLogout }) => {
     message: '',
     type: '',
   });
+
 
 
   useEffect(() => {
@@ -183,8 +183,8 @@ const Dashboard = ({ user, session, handleLogout }) => {
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
 
   // Create columns with action handlers
-  const pengadaanColumns = createPengadaanColumns(handleEdit, handleDelete, handleView);
-  const amandemenColumns = createAmandemenColumns(handleEdit, handleDelete, handleView);
+  const pengadaanColumns = createPengadaanColumns(canEdit, handleEdit, handleDelete, handleView);
+  const amandemenColumns = createAmandemenColumns(canEdit, handleEdit, handleDelete, handleView);
   const currentColumns = activeTab === 'pengadaan' ? pengadaanColumns : amandemenColumns;
 
   return (
@@ -195,26 +195,7 @@ const Dashboard = ({ user, session, handleLogout }) => {
         show={alertState.show}
         onClose={() => setAlert({ show: false, message: '', type: '' })}
       />
-      <header className="bg-blue-600 shadow-sm border-b-1-blue">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-white">
-                dadad
-              </h1>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {statsData?.data && <StatsComponent data={statsData.data} />}
         <div className="mb-6">
@@ -258,6 +239,7 @@ const Dashboard = ({ user, session, handleLogout }) => {
           data={currentData}
           columns={currentColumns}
           loading={loading}
+          canEdit={canEdit}
         />
 
         {/* Modal */}

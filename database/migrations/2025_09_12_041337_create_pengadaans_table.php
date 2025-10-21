@@ -36,6 +36,7 @@ return new class extends Migration
             $table->integer('selisih_hari')->nullable();
             $table->boolean('form_idd')->nullable();
             $table->boolean('penilaian_idd')->nullable();
+            // Add penilaian kinerja
             $table->timestamps();
         });
     }

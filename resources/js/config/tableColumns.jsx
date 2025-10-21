@@ -4,20 +4,12 @@ import dayjs from 'dayjs';
 
 const columnHelper = createColumnHelper();
 
-export const createPengadaanColumns = (onEdit, onDelete, onView) => [
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => (
-      <div className="flex space-x-1">
-        <button
-          onClick={() => onView(row.original)}
-          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-          title="View"
-        >
-          <EyeIcon size={14} />
-        </button>
-        <button
+const EditDeleteButton = (canEdit, onEdit, onDelete, row) => {
+  // console.log(canEdit);
+  if (!canEdit) return '';
+  return (
+    <>
+      <button
           onClick={() => onEdit(row.original)}
           className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
           title="Edit"
@@ -31,6 +23,24 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
         >
           <TrashIcon size={14} />
         </button>
+    </>
+  )
+}
+
+export const createPengadaanColumns = (canEdit ,onEdit, onDelete, onView) => [
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => (
+      <div className="flex space-x-1">
+        <button
+          onClick={() => onView(row.original)}
+          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+          title="View"
+        >
+          <EyeIcon size={14} />
+        </button>
+        {EditDeleteButton(canEdit, onEdit,onDelete, row)}
       </div>
     ),
   }),
@@ -184,7 +194,7 @@ export const createPengadaanColumns = (onEdit, onDelete, onView) => [
 
 ];
 
-export const createAmandemenColumns = (onEdit, onDelete, onView) => [
+export const createAmandemenColumns = (canEdit, onEdit, onDelete, onView) => [
   columnHelper.display({
     id: 'actions',
     header: 'Actions',
@@ -197,21 +207,8 @@ export const createAmandemenColumns = (onEdit, onDelete, onView) => [
         >
           <EyeIcon size={14} />
         </button>
-        <button
-          onClick={() => onEdit(row.original)}
-          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
-          title="Edit"
-        >
-          <PencilIcon size={14} />
-        </button>
-        <button
-          onClick={() => onDelete(row.original)}
-          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-          title="Delete"
-        >
-          <TrashIcon size={14} />
-        </button>
-        <button></button>
+
+        {EditDeleteButton(canEdit, onDelete, onView)}
       </div>
     ),
   }),

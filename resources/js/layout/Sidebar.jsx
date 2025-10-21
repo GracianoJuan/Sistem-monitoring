@@ -98,8 +98,7 @@ const SidebarComponent = ({ currentPage, onLogout }) => {
         <nav className="flex-1 p-4 space-y-2">
           {filteredItems.map((item) => {
             const Icon = item.icon;
-            const isActive = window.location.pathname === item.href || 
-                           currentPage === item.name;
+            const isActive = window.location.pathname === item.href;
 
             return (
               <a

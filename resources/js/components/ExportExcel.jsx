@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import dayjs from "dayjs";
 
 const ExportButton = ({ data, fileName, fields, showAlert }) => {
     const handleExport = async () => {
@@ -49,7 +50,7 @@ const newWorksheet = (data, name, fields, workbook) => {
         worksheet.addRow(headers);
 
         processedData.forEach((item) => {
-            const row = fields.map(field => item[field.key] || '');
+            const row = fields.map(field => field.type == 'date' ? dayjs(item[field.key]).format('MM/DD/YYYY') : item[field.key] || '');
             worksheet.addRow(row);
         });
     } else {
@@ -77,6 +78,7 @@ const newWorksheet = (data, name, fields, workbook) => {
             right: { style: 'thin' },
         };
     });
+
 
     worksheet.columns.forEach((column) => {
         let maxLength = 0;

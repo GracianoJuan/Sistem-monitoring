@@ -1,4 +1,3 @@
-// resources/js/pages/ManageUsers.jsx
 import { useState, useEffect } from 'react';
 import { Trash2, Edit2, Shield, Search, Filter } from 'lucide-react';
 import { useRole } from '../contexts/RoleContext';

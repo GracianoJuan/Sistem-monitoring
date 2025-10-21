@@ -11,34 +11,41 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const options = {
-    indexAxis: 'y',
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Progress Pengadaan',
-        },
-    },
-    scales: {
-        x: {
-            beginAtZero: true
 
-        }
-    }
-}
 
 const StatsComponent = (rawData) => {
+    const options = {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Progress Pengadaan',
+            },
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                max: rawData.data.total_pengadaan,
+                ticks: {
+                    stepSize: 1,
+                    autoSkip: false
+                }
+
+            }
+        }
+    }
     const labels = rawData.data.progress_pengadaan.map(item => item.value);
+    const data = rawData.data.progress_pengadaan.map(item => item.total);
     const chartData = {
         labels,
         datasets: [
             {
                 label: 'Jumlah Pengadaan',
-                data: rawData.data.progress_pengadaan.map(item => item.total),
+                data: data,
                 backgroundColor: 'rgba(53, 162, 235, 0.5)',
             },
         ],
@@ -46,8 +53,9 @@ const StatsComponent = (rawData) => {
 
     return (
         <div className='p-2 border-0 mb-2'>
-            <div className='max-w-xl'>
-                <Bar options={options} data={chartData}></Bar>
+            <Bar options={options} data={chartData}></Bar>
+            <div className=''>
+                {/* <Bar options={options} data={chartData}></Bar> */}
             </div>
 
             {/* <Bar options={options} data={data}></Bar>  */}
@@ -64,6 +72,9 @@ const StatsComponent = (rawData) => {
                         }).format(rawData.data.total_saving_nominal)}
                     </span>
                 </div>
+                <div>
+                    {rawData.data.total_saving_hpe_nominal}
+                </div>
                 <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
                     Total Saving RAB vs HPE <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
                         style: 'percent'
@@ -76,6 +87,7 @@ const StatsComponent = (rawData) => {
                     </span>
                 </div>
             </div>
+            
         </div>
     )
 }
