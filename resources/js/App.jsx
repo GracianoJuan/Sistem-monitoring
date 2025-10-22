@@ -7,7 +7,6 @@ import ManageUsers from './pages/ManageUsers';
 import SidebarComponent from './layout/Sidebar';
 import { useRole } from './contexts/RoleContext';
 import ChartPage from './pages/Chart';
-import Test from './pages/test';
 import Header from './layout/Header';
 
 
@@ -29,7 +28,6 @@ function App() {
       </div>
     );
   }
-
   // Not logged in - show login page
   if (!user || !session) {
     return (
@@ -50,7 +48,6 @@ function App() {
 
         <div className="flex h-screen bg-gray-100">
 
-          {/* Sidebar */}
           <SidebarComponent
             currentPage="Dashboard"
             onLogout={logout}
@@ -59,7 +56,7 @@ function App() {
 
           {/* Main Content */}
           <div className="flex-1 md:ml-64 overflow-auto">
-            <Header title='Dashboard' />
+            {/* <Header title='Dashboard' /> */}
             <Routes>
 
               {/* Dashboard route */}
@@ -71,14 +68,12 @@ function App() {
               {/* Admin only route */}
               <Route
                 path="/admin/users"
-                element={
-                  userRole === 'admin' 
-                    ? 
-                    // <ManageUsers handleLogout={logout} />
-                  <Test />
-                    : <Navigate to="/dashboard" replace />
+                element={userRole === 'admin' ? <ManageUsers handleLogout={logout}/> : 
+                  <div>
+                    Tidak Bisa Diakses
+                  </div>
                 }
-              />
+              />  
 
               {/* Chart route - placeholder */}
               <Route

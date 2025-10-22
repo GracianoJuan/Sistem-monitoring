@@ -1,14 +1,17 @@
 import axios from 'axios';
 import { supabase } from '../lib/supabase';
 
-// Get CSRF token for Laravel
-const csrfToken = document.head.querySelector('meta[name="csrf-token"]')?.content;
+// Safely get CSRF token with fallback
+const getCsrfToken = () => {
+  const meta = document.head.querySelector('meta[name="csrf-token"]');
+  return meta?.getAttribute('content') || '';
+};
 
 const apiClient = axios.create({
   baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
-    'X-CSRF-TOKEN': csrfToken,
+    'X-CSRF-TOKEN': getCsrfToken(),
     'X-Requested-With': 'XMLHttpRequest',
   },
 });
@@ -17,22 +20,25 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      // Get the current session from Supabase
       const { data: { session }, error } = await supabase.auth.getSession();
-      
+
       if (error) {
         console.error('Error getting session:', error);
       }
-      
+
       if (session?.access_token) {
-        // Add Supabase JWT token to requests
         config.headers['Authorization'] = `Bearer ${session.access_token}`;
-        // Also add user info for Laravel to use
         config.headers['X-User-Email'] = session.user?.email;
         config.headers['X-User-ID'] = session.user?.id;
+
+        // Add user role to headers
+        const role = session.user?.user_metadata?.role || 'viewer';
+        config.headers['X-User-Role'] = role;
       }
-      
-      console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`, config.data);
+
+      if (import.meta.env.DEV) {
+        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
+      }
       return config;
     } catch (error) {
       console.error('Request interceptor error:', error);
@@ -48,7 +54,9 @@ apiClient.interceptors.request.use(
 // Add response interceptor for debugging and auth error handling
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(`Response from ${response.config.url}:`, response.status, response.data);
+    if (import.meta.env.DEV) {
+      console.log(`Response from ${response.config.url}:`, response.status);
+    }
     return response;
   },
   async (error) => {
@@ -59,14 +67,12 @@ apiClient.interceptors.response.use(
       data: error.response?.data,
       message: error.message
     });
-    
-    // Handle auth errors
+
     if (error.response?.status === 401) {
       console.warn('Unauthorized request - user may need to login again');
-      // You could trigger a logout here if needed
-      // await supabase.auth.signOut();
+      // Optionally trigger a logout or redirect
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -105,24 +111,11 @@ export const apiService = {
 
   async deletePengadaan(id) {
     try {
-      console.log(`Attempting to delete pengadaan with ID: ${id}`);
       const response = await apiClient.delete(`/pengadaan/${id}`);
-      console.log('Delete pengadaan successful:', response.status, response.data);
-      
-      // Return response data or success indicator
       return response.data || { success: true, message: 'Deleted successfully' };
     } catch (error) {
-      console.error('Error deleting pengadaan:', {
-        id,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        message: error.message
-      });
-      
-      // Re-throw with more context
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
-      throw new Error(`Failed to delete pengadaan (ID: ${id}): ${errorMessage}`);
+      const errorMessage = error.response?.data?.message || error.message;
+      throw new Error(`Failed to delete pengadaan: ${errorMessage}`);
     }
   },
 
@@ -159,37 +152,76 @@ export const apiService = {
 
   async deleteAmandemen(id) {
     try {
-      console.log(`Attempting to delete amandemen with ID: ${id}`);
       const response = await apiClient.delete(`/amandemen/${id}`);
-      console.log('Delete amandemen successful:', response.status, response.data);
-      
-      // Return response data or success indicator
       return response.data || { success: true, message: 'Deleted successfully' };
     } catch (error) {
-      console.error('Error deleting amandemen:', {
-        id,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        message: error.message
-      });
-      
-      // Re-throw with more context
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
-      throw new Error(`Failed to delete amandemen (ID: ${id}): ${errorMessage}`);
+      const errorMessage = error.response?.data?.message || error.message;
+      throw new Error(`Failed to delete amandemen: ${errorMessage}`);
     }
   },
 
-  async getStats(){
+  // Stats endpoint
+  async getStats() {
     try {
       const response = await apiClient.get('/stats');
       return response.data;
     } catch (error) {
-      console.error('Error processing the statistic :', error);
+      console.error('Error processing the statistic:', error);
       throw error;
     }
   },
 
+  // User Management endpoints (Admin only)
+  // These should be proxied through your backend API, not called directly
+  async getAllUsers() {
+    try {
+      const response = await apiClient.get('/admin/users');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
+  },
 
-  async getAllUsers(){}
+  async getUser(userId) {
+    try {
+      const response = await apiClient.get(`/admin/users/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  },
+
+  async updateUserRole(userId, newRole) {
+    try {
+      const response = await apiClient.put(`/admin/users/${userId}/role`, 
+        { role: newRole }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      throw error;
+    }
+  },
+
+  async deleteUser(userId) {
+    try {
+      const response = await apiClient.delete(`/admin/users/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
+  },
+
+  async getSummary(){
+    try {
+      const response = await apiClient.get('/datasum');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching the data');
+      throw error;
+    }
+  }
 };
