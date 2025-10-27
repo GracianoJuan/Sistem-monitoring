@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'supabase' => [
+        'supabase_url' => env('VITE_SUPABASE_URL'),
+        'supabase_service_role' =>  env('SUPABASE_SERVICE_ROLE_KEY')
+    ]
 
 ];

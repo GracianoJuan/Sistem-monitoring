@@ -24,8 +24,8 @@ class UserController extends Controller
         }
 
         try {
-            $supabaseUrl = env('SUPABASE_URL');
-            $supabaseServiceKey = env('SUPABASE_SERVICE_ROLE_KEY');
+            $supabaseUrl = config('services.supabase.supabase_url');
+            $supabaseServiceKey = config('services.supabase.supabase_service_role');
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $supabaseServiceKey,
@@ -62,7 +62,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Error fetching users', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json(['error' => 'Server error', 'msg' => $e->getMessage()], 500);
         }
     }
 
@@ -85,14 +85,15 @@ class UserController extends Controller
         ]);
 
         try {
-            $supabaseUrl = env('SUPABASE_URL');
-            $supabaseServiceKey = env('SUPABASE_SERVICE_ROLE_KEY');
+            $supabaseUrl = config('services.supabase.supabase_url');
+            $supabaseServiceKey = config('services.supabase.supabase_service_role');
 
+            // CHANGED: Use PUT instead of PATCH
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $supabaseServiceKey,
                 'apikey' => $supabaseServiceKey,
                 'Content-Type' => 'application/json'
-            ])->patch($supabaseUrl . '/auth/v1/admin/users/' . $userId, [
+            ])->put($supabaseUrl . '/auth/v1/admin/users/' . $userId, [
                 'user_metadata' => [
                     'role' => $validated['role']
                 ]
@@ -102,11 +103,15 @@ class UserController extends Controller
                 Log::error('Failed to update user role', [
                     'user_id' => $userId,
                     'status' => $response->status(),
+                    'response_body' => $response->body(), // Added for debugging
+                    'response_json' => $response->json()
                 ]);
 
                 return response()->json([
-                    'error' => 'Failed to update user'
-                ], 500);
+                    'error' => 'Failed to update user',
+                    'details' => $response->json(), // Return error details
+                    'status' => $response->status()
+                ], $response->status());
             }
 
             Log::info('User role updated', [
@@ -117,16 +122,21 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'User role updated successfully',
-                'role' => $validated['role']
+                'role' => $validated['role'],
+                'user' => $response->json()
             ]);
 
         } catch (\Exception $e) {
             Log::error('Error updating user role', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'user_id' => $userId
             ]);
 
-            return response()->json(['error' => 'Server error'], 500);
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -145,8 +155,8 @@ class UserController extends Controller
         }
 
         try {
-            $supabaseUrl = env('SUPABASE_URL');
-            $supabaseServiceKey = env('SUPABASE_SERVICE_ROLE_KEY');
+            $supabaseUrl = config('services.supabase.supabase_url');
+            $supabaseServiceKey = config('services.supabase.supabase_service_role');
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $supabaseServiceKey,
@@ -156,12 +166,14 @@ class UserController extends Controller
             if (!$response->successful()) {
                 Log::error('Failed to delete user', [
                     'user_id' => $userId,
-                    'status' => $response->status()
+                    'status' => $response->status(),
+                    'response_body' => $response->body()
                 ]);
 
                 return response()->json([
-                    'error' => 'Failed to delete user'
-                ], 500);
+                    'error' => 'Failed to delete user',
+                    'details' => $response->json()
+                ], $response->status());
             }
 
             Log::info('User deleted', [

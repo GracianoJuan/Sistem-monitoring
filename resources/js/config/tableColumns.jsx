@@ -208,7 +208,7 @@ export const createAmandemenColumns = (canEdit, onEdit, onDelete, onView) => [
           <EyeIcon size={14} />
         </button>
 
-        {EditDeleteButton(canEdit, onDelete, onView)}
+        {EditDeleteButton(canEdit, onEdit, onDelete, row)}
       </div>
     ),
   }),

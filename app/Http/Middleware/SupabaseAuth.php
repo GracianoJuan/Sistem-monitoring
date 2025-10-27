@@ -24,8 +24,8 @@ class SupabaseAuth
         }
 
         try {
-            $supabaseUrl = env('SUPABASE_URL');
-            $supabaseServiceKey = env('SUPABASE_SERVICE_ROLE_KEY');
+            $supabaseUrl = config('services.supabase.supabase_url');
+            $supabaseServiceKey = config('services.supabase.supabase_service_role');
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $supabaseServiceKey,

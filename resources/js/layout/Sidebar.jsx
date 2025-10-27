@@ -1,6 +1,6 @@
 // resources/js/layout/Sidebar.jsx
 import { useState } from 'react';
-import { ChevronDown, LogOut, BarChart3, Users, FileText, Menu, X } from 'lucide-react';
+import { ChevronDown, LogOut, BarChart3, Users, Table2, Menu, X } from 'lucide-react';
 import { useRole } from '../contexts/RoleContext';
 import { useNavigate } from 'react-router-dom';
 import logo from '../misc/logo.png';
@@ -15,13 +15,13 @@ const SidebarComponent = ({ currentPage, onLogout }) => {
     {
       name: 'Dashboard',
       href: '/dashboard',
-      icon: BarChart3,
+      icon: Table2,
       roles: ['admin', 'editor', 'viewer']
     },
     {
       name: 'Chart',
       href: '/chart',
-      icon: FileText,
+      icon: BarChart3,
       roles: ['admin', 'editor', 'viewer']
     },
     {

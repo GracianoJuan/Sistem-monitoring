@@ -175,7 +175,7 @@ export const apiService = {
   // These should be proxied through your backend API, not called directly
   async getAllUsers() {
     try {
-      const response = await apiClient.get('/admin/users');
+      const response = await apiClient.get('/users');
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -185,7 +185,7 @@ export const apiService = {
 
   async getUser(userId) {
     try {
-      const response = await apiClient.get(`/admin/users/${userId}`);
+      const response = await apiClient.get(`/users/${userId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -195,7 +195,7 @@ export const apiService = {
 
   async updateUserRole(userId, newRole) {
     try {
-      const response = await apiClient.put(`/admin/users/${userId}/role`, 
+      const response = await apiClient.put(`/users/${userId}/role`, 
         { role: newRole }
       );
       return response.data;
@@ -207,7 +207,7 @@ export const apiService = {
 
   async deleteUser(userId) {
     try {
-      const response = await apiClient.delete(`/admin/users/${userId}`);
+      const response = await apiClient.delete(`/users/${userId}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting user:', error);

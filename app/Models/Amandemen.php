@@ -12,7 +12,7 @@ class Amandemen extends Model
     public $timestamps = true;
     
     protected $fillable = [
-        // 'no_bantex',
+        'no_bantex',
         'no_kontrak',
         'tgl_kontrak',
         'judul_kontrak',

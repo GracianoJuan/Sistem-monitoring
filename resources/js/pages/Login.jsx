@@ -80,9 +80,7 @@ const Login = () => {
           break;
           
         case 'signup':
-          result = await signup(formData.email, formData.password, {
-            name: formData.name
-          });
+          result = await signup(formData.email, formData.password, formData.name);
           break;
           
         case 'forgot':
