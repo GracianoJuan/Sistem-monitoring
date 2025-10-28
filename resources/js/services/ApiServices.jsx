@@ -218,6 +218,7 @@ export const apiService = {
   async getSummary(){
     try {
       const response = await apiClient.get('/datasum');
+      // console.log(response.data.charts)
       return response.data;
     } catch (error) {
       console.error('Error fetching the data');

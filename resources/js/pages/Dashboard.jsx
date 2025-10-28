@@ -195,14 +195,7 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
         show={alertState.show}
         onClose={() => setAlert({ show: false, message: '', type: '' })}
       />
-      <header className="bg-blue-600 shadow-sm sticky top-0 z-10">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-semibold text-white">Dashboard</h1>
 
-          </div>
-        </div>
-      </header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {statsData?.data && <StatsComponent data={statsData.data} />}
         <div className="mb-6">

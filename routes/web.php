@@ -52,42 +52,18 @@ Route::prefix('api')->group(function () {
         });
 
         // User management routes - only admin
-        // Route::middleware([CheckRole::class . ':admin'])->group(function () {
-        //     Route::get('/users', [UserController::class, 'index']);
-        //     Route::get('/users/{id}', [UserController::class, 'show']);
-        //     Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
-        //     Route::delete('/users/{id}', [UserController::class, 'destroy']);
-        // });
+        Route::middleware([CheckRole::class . ':admin'])->group(function () {
+            Route::get('/users', [UserController::class, 'index']);
+            Route::get('/users/{id}', [UserController::class, 'show']);
+            Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
+            Route::delete('/users/{id}', [UserController::class, 'destroy']);
+        });
 
-        Route::get('/users', [UserController::class, 'index']);
-        Route::get('/users/{id}', [UserController::class, 'show']);
-        Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
-        Route::delete('/users/{id}', [UserController::class, 'destroy']);
+        // Route::get('/users', [UserController::class, 'index']);
+        // Route::get('/users/{id}', [UserController::class, 'show']);
+        // Route::put('/users/{id}/role', [UserController::class, 'updateRole']);
+        // Route::delete('/users/{id}', [UserController::class, 'destroy']);
     });
-
-    // // Stats endpoint - available to all authenticated users
-    // Route::get('/stats', [PengadaanController::class, 'dataStats']);
-
-    // // Pengadaan routes
-    // Route::get('/pengadaan', [PengadaanController::class, 'index']);
-    // Route::get('/pengadaan/{id}', [PengadaanController::class, 'show']);
-
-    // // Only editor and admin can create, update, delete
-    // Route::middleware([CheckRole::class . ':admin,editor'])->group(function () {
-    //     Route::post('/pengadaan', [PengadaanController::class, 'store']);
-    //     Route::put('/pengadaan/{id}', [PengadaanController::class, 'update']);
-    //     Route::delete('/pengadaan/{id}', [PengadaanController::class, 'destroy']);
-    // });
-
-    // // Amandemen routes
-    // Route::get('/amandemen', [AmandemenController::class, 'index']);
-    // Route::get('/amandemen/{id}', [AmandemenController::class, 'show']);
-
-    // Route::middleware([CheckRole::class . ':admin,editor'])->group(function () {
-    //     Route::post('/amandemen', [AmandemenController::class, 'store']);
-    //     Route::put('/amandemen/{id}', [AmandemenController::class, 'update']);
-    //     Route::delete('/amandemen/{id}', [AmandemenController::class, 'destroy']);
-    // });
 
 });
 

@@ -1,19 +1,15 @@
-
 const Header = ({ title }) => {
-
     return (
-        <header className="bg-blue-600 shadow-sm border-b-1-blue">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+            <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    <div className="flex items-center">
-                        <h1 className="text-xl font-semibold text-white">
-                            {title}
-                        </h1>
-                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        {title}
+                    </h1>
                 </div>
             </div>
         </header>
-    )
-}
+    );
+};
 
 export default Header;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
@@ -8,16 +8,41 @@ import SidebarComponent from './layout/Sidebar';
 import { useRole } from './contexts/RoleContext';
 import ChartPage from './pages/Chart';
 import Header from './layout/Header';
+import { usePageTitle } from './hooks/usePageTitle';
 
+// Main Layout Component
+const MainLayout = ({ children, onLogout }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const title = usePageTitle();
+
+  return (
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+      <SidebarComponent
+        isOpen={sidebarOpen}
+        setOpen={setSidebarOpen}
+        onLogout={onLogout}
+      />
+
+      {/* Main Content - Dynamic margin based on sidebar state */}
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+        sidebarOpen ? 'md:ml-64' : 'md:ml-20'
+      }`}>
+        <Header title={title} />
+        
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
 
 function App() {
   const { user, session, logout, loading: authLoading } = useAuth();
   const { userRole, loading: roleLoading } = useRole();
-  const [sidebarOpen, setOpen] = useState();
 
-  const canEdit = userRole == 'admin' || userRole == 'editor' ? true : false;
+  const canEdit = userRole === 'admin' || userRole === 'editor';
 
-  // Show loading while auth and role are loading
   if (authLoading || roleLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -28,7 +53,7 @@ function App() {
       </div>
     );
   }
-  // Not logged in - show login page
+
   if (!user || !session) {
     return (
       <BrowserRouter>
@@ -40,54 +65,37 @@ function App() {
     );
   }
 
-  // Logged in - show main app with sidebar
   return (
-    <div>
-
-      <BrowserRouter>
-
-        <div className="flex h-screen bg-gray-100">
-
-          <SidebarComponent
-            currentPage="Dashboard"
-            onLogout={logout}
+    <BrowserRouter>
+      <MainLayout onLogout={logout}>
+        <Routes>
+          <Route
+            path="/dashboard"
+            element={<Dashboard user={user} session={session} canEdit={canEdit} handleLogout={logout} />}
           />
 
-
-          {/* Main Content */}
-          <div className="flex-1 md:ml-64 overflow-auto">
-            {/* <Header title='Dashboard' /> */}
-            <Routes>
-
-              {/* Dashboard route */}
-              <Route
-                path="/dashboard"
-                element={<Dashboard user={user} session={session} canEdit={canEdit} handleLogout={logout} />}
-              />
-
-              {/* Admin only route */}
-              <Route
-                path="/admin/users"
-                element={userRole === 'admin' ? <ManageUsers handleLogout={logout}/> : 
-                  <div>
-                    Tidak Bisa Diakses
+          <Route
+            path="/admin/users"
+            element={
+              userRole === 'admin' ? (
+                <ManageUsers handleLogout={logout} />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
+                    <p className="text-gray-600">You don't have permission to access this page.</p>
                   </div>
-                }
-              />  
+                </div>
+              )
+            }
+          />
 
-              {/* Chart route - placeholder */}
-              <Route
-                path="/chart"
-                element={<ChartPage />}
-              />
+          <Route path="/chart" element={<ChartPage />} />
 
-              {/* Catch all - redirect to dashboard */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </div>
-        </div>
-      </BrowserRouter>
-    </div>
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </MainLayout>
+    </BrowserRouter>
   );
 }
 

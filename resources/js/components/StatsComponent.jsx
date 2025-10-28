@@ -16,7 +16,8 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const StatsComponent = (rawData) => {
     const options = {
         indexAxis: 'y',
-        responsive: true,
+        // responsive: true,
+        maintainAspectRatio: true,
         plugins: {
             legend: {
                 position: 'top',
@@ -53,11 +54,10 @@ const StatsComponent = (rawData) => {
 
     return (
         <div className='p-2 border-0 mb-2'>
-            <div className="flex">
-                <Bar options={options} data={chartData}></Bar>
-            </div>
 
-            <div className='md:grid md:grid-cols-3 gap-4 text-center text-lg font-semibold'>
+            <Bar options={options} data={chartData}></Bar>
+            <div className='md:grid md:grid-cols-2 gap-4 text-center text-lg font-semibold'>
+
                 <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
                     Total Saving RAB vs Nilai Kontrak <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
                         style: 'percent'
@@ -68,9 +68,6 @@ const StatsComponent = (rawData) => {
                             currency: 'IDR'
                         }).format(rawData.data.total_saving_nominal)}
                     </span>
-                </div>
-                <div>
-                    {rawData.data.total_saving_hpe_nominal}
                 </div>
                 <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
                     Total Saving RAB vs HPE <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {

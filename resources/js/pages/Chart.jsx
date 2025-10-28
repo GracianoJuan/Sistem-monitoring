@@ -33,9 +33,9 @@ const CollapsiblePanel = ({ title, children }) => {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg mb-4 overflow-hidden">
+        <div className="w-full max-w-4xl mx-auto bg-white shadow-md border-0.5 rounded-lg mb-4 overflow-hidden">
             <button
-                className="w-full p-4 flex justify-between items-center cursor-pointer bg-gray-100 hover:bg-gray-200 transition duration-300 focus:outline-none"
+                className="w-full p-4 flex justify-between items-center cursor-pointer bg-white hover:bg-gray-100 transition duration-300 focus:outline-none"
                 onClick={togglePanel}
                 aria-expanded={isOpen}
             >
@@ -61,13 +61,20 @@ const ChartPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            const summaryData = apiService.getSummary();
-            setData(summaryData);
-            setLoading(false);
-        }, 500);
+        const fetchData = async () => {
+            try {
+                const load = await apiService.getSummary();
+                setData(load);
+            } catch (error) {
+                console.error("Error loading data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
+
 
     if (loading) {
         return (
@@ -89,33 +96,33 @@ const ChartPage = () => {
     };
 
     const chartColors = {
-        blue: 'rgba(59, 130, 246, 0.8)',        
-        green: 'rgba(34, 197, 94, 0.8)',        
-        yellow: 'rgba(234, 179, 8, 0.8)',       
-        red: 'rgba(239, 68, 68, 0.8)',          
-        purple: 'rgba(168, 85, 247, 0.8)',      
-        orange: 'rgba(249, 115, 22, 0.8)',      
-        teal: 'rgba(20, 184, 166, 0.8)',        
-        pink: 'rgba(236, 72, 153, 0.8)',        
-        indigo: 'rgba(99, 102, 241, 0.8)',       
-        lime: 'rgba(132, 204, 22, 0.8)',         
-        cyan: 'rgba(6, 182, 212, 0.8)',           
-        amber: 'rgba(245, 158, 11, 0.8)',        
-        rose: 'rgba(244, 63, 94, 0.8)',          
-        sky: 'rgba(14, 165, 233, 0.8)',          
-        slate: 'rgba(100, 116, 139, 0.8)',       
+        blue: 'rgba(59, 130, 246, 0.8)',
+        green: 'rgba(34, 197, 94, 0.8)',
+        yellow: 'rgba(234, 179, 8, 0.8)',
+        red: 'rgba(239, 68, 68, 0.8)',
+        purple: 'rgba(168, 85, 247, 0.8)',
+        orange: 'rgba(249, 115, 22, 0.8)',
+        teal: 'rgba(20, 184, 166, 0.8)',
+        pink: 'rgba(236, 72, 153, 0.8)',
+        indigo: 'rgba(99, 102, 241, 0.8)',
+        lime: 'rgba(132, 204, 22, 0.8)',
+        cyan: 'rgba(6, 182, 212, 0.8)',
+        amber: 'rgba(245, 158, 11, 0.8)',
+        rose: 'rgba(244, 63, 94, 0.8)',
+        sky: 'rgba(14, 165, 233, 0.8)',
+        slate: 'rgba(100, 116, 139, 0.8)',
     };
 
     const allCharts = [
         {
-            title: 'Pengadaan per Pengguna',
+            title: 'Pengadaan per Metode',
             chart: (
                 <Bar
                     data={{
-                        labels: data.pengadaanPerUser.map(item => item.user),
+                        labels: data.charts.metode.map(item => item.label),
                         datasets: [{
                             label: 'Jumlah Pengadaan',
-                            data: data.pengadaanPerUser.map(item => item.count),
+                            data: data.charts.metode.map(item => item.count),
                             backgroundColor: chartColors.blue,
                             borderColor: 'rgba(59, 130, 246, 1)',
                             borderWidth: 1
@@ -123,7 +130,7 @@ const ChartPage = () => {
                     }}
                     options={{
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'top',
@@ -149,23 +156,18 @@ const ChartPage = () => {
             chart: (
                 <Pie
                     data={{
-                        labels: data.pengadaanPerProgress.map(item => item.status),
+                        labels: data.charts.progress.map(item => item.label),
                         datasets: [{
                             label: 'Jumlah',
-                            data: data.pengadaanPerProgress.map(item => item.count),
-                            backgroundColor: [
-                                chartColors.yellow,
-                                chartColors.blue,
-                                chartColors.green,
-                                chartColors.red
-                            ],
+                            data: data.charts.progress.map(item => item.count),
+                            backgroundColor: Object.values(chartColors),
                             borderWidth: 2,
                             borderColor: '#fff'
                         }]
                     }}
                     options={{
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'right',
@@ -180,18 +182,18 @@ const ChartPage = () => {
             chart: (
                 <Bar
                     data={{
-                        labels: data.nilaiKontrakPerUser.map(item => item.user),
+                        labels: data.charts.kontrak_per_user.map(item => item.label),
                         datasets: [{
                             label: 'Nilai Kontrak (IDR)',
-                            data: data.nilaiKontrakPerUser.map(item => item.nilai),
-                            backgroundColor: chartColors.green,
+                            data: data.charts.jenis.map(item => item.total),
+                            backgroundColor: Object.values(chartColors),
                             borderColor: 'rgba(34, 197, 94, 1)',
                             borderWidth: 1
                         }]
                     }}
                     options={{
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'top',
@@ -221,23 +223,18 @@ const ChartPage = () => {
             chart: (
                 <Pie
                     data={{
-                        labels: data.nilaiKontrakPerJenis.map(item => item.jenis),
+                        labels: data.charts.jenis.map(item => item.label),
                         datasets: [{
                             label: 'Nilai Kontrak',
-                            data: data.nilaiKontrakPerJenis.map(item => item.nilai),
-                            backgroundColor: [
-                                chartColors.purple,
-                                chartColors.orange,
-                                chartColors.blue,
-                                chartColors.green
-                            ],
+                            data: data.charts.jenis.map(item => item.total),
+                            backgroundColor: Object.values(chartColors),
                             borderWidth: 2,
                             borderColor: '#fff'
                         }]
                     }}
                     options={{
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'right',
@@ -259,7 +256,7 @@ const ChartPage = () => {
             chart: (
                 <div className="text-center">
                     <div className="text-4xl font-bold text-blue-600 mb-2">
-                        {formatRupiah(data.totalRAB)}
+                        {formatRupiah(data.summary.total_rab)}
                     </div>
                     <p className="text-gray-600">Total Rencana Anggaran Biaya</p>
                 </div>
@@ -269,15 +266,8 @@ const ChartPage = () => {
 
     return (
         <>
-            <header className="bg-gray-100 shadow-sm sticky top-0 z-10 border-b-1">
-                <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <h1 className="text-xl font-semibold text-black">Chart</h1>
-
-                    </div>
-                </div>
-            </header>
-            <div className="min-h-screen bg-gray-50 py-8 px-4">
+            
+            <div className="min-h-screen bg-gray-200 py-8 px-4">
                 <div className="max-w-6xl mx-auto">
 
                     {allCharts.map((item, index) => (
