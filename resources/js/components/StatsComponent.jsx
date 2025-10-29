@@ -16,8 +16,8 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const StatsComponent = (rawData) => {
     const options = {
         indexAxis: 'y',
-        // responsive: true,
-        maintainAspectRatio: true,
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'top',
@@ -33,7 +33,7 @@ const StatsComponent = (rawData) => {
                 max: rawData.data.total_pengadaan,
                 ticks: {
                     stepSize: 1,
-                    autoSkip: false
+                    autoSkip: true
                 }
 
             }
@@ -54,8 +54,6 @@ const StatsComponent = (rawData) => {
 
     return (
         <div className='p-2 border-0 mb-2'>
-
-            <Bar options={options} data={chartData}></Bar>
             <div className='md:grid md:grid-cols-2 gap-4 text-center text-lg font-semibold'>
 
                 <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
@@ -80,6 +78,9 @@ const StatsComponent = (rawData) => {
                         }).format(rawData.data.total_saving_hpe_nominal)}
                     </span>
                 </div>
+            </div>
+            <div className="h-100">
+                <Bar options={options} data={chartData}></Bar>
             </div>
 
         </div>

@@ -10,7 +10,6 @@ import {
     Legend,
     ArcElement,
 } from 'chart.js';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { apiService } from '../services/ApiServices';
 
 // Register Chart.js components
@@ -45,7 +44,7 @@ const CollapsiblePanel = ({ title, children }) => {
                 </span>
             </button>
             <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-auto' : 'max-h-0'
                     }`}
             >
                 <div className="p-6 border-t border-gray-200">
@@ -185,7 +184,7 @@ const ChartPage = () => {
                         labels: data.charts.kontrak_per_user.map(item => item.label),
                         datasets: [{
                             label: 'Nilai Kontrak (IDR)',
-                            data: data.charts.jenis.map(item => item.total),
+                            data: data.charts.kontrak_per_user.map(item => item.total),
                             backgroundColor: Object.values(chartColors),
                             borderColor: 'rgba(34, 197, 94, 1)',
                             borderWidth: 1
@@ -234,6 +233,7 @@ const ChartPage = () => {
                     }}
                     options={{
                         responsive: true,
+                        
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
@@ -261,6 +261,17 @@ const ChartPage = () => {
                     <p className="text-gray-600">Total Rencana Anggaran Biaya</p>
                 </div>
             )
+        },
+        {
+            title: 'Total Kontrak',
+            chart: (
+                <div className="text-center">
+                    <div className="text-4xl font-bold text-blue-600 mb-2">
+                        {formatRupiah(data.summary.total_nilai_amandemen)}
+                    </div>
+                    <p className="text-gray-600">Total Nilai Kontrak (termasuk amandemens)</p>
+                </div>
+            )
         }
     ];
 
@@ -268,7 +279,7 @@ const ChartPage = () => {
         <>
             
             <div className="min-h-screen bg-gray-200 py-8 px-4">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-6xl mx-auto grid grid-cols-2 gap-1">
 
                     {allCharts.map((item, index) => (
                         <CollapsiblePanel key={index} title={item.title}>

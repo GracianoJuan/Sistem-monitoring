@@ -38,7 +38,7 @@ const MainLayout = ({ children, onLogout }) => {
 };
 
 function App() {
-  const { user, session, logout, loading: authLoading } = useAuth();
+  const { user, session, logout, loading: authLoading, isRecoveryMode } = useAuth();
   const { userRole, loading: roleLoading } = useRole();
 
   const canEdit = userRole === 'admin' || userRole === 'editor';
@@ -54,47 +54,50 @@ function App() {
     );
   }
 
-  if (!user || !session) {
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
-
   return (
     <BrowserRouter>
-      <MainLayout onLogout={logout}>
-        <Routes>
-          <Route
-            path="/dashboard"
-            element={<Dashboard user={user} session={session} canEdit={canEdit} handleLogout={logout} />}
-          />
+      <Routes>
+        {/* Login page - handles all auth modes including password reset */}
+        <Route path="/login" element={
+          (!user || isRecoveryMode) ? <Login /> : <Navigate to="/dashboard" replace />
+        } />
 
-          <Route
-            path="/admin/users"
-            element={
-              userRole === 'admin' ? (
-                <ManageUsers handleLogout={logout} />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
-                    <p className="text-gray-600">You don't have permission to access this page.</p>
-                  </div>
-                </div>
-              )
-            }
-          />
+        {/* Protected routes */}
+        {user && session && !isRecoveryMode ? (
+          <Route path="/*" element={
+            <MainLayout onLogout={logout}>
+              <Routes>
+                <Route
+                  path="/dashboard"
+                  element={<Dashboard user={user} session={session} canEdit={canEdit} handleLogout={logout} />}
+                />
 
-          <Route path="/chart" element={<ChartPage />} />
+                <Route
+                  path="/admin/users"
+                  element={
+                    userRole === 'admin' ? (
+                      <ManageUsers handleLogout={logout} />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center">
+                          <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
+                          <p className="text-gray-600">You don't have permission to access this page.</p>
+                        </div>
+                      </div>
+                    )
+                  }
+                />
 
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </MainLayout>
+                <Route path="/chart" element={<ChartPage />} />
+
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </MainLayout>
+          } />
+        ) : (
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        )}
+      </Routes>
     </BrowserRouter>
   );
 }
