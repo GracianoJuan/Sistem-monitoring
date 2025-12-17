@@ -8,14 +8,10 @@ export const RoleProvider = ({ children }) => {
   const [userRole, setUserRole] = useState('viewer');
 
   useEffect(() => {
-    if (user && user.user_metadata) {
-      const role = user.user_metadata.role || 'viewer';
+    if (user) {
+      const role = user.role || (user.user_metadata?.role) || 'viewer';
       console.log('Role set to:', role);
       setUserRole(role);
-    } else if (user) {
-      // User exists but no metadata, set to viewer
-      setUserRole('viewer');
-      console.log('User has no metadata, setting to viewer');
     }
   }, [user]);
 

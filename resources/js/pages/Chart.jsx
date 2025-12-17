@@ -12,7 +12,6 @@ import {
 } from 'chart.js';
 import { apiService } from '../services/ApiServices';
 
-// Register Chart.js components
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -23,34 +22,24 @@ ChartJS.register(
     ArcElement
 );
 
-
-const CollapsiblePanel = ({ title, children }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const togglePanel = () => {
-        setIsOpen(!isOpen);
-    };
-
+const CollapsiblePanel = ({ title, children, isOpen, onToggle }) => {
     return (
-        <div className="w-full max-w-4xl mx-auto bg-white shadow-md border-0.5 rounded-lg mb-4 overflow-hidden">
+        <div className="bg-white shadow-md rounded-md overflow-hidden self-start">
             <button
-                className="w-full p-4 flex justify-between items-center cursor-pointer bg-white hover:bg-gray-100 transition duration-300 focus:outline-none"
-                onClick={togglePanel}
+                className="w-full p-4 flex justify-between items-center cursor-pointer bg-white hover:bg-gray-100 transition-colors focus:outline-none"
+                onClick={onToggle}
                 aria-expanded={isOpen}
             >
                 <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-                <span className="text-2xl font-bold text-gray-600 transform transition-transform duration-300">
+                <span className="text-xl text-gray-600">
                     {isOpen ? '−' : '+'}
                 </span>
             </button>
-            <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-auto' : 'max-h-0'
-                    }`}
-            >
+            {isOpen && (
                 <div className="p-6 border-t border-gray-200">
                     {children}
                 </div>
-            </div>
+            )}
         </div>
     );
 };
@@ -58,6 +47,7 @@ const CollapsiblePanel = ({ title, children }) => {
 const ChartPage = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [openPanels, setOpenPanels] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,6 +64,12 @@ const ChartPage = () => {
         fetchData();
     }, []);
 
+    const togglePanel = (index) => {
+        setOpenPanels(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
 
     if (loading) {
         return (
@@ -116,180 +112,221 @@ const ChartPage = () => {
         {
             title: 'Pengadaan per Metode',
             chart: (
-                <Bar
-                    data={{
-                        labels: data.charts.metode.map(item => item.label),
-                        datasets: [{
-                            label: 'Jumlah Pengadaan',
-                            data: data.charts.metode.map(item => item.count),
-                            backgroundColor: chartColors.blue,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderWidth: 1
-                        }]
-                    }}
-                    options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
+                <div style={{ height: '300px', width: '100%' }}>
+                    <Bar
+                        data={{
+                            labels: data.charts.metode.map(item => item.label),
+                            datasets: [{
+                                label: 'Jumlah Pengadaan',
+                                data: data.charts.metode.map(item => item.count),
+                                backgroundColor: chartColors.blue,
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1
+                            }]
+                        }}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'top' }
                             },
-                            title: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 5
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
                                 }
                             }
-                        }
-                    }}
-                />
+                        }}
+                    />
+                </div>
             )
         },
         {
             title: 'Pengadaan per Progress',
             chart: (
-                <Pie
-                    data={{
-                        labels: data.charts.progress.map(item => item.label),
-                        datasets: [{
-                            label: 'Jumlah',
-                            data: data.charts.progress.map(item => item.count),
-                            backgroundColor: Object.values(chartColors),
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    }}
-                    options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
+                <div style={{ height: '300px', width: '100%' }}>
+                    <Pie
+                        data={{
+                            labels: data.charts.progress.map(item => item.label),
+                            datasets: [{
+                                data: data.charts.progress.map(item => item.count),
+                                backgroundColor: Object.values(chartColors),
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        }}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        boxWidth: 15,
+                                        padding: 15,
+                                        font: { size: 12 }
+                                    }
+                                }
                             }
-                        }
-                    }}
-                />
+                        }}
+                    />
+                </div>
             )
         },
         {
             title: 'Nilai Kontrak per Pengguna',
             chart: (
-                <Bar
-                    data={{
-                        labels: data.charts.kontrak_per_user.map(item => item.label),
-                        datasets: [{
-                            label: 'Nilai Kontrak (IDR)',
-                            data: data.charts.kontrak_per_user.map(item => item.total),
-                            backgroundColor: Object.values(chartColors),
-                            borderColor: 'rgba(34, 197, 94, 1)',
-                            borderWidth: 1
-                        }]
-                    }}
-                    options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
+                <div style={{ height: '300px', width: '100%' }}>
+                    <Bar
+                        data={{
+                            labels: data.charts.kontrak_per_user.map(item => item.label),
+                            datasets: [{
+                                label: 'Nilai Kontrak (IDR)',
+                                data: data.charts.kontrak_per_user.map(item => item.total),
+                                backgroundColor: Object.values(chartColors),
+                                borderWidth: 1
+                            }]
+                        }}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => formatRupiah(context.parsed.x)
+                                    }
+                                }
                             },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => {
-                                        return formatRupiah(context.parsed.y);
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: (value) => {
+                                            return new Intl.NumberFormat('id-ID', {
+                                                notation: 'compact',
+                                                compactDisplay: 'short'
+                                            }).format(value);
+                                        }
                                     }
                                 }
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: (value) => formatRupiah(value)
-                                }
-                            }
-                        }
-                    }}
-                />
+                        }}
+                    />
+                </div>
             )
         },
         {
             title: 'Nilai Kontrak per Jenis Pengadaan',
             chart: (
-                <Pie
-                    data={{
-                        labels: data.charts.jenis.map(item => item.label),
-                        datasets: [{
-                            label: 'Nilai Kontrak',
-                            data: data.charts.jenis.map(item => item.total),
-                            backgroundColor: Object.values(chartColors),
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    }}
-                    options={{
-                        responsive: true,
-                        
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => {
-                                        return `${context.label}: ${formatRupiah(context.parsed)}`;
+                <div style={{ height: '300px', width: '100%' }}>
+                    <Pie
+                        data={{
+                            labels: data.charts.jenis.map(item => item.label),
+                            datasets: [{
+                                data: data.charts.jenis.map(item => item.total),
+                                backgroundColor: Object.values(chartColors),
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        }}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        boxWidth: 15,
+                                        padding: 15,
+                                        font: { size: 12 }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => {
+                                            const label = context.label || '';
+                                            const value = formatRupiah(context.parsed);
+                                            return `${label}: ${value}`;
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }}
-                />
+                        }}
+                    />
+                </div>
             )
         },
         {
             title: 'Total RAB',
             chart: (
-                <div className="text-center">
-                    <div className="text-4xl font-bold text-blue-600 mb-2">
-                        {formatRupiah(data.summary.total_rab)}
+                <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                        <div className="text-4xl font-bold text-blue-600 mb-2">
+                            {formatRupiah(data.summary.total_rab)}
+                        </div>
+                        <p className="text-gray-600">Total Rencana Anggaran Biaya</p>
                     </div>
-                    <p className="text-gray-600">Total Rencana Anggaran Biaya</p>
                 </div>
             )
         },
         {
             title: 'Total Kontrak',
             chart: (
-                <div className="text-center">
-                    <div className="text-4xl font-bold text-blue-600 mb-2">
-                        {formatRupiah(data.summary.total_nilai_amandemen)}
+                <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                        <div className="text-4xl font-bold text-green-600 mb-2">
+                            {formatRupiah(data.summary.total_nilai_amandemen)}
+                        </div>
+                        <p className="text-gray-600">Total Nilai Kontrak (termasuk amendemen)</p>
                     </div>
-                    <p className="text-gray-600">Total Nilai Kontrak (termasuk amandemens)</p>
                 </div>
             )
         }
     ];
 
     return (
-        <>
-            
-            <div className="min-h-screen bg-gray-200 py-8 px-4">
-                <div className="max-w-6xl mx-auto grid grid-cols-2 gap-1">
+    <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* LEFT COLUMN */}
+                <div className="flex-1 space-y-6">
+                    {allCharts.filter((_, i) => i % 2 === 0).map((item, index) => {
+                        const originalIndex = index * 2;
+                        return (
+                            <CollapsiblePanel 
+                                key={originalIndex}
+                                title={item.title}
+                                isOpen={openPanels[originalIndex] || false}
+                                onToggle={() => togglePanel(originalIndex)}
+                            >
+                                {item.chart}
+                            </CollapsiblePanel>
+                        );
+                    })}
+                </div>
 
-                    {allCharts.map((item, index) => (
-                        <CollapsiblePanel key={index} title={item.title}>
-                            {item.chart}
-                        </CollapsiblePanel>
-                    ))}
+                {/* RIGHT COLUMN */}
+                <div className="flex-1 space-y-6">
+                    {allCharts.filter((_, i) => i % 2 === 1).map((item, index) => {
+                        const originalIndex = (index * 2) + 1;
+                        return (
+                            <CollapsiblePanel 
+                                key={originalIndex}
+                                title={item.title}
+                                isOpen={openPanels[originalIndex] || false}
+                                onToggle={() => togglePanel(originalIndex)}
+                            >
+                                {item.chart}
+                            </CollapsiblePanel>
+                        );
+                    })}
                 </div>
             </div>
-        </>
-    );
+        </div>
+    </div>
+);
 };
 
 export default ChartPage;

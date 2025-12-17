@@ -1,6 +1,6 @@
 // resources/js/contexts/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { apiClient } from '../services/ApiServices';
 
 const AuthContext = createContext();
 
@@ -13,32 +13,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        // Check for recovery token in URL
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const type = hashParams.get('type');
-
-        if (type === 'recovery' && accessToken) {
-          // User clicked reset password link
+        // Check for recovery token in URL query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const email = urlParams.get('email');
+        if (token && email) {
           setIsRecoveryMode(true);
-          
-          // Set the session from the recovery token
-          const { data: { session: recoverySession }, error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: hashParams.get('refresh_token')
-          });
-
-          if (!error && recoverySession) {
-            setSession(recoverySession);
-            setUser(recoverySession.user);
-          }
-          
-          setLoading(false);
-          return;
         }
 
-        // Normal session check
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Get session from backend (reads HttpOnly cookie)
+        const resp = await apiClient.get('/auth/me');
+        const session = resp.data?.data?.session ?? null;
         if (session) {
           setSession(session);
           setUser(session.user);
@@ -52,80 +37,46 @@ export const AuthProvider = ({ children }) => {
 
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth event:', event);
-        
-        // Don't update state on PASSWORD_RECOVERY event
-        if (event === 'PASSWORD_RECOVERY') {
-          setIsRecoveryMode(true);
-          setSession(session);
-          setUser(session?.user);
-        } else if (event === 'SIGNED_OUT') {
-          setIsRecoveryMode(false);
-          setSession(null);
-          setUser(null);
-        } else {
-          setSession(session);
-          setUser(session?.user);
-        }
-        
-        setLoading(false);
-      }
-    );
-
-    return () => subscription?.unsubscribe();
+    return () => {};
   }, []);
 
   const signup = async (email, password, displayName) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name: displayName,
-            role: 'viewer' // DEFAULT ROLE FOR NEW USERS
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      return {
-        success: true,
-        message: 'Signup successful! Please check your email to confirm.',
-        needsConfirmation: true
-      };
+      const res = await apiClient.post('/auth/register', { email, password, name: displayName });
+      return { success: true, message: res.data.message ?? 'Registered', needsConfirmation: true };
     } catch (error) {
       console.error('Signup error:', error);
-      return { success: false, message: error.message };
+      return { success: false, message: error.response?.data?.message || error.message };
     }
   };
 
   const login = async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      setIsRecoveryMode(false); // Clear recovery mode on normal login
-      return { success: true, message: 'Login successful' };
+      const res = await apiClient.post('/auth/login', { email, password });
+      // store access_token from response as fallback (for cross-origin dev)
+      if (res.data?.access_token) {
+        try { localStorage.setItem('access_token', res.data.access_token); } catch(e) {}
+      }
+      // refresh session
+      const me = await apiClient.get('/auth/me');
+      const session = me.data?.data?.session ?? null;
+      setIsRecoveryMode(false);
+      setSession(session);
+      setUser(session?.user ?? null);
+      return { success: true, message: res.data.message ?? 'Login successful' };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: error.message };
+      return { success: false, message: error.response?.data?.message || error.message };
     }
   };
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      await apiClient.post('/auth/logout');
       setUser(null);
       setSession(null);
       setIsRecoveryMode(false);
+      try { localStorage.removeItem('access_token'); } catch(e) {}
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -133,46 +84,34 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (email) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
-      });
-      
-      if (error) throw error;
-      
-      return { 
-        success: true, 
-        message: 'Password reset email sent! Please check your inbox.' 
-      };
+      const res = await apiClient.post('/auth/forgot', { email });
+      return { success: true, message: res.data.message ?? 'Reset email sent' };
     } catch (error) {
-      return { 
-        success: false, 
-        message: error.message 
-      };
+      return { success: false, message: error.response?.data?.message || error.message };
     }
   };
 
   // ← TAMBAHKAN FUNGSI INI
   const updatePassword = async (newPassword) => {
     try {
-      const { data, error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      // Try to get token and email from URL or cookie
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token') || document.cookie.split('; ').find(row => row.startsWith('reset_token='))?.split('=')[1];
+      const email = urlParams.get('email');
+      if (!token || !email) {
+        return { success: false, message: 'Missing reset token or email' };
+      }
 
-      if (error) throw error;
-
-      // After successful password update, logout user
-      await logout();
-
-      return { 
-        success: true, 
-        message: 'Password updated successfully!' 
-      };
+      const res = await apiClient.post('/auth/reset', { email, token, password: newPassword });
+      if (res.data) {
+        // clear recovery mode
+        setIsRecoveryMode(false);
+        return { success: true, message: res.data.message ?? 'Password updated' };
+      }
+      return { success: false, message: 'Unknown error' };
     } catch (error) {
       console.error('Update password error:', error);
-      return { 
-        success: false, 
-        message: error.message 
-      };
+      return { success: false, message: error.response?.data?.message || error.message };
     }
   };
 

@@ -29,12 +29,12 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
     type: '',
   });
 
-
-
+  
   useEffect(() => {
     loadData();
   }, [activeTab]);
-
+  
+  
   const loadData = async () => {
     setLoading(true);
     try {
@@ -53,7 +53,9 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
       setLoading(false);
     }
   };
+  
 
+  
   const handleCreate = () => {
     setModalState({
       isOpen: true,
@@ -291,11 +293,13 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
             fields={currentFormFields}
             showAlert={showAlert}
           />
+          
           <ExportAll
-            PengadaanData={pengadaanData}
-            AmandemenData={amandemenData}
+            PengadaanData={apiService.getPengadaanData}
+            AmandemenData={apiService.getAmandemenData}
             fileName={`Data_Pengadaan_dan_Amandemen_${dayjs().format('YYYYMMDD')}.xlsx`}
-            fields={currentFormFields}
+            PengadaanFormFields={pengadaanFormFields}
+            AmandemenFormFields={amandemenFormFields}
             showAlert={showAlert}
           />
         </div>

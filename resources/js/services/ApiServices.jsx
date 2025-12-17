@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { supabase } from '../lib/supabase';
+// Using server-side session cookie for auth; no supabase client here
 
 // Safely get CSRF token with fallback
 const getCsrfToken = () => {
@@ -14,42 +14,23 @@ const apiClient = axios.create({
     'X-CSRF-TOKEN': getCsrfToken(),
     'X-Requested-With': 'XMLHttpRequest',
   },
+  withCredentials: true,
 });
 
-// Add request interceptor to include Supabase auth token
-apiClient.interceptors.request.use(
-  async (config) => {
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
+// No auth interceptor required because server uses HttpOnly session cookie
 
-      if (error) {
-        console.error('Error getting session:', error);
-      }
-
-      if (session?.access_token) {
-        config.headers['Authorization'] = `Bearer ${session.access_token}`;
-        config.headers['X-User-Email'] = session.user?.email;
-        config.headers['X-User-ID'] = session.user?.id;
-
-        // Add user role to headers
-        const role = session.user?.user_metadata?.role || 'viewer';
-        config.headers['X-User-Role'] = role;
-      }
-
-      if (import.meta.env.DEV) {
-        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
-      }
-      return config;
-    } catch (error) {
-      console.error('Request interceptor error:', error);
-      return config;
+// Attach Authorization header from localStorage fallback (when cookie not sent)
+apiClient.interceptors.request.use((config) => {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
-  },
-  (error) => {
-    console.error('Request error:', error);
-    return Promise.reject(error);
+  } catch (e) {
+    // ignore
   }
-);
+  return config;
+});
 
 // Add response interceptor for debugging and auth error handling
 apiClient.interceptors.response.use(
@@ -226,3 +207,5 @@ export const apiService = {
     }
   }
 };
+
+export { apiClient };

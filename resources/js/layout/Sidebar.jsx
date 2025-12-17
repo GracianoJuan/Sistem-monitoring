@@ -64,7 +64,7 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
       <aside
         className={`${
           isOpen ? 'w-64' : 'w-20'
-        } bg-gray-500 text-white h-screen fixed left-0 top-0 transition-all duration-300 shadow-lg hidden md:flex flex-col z-30`}
+        } bg-gray-100 text-black h-screen fixed left-0 top-0 transition-all duration-300 shadow-lg hidden md:flex flex-col z-30`}
       >
         {/* Logo Section */}
         <div className="p-4 border-b border-gray-700 flex items-center justify-between">
@@ -86,7 +86,7 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
         {/* User Role Badge */}
         {isOpen && (
           <div className="px-4 py-3 border-b border-gray-700">
-            <p className="text-xs text-gray-300 mb-2">Current Role</p>
+            <p className="text-xs text-black mb-2">Current Role</p>
             <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor()}`}>
               {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
             </span>
@@ -105,8 +105,8 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
                 href={item.href}
                 className={`flex items-center ${isOpen ? 'space-x-3' : 'justify-center'} px-4 py-3 rounded-lg transition-colors ${
                   isActive
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-200 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-black hover:bg-gray-700 hover:text-white'
                 }`}
                 title={!isOpen ? item.name : ''}
               >
@@ -123,7 +123,7 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
             onClick={handleLogout}
             className={`w-full flex items-center ${
               isOpen ? 'space-x-3' : 'justify-center'
-            } px-4 py-3 rounded-lg text-red-300 hover:bg-red-600 hover:text-white transition-colors`}
+            } px-4 py-3 rounded-lg text-red-500 hover:bg-red-600 hover:text-white transition-colors`}
             title="Logout"
           >
             <LogOut size={20} />
@@ -136,11 +136,11 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
       {isMobileOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            className="fixed inset-0 backdrop-brightness-50 z-40 md:hidden"
             onClick={() => setIsMobileOpen(false)}
           />
           
-          <aside className="fixed left-0 top-0 h-screen w-64 bg-gray-500 text-white shadow-lg flex flex-col z-50 md:hidden">
+          <aside className="fixed left-0 top-0 h-screen w-64 bg-gray-100 text-black shadow-lg flex flex-col z-50 md:hidden">
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center space-x-3">
                 <img src={logo} alt="logo" className="h-15 w-auto rounded" />
@@ -148,7 +148,7 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
             </div>
 
             <div className="px-4 py-3 border-b border-gray-700">
-              <p className="text-xs text-gray-300 mb-2">Current Role</p>
+              <p className="text-xs text-black mb-2">Current Role</p>
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor()}`}>
                 {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
               </span>
@@ -166,8 +166,8 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
                     onClick={() => setIsMobileOpen(false)}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-200 hover:bg-gray-700 hover:text-white'
+                        ? 'bg-gray-900 text-white'
+                        : 'text-black hover:bg-gray-700 hover:text-white'
                     }`}
                   >
                     <Icon size={20} />
@@ -183,7 +183,7 @@ const SidebarComponent = ({ isOpen, setOpen, onLogout }) => {
                   handleLogout();
                   setIsMobileOpen(false);
                 }}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-red-300 hover:bg-red-600 hover:text-white transition-colors"
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-600 hover:text-white transition-colors"
               >
                 <LogOut size={20} />
                 <span className="text-sm font-medium">Logout</span>
