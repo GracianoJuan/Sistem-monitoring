@@ -8,8 +8,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\DBAuth;
-
-
+use Dflydev\DotAccessData\Data;
 
 Route::get('/', function () {
     return view('app');
@@ -45,6 +44,11 @@ Route::prefix('api')->group(function () {
     // Pengadaan routes
     Route::get('/pengadaan', [PengadaanController::class, 'index']);
     Route::get('/pengadaan/{id}', [PengadaanController::class, 'show']);
+
+    Route::get('/get-year', [DataVizController::class, 'getAvailableYears']);
+
+    Route::middleware([DBAuth::class])->group(function () {
+    });
 
     // Use DBAuth middleware (session cookie or bearer token)
     // Route::middleware([DBAuth::class])->group(function () {
@@ -104,6 +108,7 @@ Route::prefix('api/auth')->group(function () {
     Route::get('/verify-reset', [\App\Http\Controllers\AuthController::class, 'verifyReset']);
     Route::get('/me', [\App\Http\Controllers\AuthController::class, 'me']);
     Route::post('/reset', [\App\Http\Controllers\AuthController::class, 'updatePassword']);
+    // Route::get('/check-role' []);s
 });
 
 

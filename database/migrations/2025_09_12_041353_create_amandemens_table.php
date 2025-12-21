@@ -12,7 +12,10 @@ return new class extends Migration
             $table->id();
             $table->integer('no_bantex')->nullable();
             $table->string('no_kontrak');
-            $table->date('tgl_kontrak');
+            $table->date('tgl_kontrak')->index();
+            $table->unsignedSmallInteger('tahun_kontrak')
+                ->storedAs('YEAR(tgl_kontrak)')
+                ->index();
             $table->string('judul_kontrak');
             $table->bigInteger('nilai_kontrak')->nullable();
             $table->string('amandemen_ke');

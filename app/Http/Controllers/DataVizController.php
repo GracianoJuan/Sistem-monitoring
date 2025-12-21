@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengadaan;
+use App\Models\Amandemen;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,6 +78,34 @@ class DataVizController extends Controller
                 'success' => false,
                 'error' => $e
             ]);
+        }
+    }
+    public function getYear(Request $request): JsonResponse
+    {
+        try {
+            // 1. Get unique years from Pengadaan
+            $pengadaanYears = Pengadaan::distinct()
+                ->orderBy('tahun_kontrak', 'asc')
+                ->pluck('tahun_kontrak')
+                ->toArray();
+
+            // 2. Get unique years from Amandemen
+            $amandemenYears = Amandemen::distinct()
+                ->orderBy('tahun_kontrak', 'asc')
+                ->pluck('tahun_kontrak')
+                ->toArray();
+
+            // 3. Merge them, remove duplicates, and sort
+            $allYears = array_unique(array_merge($pengadaanYears, $amandemenYears));
+            sort($allYears);
+
+            return response()->json([
+                'success' => true,
+                'years' => $allYears,
+                'range' => !empty($allYears) ? min($allYears) . '-' . max($allYears) : null
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
         }
     }
 }

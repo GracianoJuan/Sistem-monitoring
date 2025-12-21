@@ -1,7 +1,6 @@
 import axios from 'axios';
-// Using server-side session cookie for auth; no supabase client here
 
-// Safely get CSRF token with fallback
+// Get CSRF token with fallback
 const getCsrfToken = () => {
   const meta = document.head.querySelector('meta[name="csrf-token"]');
   return meta?.getAttribute('content') || '';
@@ -17,9 +16,6 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-// No auth interceptor required because server uses HttpOnly session cookie
-
-// Attach Authorization header from localStorage fallback (when cookie not sent)
 apiClient.interceptors.request.use((config) => {
   try {
     const token = localStorage.getItem('access_token');
@@ -101,9 +97,13 @@ export const apiService = {
   },
 
   // Amandemen endpoints
-  async getAmandemenData() {
+  async getAmandemenData(year = null) {
     try {
-      const response = await apiClient.get('/amandemen');
+      if (!year) {
+        const response = await apiClient.get('/amandemen');
+      } else {
+        const response = await apiClient.get(`/amandemen?year=${year}`);
+      }
       return response.data;
     } catch (error) {
       console.error('Error fetching amandemen data:', error);

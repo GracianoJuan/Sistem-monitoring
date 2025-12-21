@@ -18,6 +18,7 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
   const [statsData, setStatsData] = useState({});
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [currentYear, setCurrentYear] = useState(dayjs().year());
   const [modalState, setModalState] = useState({
     isOpen: false,
     mode: null,
@@ -29,12 +30,12 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
     type: '',
   });
 
-  
+
   useEffect(() => {
     loadData();
   }, [activeTab]);
-  
-  
+
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -53,9 +54,9 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
       setLoading(false);
     }
   };
-  
 
-  
+
+
   const handleCreate = () => {
     setModalState({
       isOpen: true,
@@ -225,15 +226,23 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
             </nav>
           </div>
         </div>
-        <div className="mb-4">
-          <button
-            onClick={handleCreate}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
-            disabled={loading}
-          >
-            <PlusIcon size={20} />
-            <span>Tambah {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
-          </button>
+        <div className="mb-4 flex justify-between">
+          {canEdit ?
+
+            <button
+              onClick={handleCreate}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
+              disabled={loading}
+            >
+              <PlusIcon size={20} />
+              <span>Tambah {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
+            </button>
+            : ''}
+            {/* filter tanggal */}
+            <select name="" id="" className='bg-white border rounded-xl px-2'>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
         </div>
 
         {/* Table */}
@@ -293,7 +302,7 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
             fields={currentFormFields}
             showAlert={showAlert}
           />
-          
+
           <ExportAll
             PengadaanData={apiService.getPengadaanData}
             AmandemenData={apiService.getAmandemenData}

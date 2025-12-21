@@ -74,7 +74,7 @@ const DataTable = ({ data, columns, loading }) => {
                                         <th
                                             key={header.id}
                                             className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200 bg-gray-50 ${
-                                                index < 3 ? 'sticky shadow-r' : 'min-w-[150px]'
+                                                index < 2 ? 'sticky' : index < 3 ? 'lg:sticky shadow-r' : 'min-w-[150px]'
                                             }`}
                                             style={{
                                                 minWidth: index <= 1 ? '100px' :index > 1 && index < 3 ? '250px' : '150px',
@@ -144,7 +144,7 @@ const DataTable = ({ data, columns, loading }) => {
                                         <td
                                             key={cell.id}
                                             className={`px-4 py-3 text-sm text-gray-900 border-r border-gray-100 ${
-                                                index < 3 ? 'sticky bg-white shadow-r' : ''
+                                                index < 2 ? 'sticky' : index < 3 ? 'lg:sticky bg-white shadow-r' : ''
                                             }`}
                                             style={{
                                                 minWidth: index <= 1 ? '100px' :index > 1 && index < 3 ? '250px' : '150px',
