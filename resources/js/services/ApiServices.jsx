@@ -6,6 +6,19 @@ const getCsrfToken = () => {
   return meta?.getAttribute('content') || '';
 };
 
+// Refresh CSRF token by fetching it from the server
+const refreshCsrfToken = async () => {
+  try {
+    await axios.get('/sanctum/csrf-cookie');
+    // After fetching, update our token
+    const meta = document.head.querySelector('meta[name="csrf-token"]');
+    return meta?.getAttribute('content') || '';
+  } catch (error) {
+    console.error('Failed to refresh CSRF token:', error);
+    return '';
+  }
+};
+
 const apiClient = axios.create({
   baseURL: '/api',
   headers: {
@@ -16,12 +29,15 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-apiClient.interceptors.request.use((config) => {
+apiClient.interceptors.request.use(async (config) => {
   try {
     const token = localStorage.getItem('access_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    
+    // Always use fresh CSRF token
+    config.headers['X-CSRF-TOKEN'] = getCsrfToken();
   } catch (e) {
     // ignore
   }
@@ -44,6 +60,16 @@ apiClient.interceptors.response.use(
       data: error.response?.data,
       message: error.message
     });
+
+    // Handle CSRF token mismatch
+    if (error.response?.status === 419) {
+      console.warn('CSRF token mismatch - refreshing token');
+      const newToken = await refreshCsrfToken();
+      if (newToken && error.config) {
+        error.config.headers['X-CSRF-TOKEN'] = newToken;
+        return apiClient.request(error.config);
+      }
+    }
 
     if (error.response?.status === 401) {
       console.warn('Unauthorized request - user may need to login again');

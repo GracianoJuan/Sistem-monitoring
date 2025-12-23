@@ -1,96 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Your Account</title>
+    <title>Konfirmasi Akun</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f9fafb;
+            background-color: #f4f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 24px 16px;
         }
+
         .email-wrapper {
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
         }
+
         .header {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            padding: 40px 30px;
+            padding: 32px 24px;
             text-align: center;
+            border-bottom: 1px solid #e5e7eb;
         }
+
         .header h1 {
             margin: 0;
-            color: #ffffff;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 600;
+            letter-spacing: -0.2px;
         }
+
         .content {
-            padding: 40px 30px;
+            padding: 32px 28px;
         }
+
         .greeting {
-            font-size: 18px;
-            color: #1f2937;
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .message {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #4b5563;
             margin-bottom: 20px;
         }
-        .message {
-            color: #4b5563;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
+
         .button-container {
             text-align: center;
-            margin: 35px 0;
+            margin: 32px 0;
         }
+
         .button {
             display: inline-block;
-            padding: 14px 32px;
-            background-color: #1f2937;
+            padding: 14px 36px;
+            background-color: #111827;
             color: #ffffff;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: 600;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            letter-spacing: 0.2px;
         }
-        .button:hover {
-            background-color: #374151;
-        }
-        .footer {
-            background-color: #f9fafb;
-            padding: 30px;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-        }
-        .footer-text {
-            color: #6b7280;
+
+        .note {
             font-size: 14px;
-            line-height: 1.5;
-            margin: 5px 0;
+            color: #6b7280;
+            margin-top: 24px;
         }
-        .link-text {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #f3f4f6;
-            border-radius: 6px;
-            word-break: break-all;
+
+        .link-box {
+            margin-top: 28px;
+            padding: 16px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             font-size: 13px;
             color: #6b7280;
+            word-break: break-all;
         }
-        .link-label {
-            font-weight: 600;
-            color: #374151;
+
+        .link-box strong {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .footer {
+            padding: 24px;
+            text-align: center;
+            background-color: #fafafa;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #9ca3af;
+            margin: 6px 0;
         }
     </style>
 </head>
@@ -98,38 +115,39 @@
     <div class="container">
         <div class="email-wrapper">
             <div class="header">
-                <h1>✉️ Confirm Your Account</h1>
+                <h1>Konfirmasi Akun</h1>
             </div>
-            
+
             <div class="content">
-                <p class="greeting">Hello {{ $userName }},</p>
-                
+                <p class="greeting">Halo {{ $userName }},</p>
+
                 <p class="message">
-                    Thank you for registering! We're excited to have you on board. 
-                    To complete your registration and activate your account, please click the button below:
+                    Terima kasih telah mendaftar. Untuk menyelesaikan proses pendaftaran dan
+                    mengaktifkan akun Anda, silakan lakukan konfirmasi dengan menekan tombol di bawah ini.
                 </p>
-                
+
                 <div class="button-container">
-                    <a href="{{ $confirmUrl }}" class="button">Confirm My Account</a>
+                    <a href="{{ $confirmUrl }}" class="button">Konfirmasi Akun</a>
                 </div>
-                
-                <p class="message">
-                    This link will expire in 60 minutes for security reasons.
+
+                <p class="note">
+                    Tautan konfirmasi ini akan kedaluwarsa dalam waktu <strong>60 menit</strong>
+                    demi menjaga keamanan akun Anda.
                 </p>
-                
-                <p class="message">
-                    If you didn't create an account, you can safely ignore this email.
+
+                <p class="note">
+                    Jika Anda merasa tidak pernah membuat akun ini, silakan abaikan email ini.
                 </p>
-                
-                <div class="link-text">
-                    <span class="link-label">Or copy and paste this URL into your browser:</span>
+
+                <div class="link-box">
+                    <strong>Atau salin dan tempel tautan berikut ke browser Anda:</strong>
                     {{ $confirmUrl }}
                 </div>
             </div>
-            
+
             <div class="footer">
-                <p class="footer-text">This is an automated message, please do not reply.</p>
-                <p class="footer-text">© {{ date('Y') }} Your Application. All rights reserved.</p>
+                <p class="footer-text">Email ini dikirim secara otomatis, mohon tidak membalas email ini.</p>
+                <p class="footer-text">© {{ date('Y') }} Aplikasi Anda. Seluruh hak cipta dilindungi.</p>
             </div>
         </div>
     </div>

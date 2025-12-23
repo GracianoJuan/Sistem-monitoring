@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import EmailConfirm from './pages/EmailConfirm';
 import Dashboard from './pages/Dashboard';
 import ManageUsers from './pages/ManageUsers';
 import ExcelImport from './pages/ExcelImport';
@@ -44,7 +45,7 @@ function App() {
 
   const canEdit = userRole === 'admin' || userRole === 'editor';
 
-  // penyakit loading state
+  // Loading state
   if (authLoading || roleLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -59,10 +60,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login page - handles all auth modes including password reset */}
+        {/* Public Routes */}
         <Route path="/login" element={
           (!user || isRecoveryMode) ? <Login /> : <Navigate to="/dashboard" replace />
         } />
+
+        {/* Email Confirmation Route - Public */}
+        <Route path="/confirm-email" element={<EmailConfirm />} />
 
         {/* Protected routes */}
         {user && session && !isRecoveryMode ? (

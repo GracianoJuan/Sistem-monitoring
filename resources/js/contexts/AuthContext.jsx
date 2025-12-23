@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true, message: res.data.message ?? 'Login successful' };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: error.response?.data?.message || error.message };
+      return { success: false, message: error.response?.data?.error || error.response?.data?.message || error.message };
     }
   };
 
@@ -93,50 +93,30 @@ export const AuthProvider = ({ children }) => {
 
   const verifyResetToken = async (token, email) => {
     try {
-      const response = await fetch(`${API_URL}/auth/verify-reset?token=${token}&email=${encodeURIComponent(email)}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return { success: false, message: data.error || 'Invalid or expired token' };
-      }
-
-      return { success: true, message: 'Token verified' };
+      const res = await apiClient.get(`/auth/verify-reset?token=${token}&email=${encodeURIComponent(email)}`);
+      return { success: true, message: res.data.message || 'Token verified' };
     } catch (error) {
       console.error('Token verification error:', error);
-      return { success: false, message: 'Failed to verify token' };
+      return { success: false, message: error.response?.data?.error || 'Failed to verify token' };
     }
   };
 
   const updatePassword = async (password, token, email) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/update-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: email,
-          token: token,
-          password: password,
-        }),
+      const res = await apiClient.post('/auth/update-password', {
+        email: email,
+        token: token,
+        password: password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        return { success: false, message: data.error || 'Failed to update password' };
-      }
-
-      return { success: true, message: 'Password updated successfully' };
+      return { success: true, message: res.data.message || 'Password updated successfully' };
     } catch (error) {
       console.error('Password update error:', error);
-      return { success: false, message: 'Failed to update password' };
+      return { 
+        success: false, 
+        message: error.response?.data?.error || error.response?.data?.message || 'Failed to update password' 
+      };
     } finally {
       setLoading(false);
     }

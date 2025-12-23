@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { EyeIcon, EyeOff, UserPlusIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Login = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [mode, setMode] = useState('login'); // Fixed: Start with 'login'
-  const [resetToken, setResetToken] = useState(''); // Added missing state
-  const [resetEmail, setResetEmail] = useState(''); // Added missing state
+  const [mode, setMode] = useState('login');
+  const [resetToken, setResetToken] = useState('');
+  const [resetEmail, setResetEmail] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,6 +19,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
+  
+  // Use ref to track if token has been verified to prevent double verification
+  const tokenVerified = useRef(false);
 
   const { login, signup, resetPassword, updatePassword, loading } = useAuth();
 
@@ -27,8 +30,9 @@ const Login = () => {
     const token = searchParams.get('token');
     const email = searchParams.get('email');
 
-    if (token && email) {
-      // Verify token with backend
+    // Only verify if we have both token and email AND haven't verified yet
+    if (token && email && !tokenVerified.current) {
+      tokenVerified.current = true; // Mark as verified before calling
       verifyResetTokenWithBackend(token, email);
     }
   }, [searchParams]);
@@ -53,11 +57,16 @@ const Login = () => {
         // Token is invalid or expired
         setMessage(data.error || 'Invalid or expired reset link. Please request a new one.');
         setMode('login');
+        // Clear URL params
+        tokenVerified.current = false; // Reset flag if verification failed
+        navigate('/login', { replace: true }); // Use navigate instead of setSearchParams
       }
     } catch (error) {
       console.error('Token verification error:', error);
       setMessage('Failed to verify reset link. Please try again.');
       setMode('login');
+      tokenVerified.current = false; // Reset flag on error
+      navigate('/login', { replace: true });
     }
   };
 
@@ -137,11 +146,11 @@ const Login = () => {
           break;
 
         case 'reset':
-          // Pass token and email for password reset
           result = await updatePassword(formData.password, resetToken, resetEmail);
           if (result.success) {
             setMessage('Password updated successfully! Redirecting to login...');
             setTimeout(() => {
+              // Clear state
               setMode('login');
               setFormData({
                 email: '',
@@ -151,7 +160,9 @@ const Login = () => {
               });
               setResetToken('');
               setResetEmail('');
-              // Clear URL params
+              setMessage('');
+              tokenVerified.current = false; // Reset verification flag
+              // Use navigate to completely change URL without triggering useEffect
               navigate('/login', { replace: true });
             }, 2000);
             return;
@@ -182,11 +193,16 @@ const Login = () => {
     setErrors({});
     setMessage('');
     setFormData({
-      email: newMode === 'reset' ? resetEmail : formData.email,
+      email: newMode === 'reset' ? resetEmail : '',
       password: '',
       confirmPassword: '',
       name: ''
     });
+    // Clear URL params when switching modes manually
+    if (newMode !== 'reset') {
+      tokenVerified.current = false;
+      navigate('/login', { replace: true });
+    }
   };
 
   const renderForm = () => {
@@ -236,6 +252,14 @@ const Login = () => {
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
               )}
+            </div>
+          )}
+
+          {mode === 'reset' && (
+            <div>
+              <p className="text-sm text-gray-600 mb-4">
+                Reset password for: <span className="font-medium">{resetEmail}</span>
+              </p>
             </div>
           )}
 
@@ -316,12 +340,12 @@ const Login = () => {
 
         {message && (
           <div className={`border rounded-lg p-3 ${
-            message.includes('successful') || message.includes('sent')
+            message.includes('successful') || message.includes('sent') || message.includes('Registered')
               ? 'bg-green-50 border-green-200'
               : 'bg-red-50 border-red-200'
           }`}>
             <p className={`text-sm ${
-              message.includes('successful') || message.includes('sent')
+              message.includes('successful') || message.includes('sent') || message.includes('Registered')
                 ? 'text-green-700'
                 : 'text-red-700'
             }`}>

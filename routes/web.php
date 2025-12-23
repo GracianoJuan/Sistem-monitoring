@@ -12,6 +12,20 @@ use Dflydev\DotAccessData\Data;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BulkImportController;
 
+// Auth routes MUST come before any other routes
+// Define them at the very top to prevent being caught by other patterns
+Route::prefix('api/auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    // Email confirmation - must be GET and return redirect or JSON
+    Route::get('/confirm', [AuthController::class, 'confirm'])->name('auth.confirm');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/forgot', [AuthController::class, 'sendReset']);
+    Route::get('/verify-reset', [AuthController::class, 'verifyReset']);
+    Route::post('/update-password', [AuthController::class, 'updatePassword']);
+    Route::get('/me', [AuthController::class, 'me']);
+});
+
 Route::get('/', function () {
     return view('app');
 });
@@ -56,22 +70,7 @@ Route::prefix('api')->group(function () {
     });
 });
 
-// Auth routes (public)
-Route::prefix('api/auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/confirm', [AuthController::class, 'confirm']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/forgot', [AuthController::class, 'sendReset']);
-    Route::get('/verify-reset', [AuthController::class, 'verifyReset']);
-    Route::post('/update-password', [AuthController::class, 'updatePassword']);
-    Route::get('/me', [AuthController::class, 'me']);
-    
-
-});
-
-
-
+// Catch-all route MUST be last
 Route::get('{any}', function () {
     return view('app');
 })->where('any', '.*');

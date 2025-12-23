@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 const numFormat = {
     percent: '0%',
     currency: '"Rp" #,##0',
+    number: '#,##0.00',
     date: 'dd-mmm-yyyy'
 };
 
@@ -47,17 +48,16 @@ const ExportButton = ({ data, fileName, fields, showAlert }) => {
 
 const formatCellValue = (value, field) => {
     // Handle null/undefined
-    if (value === null || value === undefined) return '';
+    if (value === null || value === undefined || value === '') return '';
 
     // Handle boolean
     if (field.type === 'boolean') {
         return value === true || value === 'true' || value === 1 ? 'Sudah' : 'Belum';
     }
 
-    // Handle date
+    // Handle date - return as Date object for Excel to format
     if (field.type === 'date') {
         if (!value) return '';
-        // Return as Date object for Excel to format
         const date = dayjs(value);
         return date.isValid() ? date.toDate() : value;
     }
@@ -68,15 +68,14 @@ const formatCellValue = (value, field) => {
         return isNaN(numValue) ? 0 : numValue / 100;
     }
 
-    // Handle currency/number
-    if (field.type === 'currency' && field.type === 'number') {
+    // Handle currency/number - return as number for Excel formatting
+    if (field.note === 'currency' || field.type === 'number') {
         const numValue = parseFloat(value);
         return isNaN(numValue) ? 0 : numValue;
     }
 
     // Handle textarea - preserve line breaks
     if (field.type === 'textarea' && typeof value === 'string') {
-        // Return as is - Excel will handle the line breaks
         return value;
     }
 
@@ -86,7 +85,6 @@ const formatCellValue = (value, field) => {
 
 const newWorksheet = (data, name, fields, workbook) => {
     const worksheet = workbook.addWorksheet(name);
-
     const processedData = data;
 
     if (!processedData || processedData.length === 0) return worksheet;
@@ -97,7 +95,7 @@ const newWorksheet = (data, name, fields, workbook) => {
         worksheet.addRow(headers);
 
         // Add data rows
-        processedData.forEach((item, rowIndex) => {
+        processedData.forEach((item) => {
             const rowData = fields.map(field => formatCellValue(item[field.key], field));
             const row = worksheet.addRow(rowData);
 
@@ -105,6 +103,7 @@ const newWorksheet = (data, name, fields, workbook) => {
             fields.forEach((field, colIndex) => {
                 const cell = row.getCell(colIndex + 1);
                 
+                // Apply number format
                 if (field.note === 'percent') {
                     cell.numFmt = numFormat.percent;
                 } else if (field.note === 'currency') {
@@ -112,7 +111,7 @@ const newWorksheet = (data, name, fields, workbook) => {
                 } else if (field.type === 'date') {
                     cell.numFmt = numFormat.date;
                 } else if (field.type === 'number') {
-                    cell.numFmt = '#,##0';
+                    cell.numFmt = numFormat.number;
                 }
 
                 // Enable text wrapping for textarea fields
@@ -163,7 +162,7 @@ const newWorksheet = (data, name, fields, workbook) => {
         
         // For textarea fields, set a reasonable max width
         if (fields && fields[colIndex] && fields[colIndex].type === 'textarea') {
-            column.width = Math.min(maxLength + 2, 50); // Max width of 50 for textarea
+            column.width = Math.min(maxLength + 2, 50);
         } else {
             column.width = maxLength < 10 ? 10 : maxLength + 2;
         }
@@ -173,7 +172,7 @@ const newWorksheet = (data, name, fields, workbook) => {
             const field = fields[colIndex];
             column.eachCell({ includeEmpty: false }, (cell, rowNumber) => {
                 if (rowNumber > 1) { // Skip header
-                    if (field.type === 'percent' || field.type === 'currency' || field.type === 'number') {
+                    if (field.note === 'percent' || field.note === 'currency' || field.type === 'number') {
                         cell.alignment = { horizontal: 'right', vertical: 'middle' };
                     } else if (field.type === 'date' || field.type === 'boolean') {
                         cell.alignment = { horizontal: 'center', vertical: 'middle' };
