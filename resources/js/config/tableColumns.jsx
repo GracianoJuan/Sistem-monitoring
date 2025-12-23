@@ -87,6 +87,10 @@ export const createPengadaanColumns = (canEdit ,onEdit, onDelete, onView) => [
       }).format(getValue())
       : '-',
   }),
+  columnHelper.accessor('keterangan_rab', {
+    header: 'Keterangan RAB',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
     columnHelper.accessor('hpe', {
       header: 'HPE',
       cell: ({ getValue }) => getValue()
@@ -95,6 +99,10 @@ export const createPengadaanColumns = (canEdit ,onEdit, onDelete, onView) => [
           currency: 'IDR'
         }).format(getValue())
         : '-',
+  }),
+  columnHelper.accessor('keterangan_hpe', {
+    header: 'Keterangan HPE',
+    cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('saving_hpe', {
     header: 'Saving HPE',
@@ -134,6 +142,10 @@ export const createPengadaanColumns = (canEdit ,onEdit, onDelete, onView) => [
         currency: 'IDR'
       }).format(getValue())
       : '-',
+  }),
+  columnHelper.accessor('keterangan_nilai_kontrak', {
+    header: 'Keterangan Nilai Kontrak',
+    cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('mulai_kontrak', {
     header: 'Mulai Kontrak',
@@ -277,6 +289,10 @@ export const createAmandemenColumns = (canEdit, onEdit, onDelete, onView) => [
       }).format(getValue())
       : '-',
   }),
+  columnHelper.accessor('keterangan_rab_amandemen', {
+    header: 'Keterangan RAB Amandemen',
+    cell: ({ getValue }) => getValue() || '-',
+  }),
   columnHelper.accessor('no_amandemen', {
     header: 'Nomor Amandemen',
     cell: ({ getValue }) => getValue() || '-',
@@ -294,6 +310,10 @@ export const createAmandemenColumns = (canEdit, onEdit, onDelete, onView) => [
         currency: 'IDR'
       }).format(getValue())
       : '-',
+  }),
+  columnHelper.accessor('keterangan_nilai_amandemen', {
+    header: 'Keterangan Nilai Amandemen',
+    cell: ({ getValue }) => getValue() || '-',
   }),
   columnHelper.accessor('progress', {
     header: 'Progress',

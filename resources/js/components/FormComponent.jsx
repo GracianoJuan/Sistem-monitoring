@@ -96,7 +96,20 @@ const FormComponent = ({ item, mode, fields, onSubmit, onCancel, loading = false
     }
   }
 
+  // Handle textarea input with proper line break support
+  const handleTextareaChange = (e, fieldKey) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, [fieldKey]: value }));
+  };
 
+  // Handle textarea keydown to allow Enter key for new lines
+  const handleTextareaKeyDown = (e) => {
+    // Allow Enter key to create new lines (don't submit form)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      // Let the default behavior happen (new line)
+      e.stopPropagation();
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,11 +123,14 @@ const FormComponent = ({ item, mode, fields, onSubmit, onCancel, loading = false
             {field.type === 'textarea' ? (
               <textarea
                 value={formData[field.key]}
-                onChange={(e) => setFormData(prev => ({ ...prev, [field.key]: e.target.value }))}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
+                onChange={(e) => handleTextareaChange(e, field.key)}
+                onKeyDown={handleTextareaKeyDown}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y ${errors[field.key] ? 'border-red-500' : 'border-gray-300'
                   }`}
                 rows={4}
                 required={field.required}
+                placeholder="Press Enter for new line"
+                style={{ whiteSpace: 'pre-wrap' }}
               />
             ) : field.type === 'select' ? (
               <select

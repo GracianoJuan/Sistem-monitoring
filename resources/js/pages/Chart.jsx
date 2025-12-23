@@ -287,46 +287,58 @@ const ChartPage = () => {
     ];
 
     return (
-    <div className="p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row gap-6">
-                {/* LEFT COLUMN */}
-                <div className="flex-1 space-y-6">
-                    {allCharts.filter((_, i) => i % 2 === 0).map((item, index) => {
-                        const originalIndex = index * 2;
-                        return (
-                            <CollapsiblePanel 
-                                key={originalIndex}
-                                title={item.title}
-                                isOpen={openPanels[originalIndex] || false}
-                                onToggle={() => togglePanel(originalIndex)}
-                            >
-                                {item.chart}
-                            </CollapsiblePanel>
-                        );
-                    })}
-                </div>
+        <div className="p-4 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+                {/* per year chart */}
+                {/* {availableYears.length > 0 ? (
+                    availableYears.map(year => (
+                        <option key={year} value={year}>
+                            Tahun {year}
+                        </option>
+                    ))
+                ) : (
+                    <option value={dayjs().year()}>
+                        Tahun {dayjs().year()}
+                    </option>
+                )} */}
+                <div className="flex flex-col lg:flex-row gap-6">
+                    {/* LEFT COLUMN */}
+                    <div className="flex-1 space-y-6">
+                        {allCharts.filter((_, i) => i % 2 === 0).map((item, index) => {
+                            const originalIndex = index * 2;
+                            return (
+                                <CollapsiblePanel
+                                    key={originalIndex}
+                                    title={item.title}
+                                    isOpen={openPanels[originalIndex] || false}
+                                    onToggle={() => togglePanel(originalIndex)}
+                                >
+                                    {item.chart}
+                                </CollapsiblePanel>
+                            );
+                        })}
+                    </div>
 
-                {/* RIGHT COLUMN */}
-                <div className="flex-1 space-y-6">
-                    {allCharts.filter((_, i) => i % 2 === 1).map((item, index) => {
-                        const originalIndex = (index * 2) + 1;
-                        return (
-                            <CollapsiblePanel 
-                                key={originalIndex}
-                                title={item.title}
-                                isOpen={openPanels[originalIndex] || false}
-                                onToggle={() => togglePanel(originalIndex)}
-                            >
-                                {item.chart}
-                            </CollapsiblePanel>
-                        );
-                    })}
+                    {/* RIGHT COLUMN */}
+                    <div className="flex-1 space-y-6">
+                        {allCharts.filter((_, i) => i % 2 === 1).map((item, index) => {
+                            const originalIndex = (index * 2) + 1;
+                            return (
+                                <CollapsiblePanel
+                                    key={originalIndex}
+                                    title={item.title}
+                                    isOpen={openPanels[originalIndex] || false}
+                                    onToggle={() => togglePanel(originalIndex)}
+                                >
+                                    {item.chart}
+                                </CollapsiblePanel>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
 };
 
 export default ChartPage;

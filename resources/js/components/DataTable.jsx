@@ -21,6 +21,12 @@ const DataTable = ({ data, columns, loading }) => {
         return wrapColumns.includes(columnId);
     };
 
+    // Check if column should preserve line breaks (for textarea fields)
+    const shouldPreserveLineBreaks = (columnId) => {
+        const textareaColumns = ['keterangan', 'catatan', 'notes', 'description', 'alamat', 'address'];
+        return textareaColumns.includes(columnId);
+    };
+
     const table = useReactTable({
         data: data || [],
         columns,
@@ -158,9 +164,17 @@ const DataTable = ({ data, columns, loading }) => {
                                                 className={`min-h-[20px] flex items-center ${
                                                     shouldWrapColumn(cell.column.id)
                                                         ? 'break-all whitespace-normal word-break'
+                                                        : shouldPreserveLineBreaks(cell.column.id)
+                                                        ? 'whitespace-pre-wrap break-words'
                                                         : ''
                                                 }`}
-                                                style={shouldWrapColumn(cell.column.id) ? { wordBreak: 'break-all' } : {}}
+                                                style={
+                                                    shouldWrapColumn(cell.column.id) 
+                                                        ? { wordBreak: 'break-all' }
+                                                        : shouldPreserveLineBreaks(cell.column.id)
+                                                        ? { whiteSpace: 'pre-wrap', wordBreak: 'break-word' }
+                                                        : {}
+                                                }
                                             >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </div>

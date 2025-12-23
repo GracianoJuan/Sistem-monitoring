@@ -24,9 +24,11 @@ class Amandemen extends Model
         'tgl_spa',
         'tgl_tanggapan',
         'rab_amandemen',
+        'keterangan_rab_amandemen',
         'no_amandemen',
         'tgl_amandemen',
         'nilai_amandemen',
+        'keterangan_nilai_amandemen',
         'progress',
         'status',
         'keterangan',
@@ -40,7 +42,7 @@ class Amandemen extends Model
         'tgl_spa' => 'date',
         'tgl_tanggapan' => 'date',
         'tgl_amandemen' => 'date',
-        'nilai_kontrak' => 'integer',  // Changed from bigInteger to integer
+        'nilai_kontrak' => 'integer', 
         'rab_amandemen' => 'integer',
         'nilai_amandemen' => 'integer'
     ];

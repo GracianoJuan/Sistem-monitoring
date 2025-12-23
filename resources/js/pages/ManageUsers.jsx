@@ -154,6 +154,7 @@ const ManageUsers = ({ handleLogout }) => {
             </div>
           </div>
         </div>
+        
 
         {/* Users Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -205,22 +206,25 @@ const ManageUsers = ({ handleLogout }) => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleEditRole(user)}
-                            className="inline-flex items-center space-x-1 px-3 py-1 rounded text-blue-600 hover:bg-blue-50 transition-colors"
-                            title="Edit Role"
-                          >
-                            <Edit2 size={16} />
-                            <span className="text-xs">Edit</span>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(user)}
-                            className="inline-flex items-center space-x-1 px-3 py-1 rounded text-red-600 hover:bg-red-50 transition-colors"
-                            title="Delete User"
-                          >
-                            <Trash2 size={16} />
-                            <span className="text-xs">Delete</span>
-                          </button>
+                          {
+                            user.role === 'admin' ? null : 
+                            <><button
+                                onClick={() => handleEditRole(user)}
+                                className="inline-flex items-center space-x-1 px-3 py-1 rounded text-blue-600 hover:bg-blue-50 transition-colors"
+                                title="Edit Role"
+                              >
+                                <Edit2 size={16} />
+                                <span className="text-xs">Edit</span>
+                              </button><button
+                                onClick={() => handleDeleteUser(user)}
+                                className="inline-flex items-center space-x-1 px-3 py-1 rounded text-red-600 hover:bg-red-50 transition-colors"
+                                title="Delete User"
+                              >
+                                  <Trash2 size={16} />
+                                  <span className="text-xs">Delete</span>
+                                </button></>
+                          }
+                          
                         </div>
                       </td>
                     </tr>
@@ -255,7 +259,7 @@ const ManageUsers = ({ handleLogout }) => {
             >
               <option value="viewer">Viewer - Can only view data and stats</option>
               <option value="editor">Editor - Can create, edit, delete data</option>
-              <option value="admin">Admin - Full access including user management</option>
+              {/* <option value="admin">Admin - Full access including user management</option> */}
             </select>
             <p className="text-xs text-gray-500 mt-3">
               <strong>Current role:</strong> <span className="font-semibold capitalize">{modalState.user?.role}</span>

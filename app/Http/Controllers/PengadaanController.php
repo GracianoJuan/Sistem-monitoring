@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class PengadaanController extends Controller
 {
-    /**
-     * Validation rules untuk Pengadaan
-     */
     private function validationRules(): array
     {
         return [
@@ -24,7 +21,9 @@ class PengadaanController extends Controller
             'jenis' => 'required|string',
             'metode' => 'required|string',
             'rab' => 'nullable|integer|min:0',
+            'keterangan_rab' => 'nullable|string',
             'hpe' => 'nullable|integer|min:0',
+            'keterangan_hpe' => 'nullable|string',
             'saving_hpe' => 'nullable|integer',
             'tgl_kebutuhan' => 'nullable|date',
             'progress' => 'nullable|string',
@@ -32,6 +31,7 @@ class PengadaanController extends Controller
             'tgl_kontrak' => 'nullable|date',
             'no_perjanjian' => 'nullable|string|max:255',
             'nilai_kontrak' => 'nullable|integer|min:0',
+            'keterangan_nilai_kontrak' => 'nullable|string',
             'mulai_kontrak' => 'nullable|date',
             'akhir_kontrak' => 'nullable|date|after_or_equal:mulai_kontrak',
             'jangka_waktu' => 'nullable|string',
@@ -45,14 +45,36 @@ class PengadaanController extends Controller
         ];
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $pengadaan = Pengadaan::orderBy('no_bantex', 'asc')->get();
+            $query = Pengadaan::query();
+            
+            // Filter by year if provided
+            if ($request->has('year') && $request->year) {
+                $query->whereYear('created_at', $request->year);
+            }
+            
+            $pengadaan = $query->orderBy('no_bantex', 'asc')->get();
             return response()->json($pengadaan);
         } catch (\Exception $e) {
             Log::error('Failed to fetch pengadaan: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to fetch data'], 500);
+        }
+    }
+
+    public function getAvailableYears(): JsonResponse
+    {
+        try {
+            $years = Pengadaan::selectRaw('DISTINCT YEAR(created_at) as year')
+                ->whereNotNull('created_at')
+                ->orderBy('year', 'desc')
+                ->pluck('year');
+            
+            return response()->json($years);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch available years: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch years'], 500);
         }
     }
 
@@ -156,14 +178,22 @@ class PengadaanController extends Controller
         }
     }
 
-    public function dataStats(): JsonResponse
+    public function dataStats(Request $request): JsonResponse
     {
         try {
+            $query = Pengadaan::query();
+            
+            // Filter by year if provided
+            if ($request->has('year') && $request->year) {
+                $query->whereYear('created_at', $request->year);
+            }
+            
             // Hitung total progress yang selesai
-            $totalProgress = Pengadaan::whereNotNull('progress')->get();
+            $totalProgress = $query->whereNotNull('progress')->get();
 
             // Hitung total saving dengan query yang lebih efisien
-            $stats = Pengadaan::whereNotNull('rab')
+            $statsQuery = clone $query;
+            $stats = $statsQuery->whereNotNull('rab')
                 ->whereNotNull('nilai_kontrak')
                 ->selectRaw('
                     SUM(rab) as total_rab, 
@@ -171,7 +201,9 @@ class PengadaanController extends Controller
                     SUM(hpe) as total_hpe
                 ')
                 ->first();
-            $statsHpe = Pengadaan::whereNotNull('rab')
+                
+            $statsHpeQuery = clone $query;
+            $statsHpe = $statsHpeQuery->whereNotNull('rab')
                 ->whereNotNull('hpe')
                 ->selectRaw('
                     SUM(rab) as total_rab, 
@@ -193,6 +225,8 @@ class PengadaanController extends Controller
                 ? round((($totalRabHpe - $totalHpe) / $totalRabHpe) * 100, 2)
                 : 0;
 
+            $countQuery = clone $query;
+
             return response()->json([
                 'data' => [
                     'progress_pengadaan' => [
@@ -212,7 +246,7 @@ class PengadaanController extends Controller
                         ['value'=>'Selesai','total'=> $totalProgress->where('progress', 'Selesai')->count()],                        
                     ],
 
-                    'total_pengadaan' => Pengadaan::count(),
+                    'total_pengadaan' => $countQuery->count(),
                     'total_saving_percentage' => $totalSaving,
                     'total_saving_nominal' => $totalRab - $totalKontrak,
                     'total_saving_hpe_percentage' => $totalSavingHpe,

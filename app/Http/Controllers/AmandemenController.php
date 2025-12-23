@@ -15,7 +15,7 @@ class AmandemenController extends Controller
         return [
             'no_bantex' => 'nullable|integer|min:0',
             'no_kontrak' => 'required|string',
-            'tgl_kontrak' => 'required|date',
+            'tgl_kontrak' => 'nullable|date',
             'judul_kontrak' => 'required|string|max:255',
             'nilai_kontrak' => 'nullable|integer|min:0',
             'amandemen_ke' => 'nullable|string',
@@ -25,9 +25,11 @@ class AmandemenController extends Controller
             'tgl_spa' => 'nullable|date',
             'tgl_tanggapan' => 'nullable|date',
             'rab_amandemen' => 'nullable|integer|min:0',
-            'no_amandemen' => 'required|string',
-            'tgl_amandemen' => 'required|date',
+            'keterangan_rab_amandemen' => 'nullable|string',
+            'no_amandemen' => 'nullable|string',
+            'tgl_amandemen' => 'nullable|date',
             'nilai_amandemen' => 'nullable|integer|min:0',
+            'keterangan_nilai_amandemen' => 'nullable|string',
             'progress' => 'nullable|string',
             'status' => 'nullable|string',
             'keterangan' => 'nullable|string',
@@ -35,14 +37,36 @@ class AmandemenController extends Controller
         ];
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $amandemen = Amandemen::orderBy('no_bantex', 'asc')->get();
+            $query = Amandemen::query();
+            
+            // Filter by year if provided
+            if ($request->has('year') && $request->year) {
+                $query->whereYear('created_at', $request->year);
+            }
+            
+            $amandemen = $query->orderBy('no_bantex', 'asc')->get();
             return response()->json($amandemen);
         } catch (\Exception $e) {
-            Log::error('Failed to fetch pengadaan: ' . $e->getMessage());
+            Log::error('Failed to fetch amandemen: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to fetch data'], 500);
+        }
+    }
+
+    public function getAvailableYears(): JsonResponse
+    {
+        try {
+            $years = Amandemen::selectRaw('DISTINCT YEAR(created_at) as year')
+                ->whereNotNull('created_at')
+                ->orderBy('year', 'desc')
+                ->pluck('year');
+            
+            return response()->json($years);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch available years: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch years'], 500);
         }
     }
 
@@ -56,7 +80,7 @@ class AmandemenController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Failed to create pengadaan: ' . $e->getMessage());
+            Log::error('Failed to create amandemen: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to create data'], 500);
         }
     }
@@ -80,7 +104,7 @@ class AmandemenController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            Log::error('Failed to update pengadaan: ' . $e->getMessage());
+            Log::error('Failed to update amandemen: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to update data'], 500);
         }
     }
@@ -106,7 +130,7 @@ class AmandemenController extends Controller
                 'message' => 'Data not found'
             ], 404);
         } catch (\Exception $e) {
-            Log::error('Failed to delete pengadaan', [
+            Log::error('Failed to delete amandemen', [
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);

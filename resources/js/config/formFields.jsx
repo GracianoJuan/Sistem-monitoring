@@ -14,7 +14,9 @@ export const pengadaanFormFields = [
     'Pengadaan Langsung','Penunjukan Langsung', 'Tender Terbatas', 'Seleksi Terbatas', 'Tender Umum', 'Seleksi Umum'
   ], required: true },
   { key: 'rab', label: 'Nilai RAB (Exclude PPN)', type: 'number', note: 'currency'},
+  { key: 'keterangan_rab', label: 'Keterangan RAB', type: 'textarea'},
   { key: 'hpe', label: 'HPE', type: 'number', note: 'currency'},
+  { key: 'keterangan_hpe', label: 'Keterangan HPE', type: 'textarea'},
   { key: 'saving_hpe', label: 'Saving HPE', type: 'number', note: 'percent'},
   { key: 'tgl_kebutuhan', label: 'Tanggal Kebutuhan', type: 'date'},
   { key: 'progress', label: 'Progress', type: 'select', options: [
@@ -25,6 +27,7 @@ export const pengadaanFormFields = [
   { key: 'tgl_kontrak', label: 'Tanggal Kontrak/ SPK', type: 'date'},
   { key: 'no_perjanjian', label: 'Nomor Perjanjian/SPK', type: 'textarea', required: true },
   { key: 'nilai_kontrak', label: 'Nilai Kontrak (exc PPN)', type: 'number', note: 'currency'},
+  { key: 'keterangan_nilai_kontrak', label: 'Keterangan Nilai Kontrak', type: 'textarea'},
   { key: 'mulai_kontrak', label: 'Mulai Kontrakk', type:'date'},
   { key: 'akhir_kontrak', label: 'Akhir Kontrak', type:'date'},
   { key: 'jangka_waktu', label: 'Jangka waktu'},
@@ -39,9 +42,9 @@ export const pengadaanFormFields = [
 
 export const amandemenFormFields = [
   { key: 'no_bantex', label: 'Nomor Bantex', type:'number'},
-  { key: 'no_kontrak', label: 'Nomor Kontrak/SPK', type:'textarea', required: true },
-  { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date', required: true},
-  { key: 'judul_kontrak', label: 'Judul Kontrak/SPK', required: true },
+  { key: 'no_kontrak', label: 'Nomor Kontrak/SPK', type:'textarea'},
+  { key: 'tgl_kontrak', label: 'Tanggal Kontrak', type: 'date'},
+  { key: 'judul_kontrak', label: 'Judul Kontrak/SPK', type:'textarea', required: true },
   { key: 'nilai_kontrak', label: 'Nilai Kontrak/SPK', type: 'number', note: 'currency'},
   { key: 'amandemen_ke', label: 'Amendemen Ke', required: true },
   { key: 'vendor', label: 'Vendor', required: true },
@@ -50,9 +53,11 @@ export const amandemenFormFields = [
   { key: 'tgl_spa', label: 'Tanggal Surat Permintaan Amendemen', type: 'date'},
   { key: 'tgl_tanggapan', label: 'Tanggal Tanggapan (Surat/Notulen)', type: 'date'},
   { key: 'rab_amandemen', label: 'Nilai RAB (untuk kerja tambah/kurang) exclude PPN', type: 'number', note: 'currency' },
-  { key: 'no_amandemen', label: 'Nomor Amandemen', required: true},
-  { key: 'tgl_amandemen', label: 'Tanggal Amandemen', type: 'date', required:true },
+  { key: 'keterangan_rab_amandemen', label: 'Keterangan RAB Amandemen', type: 'textarea'},
+  { key: 'no_amandemen', label: 'Nomor Amandemen'},
+  { key: 'tgl_amandemen', label: 'Tanggal Amandemen', type: 'date'},
   { key: 'nilai_amandemen', label: 'Nilai Amandemen exclude PPN', type: 'number' , note: 'currency'},
+  { key: 'keterangan_nilai_amandemen', label: 'Keterangan Nilai Amandemen', type: 'textarea'},
   { key: 'progress', label: 'Progress', type: 'select', options: [
     'Evaluasi Usulan Amendemen', 'Negosiasi', 'Draft Amandemen', 'Tandatangan', 'Selesai'
   ] },

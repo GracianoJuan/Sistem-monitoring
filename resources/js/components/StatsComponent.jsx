@@ -11,8 +11,6 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-
-
 const StatsComponent = (rawData) => {
     const options = {
         indexAxis: 'y',
@@ -20,11 +18,16 @@ const StatsComponent = (rawData) => {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'top',
+                display: false
             },
             title: {
                 display: true,
                 text: 'Progress Pengadaan',
+                font: {
+                    size: 16,
+                    weight: 'bold'
+                },
+                color: '#111827'
             },
         },
         scales: {
@@ -34,56 +37,86 @@ const StatsComponent = (rawData) => {
                 ticks: {
                     stepSize: 1,
                     autoSkip: true
+                },
+                grid: {
+                    color: '#f3f4f6'
                 }
-
+            },
+            y: {
+                grid: {
+                    display: false
+                }
             }
         }
-    }
+    };
+
     const labels = rawData.data.progress_pengadaan.map(item => item.value);
     const data = rawData.data.progress_pengadaan.map(item => item.total);
+    
     const chartData = {
         labels,
         datasets: [
             {
                 label: 'Jumlah Pengadaan',
                 data: data,
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                backgroundColor: '#111827',
+                borderRadius: 4,
+                barThickness: 20
             },
         ],
     };
 
     return (
-        <div className='p-2 border-0 mb-2'>
-            <div className='md:grid md:grid-cols-2 gap-4 text-center text-lg font-semibold'>
-
-                <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
-                    Total Saving RAB vs Nilai Kontrak <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
-                        style: 'percent'
-                    }).format(rawData.data.total_saving_percentage / 100)}</span>
-                    <span>
+        <div className='mb-6'>
+            {/* Stats Cards */}
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+                <div className='bg-white shadow-sm border border-gray-200 rounded-lg p-6'>
+                    <h3 className='text-sm font-medium text-gray-600 mb-2'>
+                        Total Saving RAB vs Nilai Kontrak
+                    </h3>
+                    <div className='text-5xl font-bold text-gray-900 mb-2'>
                         {new Intl.NumberFormat('en-EN', {
+                            style: 'percent',
+                            minimumFractionDigits: 2
+                        }).format(rawData.data.total_saving_percentage / 100)}
+                    </div>
+                    <div className='text-sm text-gray-600 font-medium'>
+                        {new Intl.NumberFormat('id-ID', {
                             style: 'currency',
-                            currency: 'IDR'
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
                         }).format(rawData.data.total_saving_nominal)}
-                    </span>
+                    </div>
                 </div>
-                <div className='bg-gray-200 shadow-md border-gray-300 rounded-md p-4 border-1'>
-                    Total Saving RAB vs HPE <span className='block text-7xl'>{new Intl.NumberFormat('en-EN', {
-                        style: 'percent'
-                    }).format(rawData.data.total_saving_hpe_percentage / 100)}</span>
-                    <span>
+
+                <div className='bg-white shadow-sm border border-gray-200 rounded-lg p-6'>
+                    <h3 className='text-sm font-medium text-gray-600 mb-2'>
+                        Total Saving RAB vs HPE
+                    </h3>
+                    <div className='text-5xl font-bold text-gray-900 mb-2'>
                         {new Intl.NumberFormat('en-EN', {
+                            style: 'percent',
+                            minimumFractionDigits: 2
+                        }).format(rawData.data.total_saving_hpe_percentage / 100)}
+                    </div>
+                    <div className='text-sm text-gray-600 font-medium'>
+                        {new Intl.NumberFormat('id-ID', {
                             style: 'currency',
-                            currency: 'IDR'
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
                         }).format(rawData.data.total_saving_hpe_nominal)}
-                    </span>
+                    </div>
                 </div>
-            </div>
-            <div className="h-100">
-                <Bar options={options} data={chartData}></Bar>
             </div>
 
+            {/* Progress Chart */}
+            <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+                <div className="h-96">
+                    <Bar options={options} data={chartData} />
+                </div>
+            </div>
         </div>
-    )
-}
+    );
+};
+
 export default StatsComponent;

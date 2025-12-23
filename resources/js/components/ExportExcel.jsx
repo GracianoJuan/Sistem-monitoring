@@ -74,6 +74,12 @@ const formatCellValue = (value, field) => {
         return isNaN(numValue) ? 0 : numValue;
     }
 
+    // Handle textarea - preserve line breaks
+    if (field.type === 'textarea' && typeof value === 'string') {
+        // Return as is - Excel will handle the line breaks
+        return value;
+    }
+
     // Default: return as string
     return value;
 };
@@ -81,8 +87,7 @@ const formatCellValue = (value, field) => {
 const newWorksheet = (data, name, fields, workbook) => {
     const worksheet = workbook.addWorksheet(name);
 
-    // Only slice if data has more than 2 items
-    const processedData = data.length > 2 ? data.slice(1, -2) : data;
+    const processedData = data;
 
     if (!processedData || processedData.length === 0) return worksheet;
 
@@ -108,6 +113,15 @@ const newWorksheet = (data, name, fields, workbook) => {
                     cell.numFmt = numFormat.date;
                 } else if (field.type === 'number') {
                     cell.numFmt = '#,##0';
+                }
+
+                // Enable text wrapping for textarea fields
+                if (field.type === 'textarea') {
+                    cell.alignment = { 
+                        wrapText: true, 
+                        vertical: 'top', 
+                        horizontal: 'left' 
+                    };
                 }
             });
         });
@@ -146,7 +160,13 @@ const newWorksheet = (data, name, fields, workbook) => {
             const len = cell.value ? cell.value.toString().length : 10;
             if (len > maxLength) maxLength = len;
         });
-        column.width = maxLength < 10 ? 10 : maxLength + 2;
+        
+        // For textarea fields, set a reasonable max width
+        if (fields && fields[colIndex] && fields[colIndex].type === 'textarea') {
+            column.width = Math.min(maxLength + 2, 50); // Max width of 50 for textarea
+        } else {
+            column.width = maxLength < 10 ? 10 : maxLength + 2;
+        }
 
         // Set alignment for data cells based on type
         if (fields && fields[colIndex]) {
@@ -157,6 +177,12 @@ const newWorksheet = (data, name, fields, workbook) => {
                         cell.alignment = { horizontal: 'right', vertical: 'middle' };
                     } else if (field.type === 'date' || field.type === 'boolean') {
                         cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    } else if (field.type === 'textarea') {
+                        cell.alignment = { 
+                            wrapText: true, 
+                            vertical: 'top', 
+                            horizontal: 'left' 
+                        };
                     } else {
                         cell.alignment = { horizontal: 'left', vertical: 'middle' };
                     }

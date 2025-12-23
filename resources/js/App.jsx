@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ManageUsers from './pages/ManageUsers';
+import ExcelImport from './pages/ExcelImport';
 import SidebarComponent from './layout/Sidebar';
 import { useRole } from './contexts/RoleContext';
 import ChartPage from './pages/Chart';
@@ -43,6 +44,7 @@ function App() {
 
   const canEdit = userRole === 'admin' || userRole === 'editor';
 
+  // penyakit loading state
   if (authLoading || roleLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -86,6 +88,22 @@ function App() {
                       </div>
                     )
                   }
+                />
+
+                <Route 
+                  path="/import" 
+                  element={
+                    canEdit ? (
+                      <ExcelImport />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center">
+                          <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
+                          <p className="text-gray-600">You don't have permission to import data.</p>
+                        </div>
+                      </div>
+                    )
+                  } 
                 />
 
                 <Route path="/chart" element={<ChartPage />} />

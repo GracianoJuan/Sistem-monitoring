@@ -12,10 +12,7 @@ return new class extends Migration
             $table->id();
             $table->integer('no_bantex')->nullable();
             $table->string('no_kontrak');
-            $table->date('tgl_kontrak')->index();
-            $table->unsignedSmallInteger('tahun_kontrak')
-                ->storedAs('YEAR(tgl_kontrak)')
-                ->index();
+            $table->date('tgl_kontrak')->nullable();
             $table->string('judul_kontrak');
             $table->bigInteger('nilai_kontrak')->nullable();
             $table->string('amandemen_ke');
@@ -25,13 +22,16 @@ return new class extends Migration
             $table->date('tgl_spa')->nullable();
             $table->date('tgl_tanggapan')->nullable();
             $table->bigInteger('rab_amandemen')->nullable();
-            $table->string('no_amandemen');
+            $table->string('keterangan_rab_amandemen')->nullable();
+            $table->string('no_amandemen')->nullable();
             $table->date('tgl_amandemen')->nullable();
             $table->bigInteger('nilai_amandemen')->nullable();
+            $table->string('keterangan_nilai_amandemen')->nullable();
             $table->string('progress')->nullable();
             $table->string('status')->nullable();
             $table->string('keterangan')->nullable();
             $table->string('pic')->nullable();
+            $table->unsignedSmallInteger('tahun')->storedAs('YEAR(created_at)')->index();
             $table->timestamps();
         });
     }

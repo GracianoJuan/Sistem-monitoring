@@ -6,7 +6,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 const Login = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [mode, setMode] = useState('login'); // 'login', 'signup', 'forgot', 'reset'
+  const [mode, setMode] = useState('login'); // Fixed: Start with 'login'
+  const [resetToken, setResetToken] = useState(''); // Added missing state
+  const [resetEmail, setResetEmail] = useState(''); // Added missing state
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,21 +20,53 @@ const Login = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
 
-  const { login, signup, resetPassword, updatePassword, loading, isRecoveryMode } = useAuth();
+  const { login, signup, resetPassword, updatePassword, loading } = useAuth();
 
-  // Check if user arrived via password reset link
+  // Verify reset token on component mount
   useEffect(() => {
-    if (isRecoveryMode) {
-      setMode('reset');
+    const token = searchParams.get('token');
+    const email = searchParams.get('email');
+
+    if (token && email) {
+      // Verify token with backend
+      verifyResetTokenWithBackend(token, email);
     }
-  }, [isRecoveryMode]);
+  }, [searchParams]);
+
+  const verifyResetTokenWithBackend = async (token, email) => {
+    try {
+      const response = await fetch(`/api/auth/verify-reset?token=${token}&email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.message === 'Token valid') {
+        // Token is valid, switch to reset mode
+        setMode('reset');
+        setResetToken(token);
+        setResetEmail(email);
+        setFormData(prev => ({ ...prev, email: email }));
+        setMessage('');
+      } else {
+        // Token is invalid or expired
+        setMessage(data.error || 'Invalid or expired reset link. Please request a new one.');
+        setMode('login');
+      }
+    } catch (error) {
+      console.error('Token verification error:', error);
+      setMessage('Failed to verify reset link. Please try again.');
+      setMode('login');
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-    
+
     if (errors[field]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -40,14 +74,13 @@ const Login = () => {
         return newErrors;
       });
     }
-    
+
     if (message) setMessage('');
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
-    // Email validation (not needed for reset mode)
+
     if (mode !== 'reset') {
       if (!formData.email) {
         newErrors.email = 'Email is required';
@@ -55,16 +88,14 @@ const Login = () => {
         newErrors.email = 'Email is invalid';
       }
     }
-    
-    // Password validation
+
     if (mode !== 'forgot') {
       if (!formData.password) {
         newErrors.password = 'Password is required';
       } else if (formData.password.length < 6) {
         newErrors.password = 'Password must be at least 6 characters';
       }
-      
-      // Additional validations for signup and reset
+
       if (mode === 'signup' || mode === 'reset') {
         if (!formData.confirmPassword) {
           newErrors.confirmPassword = 'Please confirm your password';
@@ -73,41 +104,41 @@ const Login = () => {
         }
       }
 
-      // Name validation for signup only
       if (mode === 'signup') {
         if (!formData.name) {
           newErrors.name = 'Name is required';
         }
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     try {
       let result;
-      
+
       switch (mode) {
         case 'login':
           result = await login(formData.email, formData.password);
           break;
-          
+
         case 'signup':
           result = await signup(formData.email, formData.password, formData.name);
           break;
-          
+
         case 'forgot':
           result = await resetPassword(formData.email);
           break;
 
         case 'reset':
-          result = await updatePassword(formData.password);
+          // Pass token and email for password reset
+          result = await updatePassword(formData.password, resetToken, resetEmail);
           if (result.success) {
             setMessage('Password updated successfully! Redirecting to login...');
             setTimeout(() => {
@@ -118,12 +149,16 @@ const Login = () => {
                 confirmPassword: '',
                 name: ''
               });
+              setResetToken('');
+              setResetEmail('');
+              // Clear URL params
+              navigate('/login', { replace: true });
             }, 2000);
             return;
           }
           break;
       }
-      
+
       if (result.success) {
         if (mode === 'signup' && result.needsConfirmation) {
           setMessage(result.message);
@@ -135,7 +170,7 @@ const Login = () => {
       } else {
         setMessage(result.message);
       }
-      
+
     } catch (error) {
       console.error('Form submission error:', error);
       setMessage('An unexpected error occurred. Please try again.');
@@ -147,7 +182,7 @@ const Login = () => {
     setErrors({});
     setMessage('');
     setFormData({
-      email: formData.email,
+      email: newMode === 'reset' ? resetEmail : formData.email,
       password: '',
       confirmPassword: '',
       name: ''
@@ -156,11 +191,11 @@ const Login = () => {
 
   const renderForm = () => {
     return (
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
               </label>
               <input
@@ -169,9 +204,9 @@ const Login = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
+                className={`appearance-none relative block w-full px-4 py-2.5 border ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+                } placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm`}
                 placeholder="Enter your full name"
                 required
               />
@@ -183,7 +218,7 @@ const Login = () => {
 
           {mode !== 'reset' && (
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
               </label>
               <input
@@ -192,9 +227,9 @@ const Login = () => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
+                className={`appearance-none relative block w-full px-4 py-2.5 border ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+                } placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm`}
                 placeholder="Enter your email"
                 required
               />
@@ -203,23 +238,23 @@ const Login = () => {
               )}
             </div>
           )}
-          
+
           {mode !== 'forgot' && (
             <>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                   {mode === 'reset' ? 'New Password' : 'Password'}
                 </label>
-                <div className="relative mt-1">
+                <div className="relative">
                   <input
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`appearance-none relative block w-full px-3 py-2 pr-10 border ${
+                    className={`appearance-none relative block w-full px-4 py-2.5 pr-10 border ${
                       errors.password ? 'border-red-500' : 'border-gray-300'
-                    } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+                    } placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm`}
                     placeholder={mode === 'reset' ? 'Enter new password' : 'Enter your password'}
                     required
                   />
@@ -242,19 +277,19 @@ const Login = () => {
 
               {(mode === 'signup' || mode === 'reset') && (
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                     Confirm Password
                   </label>
-                  <div className="relative mt-1">
+                  <div className="relative">
                     <input
                       id="confirmPassword"
                       name="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={formData.confirmPassword}
                       onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                      className={`mt-1 appearance-none relative block w-full px-3 py-2 pr-10 border ${
+                      className={`appearance-none relative block w-full px-4 py-2.5 pr-10 border ${
                         errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                      } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+                      } placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm`}
                       placeholder="Confirm your password"
                       required
                     />
@@ -280,15 +315,15 @@ const Login = () => {
         </div>
 
         {message && (
-          <div className={`border rounded-md p-3 ${
-            message.includes('successful') || message.includes('sent') 
-              ? 'bg-green-50 border-green-200' 
+          <div className={`border rounded-lg p-3 ${
+            message.includes('successful') || message.includes('sent')
+              ? 'bg-green-50 border-green-200'
               : 'bg-red-50 border-red-200'
           }`}>
             <p className={`text-sm ${
               message.includes('successful') || message.includes('sent')
-                ? 'text-green-600' 
-                : 'text-red-600'
+                ? 'text-green-700'
+                : 'text-red-700'
             }`}>
               {message}
             </p>
@@ -299,7 +334,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-3xl text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
               <div className="flex items-center">
@@ -329,10 +364,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-lg w-full space-y-8 border-sm p-8 rounded-2xl shadow-md bg-white">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-sm border border-gray-200">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="text-center text-3xl font-bold text-gray-900">
             {mode === 'login' && 'Sign in to your account'}
             {mode === 'signup' && 'Create your account'}
             {mode === 'forgot' && 'Reset your password'}
@@ -344,7 +379,7 @@ const Login = () => {
             </p>
           )}
         </div>
-        
+
         {renderForm()}
 
         {mode !== 'reset' && (
@@ -354,7 +389,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => switchMode('signup')}
-                  className="text-sm text-blue-600 hover:text-blue-500"
+                  className="text-sm text-gray-900 hover:text-gray-700 font-medium"
                 >
                   Don't have an account? Sign up
                 </button>
@@ -362,28 +397,28 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => switchMode('forgot')}
-                  className="text-sm text-blue-600 hover:text-blue-500"
+                  className="text-sm text-gray-900 hover:text-gray-700 font-medium"
                 >
                   Forgot your password?
                 </button>
               </>
             )}
-            
+
             {mode === 'signup' && (
               <button
                 type="button"
                 onClick={() => switchMode('login')}
-                className="text-sm text-blue-600 hover:text-blue-500"
+                className="text-sm text-gray-900 hover:text-gray-700 font-medium"
               >
                 Already have an account? Sign in
               </button>
             )}
-            
+
             {mode === 'forgot' && (
               <button
                 type="button"
                 onClick={() => switchMode('login')}
-                className="text-sm text-blue-600 hover:text-blue-500"
+                className="text-sm text-gray-900 hover:text-gray-700 font-medium"
               >
                 Remember your password? Sign in
               </button>

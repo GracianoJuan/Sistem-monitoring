@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
     checkUser();
 
-    return () => {};
+    return () => { };
   }, []);
 
   const signup = async (email, password, displayName) => {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       const res = await apiClient.post('/auth/login', { email, password });
       // store access_token from response as fallback (for cross-origin dev)
       if (res.data?.access_token) {
-        try { localStorage.setItem('access_token', res.data.access_token); } catch(e) {}
+        try { localStorage.setItem('access_token', res.data.access_token); } catch (e) { }
       }
       // refresh session
       const me = await apiClient.get('/auth/me');
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setSession(null);
       setIsRecoveryMode(false);
-      try { localStorage.removeItem('access_token'); } catch(e) {}
+      try { localStorage.removeItem('access_token'); } catch (e) { }
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -91,41 +91,69 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ← TAMBAHKAN FUNGSI INI
-  const updatePassword = async (newPassword) => {
+  const verifyResetToken = async (token, email) => {
     try {
-      // Try to get token and email from URL or cookie
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token') || document.cookie.split('; ').find(row => row.startsWith('reset_token='))?.split('=')[1];
-      const email = urlParams.get('email');
-      if (!token || !email) {
-        return { success: false, message: 'Missing reset token or email' };
+      const response = await fetch(`${API_URL}/auth/verify-reset?token=${token}&email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.error || 'Invalid or expired token' };
       }
 
-      const res = await apiClient.post('/auth/reset', { email, token, password: newPassword });
-      if (res.data) {
-        // clear recovery mode
-        setIsRecoveryMode(false);
-        return { success: true, message: res.data.message ?? 'Password updated' };
-      }
-      return { success: false, message: 'Unknown error' };
+      return { success: true, message: 'Token verified' };
     } catch (error) {
-      console.error('Update password error:', error);
-      return { success: false, message: error.response?.data?.message || error.message };
+      console.error('Token verification error:', error);
+      return { success: false, message: 'Failed to verify token' };
+    }
+  };
+
+  const updatePassword = async (password, token, email) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/auth/update-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: email,
+          token: token,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, message: data.error || 'Failed to update password' };
+      }
+
+      return { success: true, message: 'Password updated successfully' };
+    } catch (error) {
+      console.error('Password update error:', error);
+      return { success: false, message: 'Failed to update password' };
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      loading, 
+    <AuthContext.Provider value={{
+      user,
+      session,
+      loading,
       isRecoveryMode,
-      signup, 
-      login, 
-      logout, 
+      signup,
+      login,
+      logout,
       resetPassword,
-      updatePassword // ← EXPORT INI
+      verifyResetToken,
+      updatePassword,
     }}>
       {children}
     </AuthContext.Provider>

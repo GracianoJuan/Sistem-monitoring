@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
+use App\Mail\ConfirmAccountMail;
+use App\Mail\ResetPasswordMail;
 
 class AuthController extends Controller
 {
@@ -40,7 +42,6 @@ class AuthController extends Controller
 
             $user = User::create($attrs);
 
-            // create confirmation token
             $token = Str::random(64);
             DB::table('password_reset_tokens')->insert([
                 'email' => $user->email,
@@ -48,11 +49,8 @@ class AuthController extends Controller
                 'created_at' => Carbon::now()
             ]);
 
-            // send confirmation email
             $confirmUrl = url('/api/auth/confirm?token=' . $token . '&email=' . urlencode($user->email));
-            Mail::raw('Confirm your account: ' . $confirmUrl, function($m) use ($user) {
-                $m->to($user->email)->subject('Confirm your account');
-            });
+            Mail::to($user->email)->send(new ConfirmAccountMail($user->name ?? 'User', $confirmUrl));
 
             DB::commit();
 
@@ -60,7 +58,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Registration error', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Registration failed'], 500);
+            return response()->json(['error' =>  $e->getMessage()], 500);
         }
     }
 
@@ -78,14 +76,12 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid or expired token'], 400);
         }
 
-        // mark user as confirmed by setting email_verified_at
         $user = User::where('email', $email)->first();
         if (!$user) return response()->json(['error' => 'User not found'], 404);
 
         $user->email_verified_at = Carbon::now();
         $user->save();
 
-        // delete the token
         DB::table('password_reset_tokens')->where('email', $email)->delete();
 
         return response()->json(['message' => 'Email confirmed successfully']);
@@ -119,8 +115,7 @@ class AuthController extends Controller
             'last_activity' => time()
         ]);
 
-        // return token in cookie and in response body (for dev / cross-origin fallback)
-        return response()->json(['message' => 'Login successful', 'user' => $user, 'access_token' => $token])->cookie('session_token', $token, 60*24*30, '/', null, false, true);
+        return response()->json(['message' => 'Login successful', 'user' => $user, 'access_token' => $token])->cookie('session_token', $token, 60 * 24 * 7, '/', null, false, true);
     }
 
     public function logout(Request $request)
@@ -139,6 +134,8 @@ class AuthController extends Controller
         $user = User::where('email', $validated['email'])->first();
         if (!$user) return response()->json(['message' => 'If the email exists, a reset link has been sent.']);
 
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+
         $token = Str::random(64);
         DB::table('password_reset_tokens')->insert([
             'email' => $user->email,
@@ -146,18 +143,17 @@ class AuthController extends Controller
             'created_at' => Carbon::now()
         ]);
 
-        $resetUrl = url('/reset?token=' . $token . '&email=' . urlencode($user->email));
-        Mail::raw('Reset your password: ' . $resetUrl, function($m) use ($user) {
-            $m->to($user->email)->subject('Reset your password');
-        });
+        $frontendUrl = env('APP_URL', 'http://localhost:8000');
+        $resetUrl = $frontendUrl . '/login?token=' . $token . '&email=' . urlencode($user->email);
+        
+        Mail::to($user->email)->send(new ResetPasswordMail($user->name ?? 'User', $resetUrl));
 
-        // Also set cookie with token, expires in 1 minute
-        return response()->json(['message' => 'Reset link sent'])->cookie('reset_token', $token, 1, '/', null, false, true);
+        return response()->json(['message' => 'Reset link sent']);
     }
 
     public function verifyReset(Request $request)
     {
-        $token = $request->query('token') ?? $request->cookie('reset_token');
+        $token = $request->query('token');
         $email = $request->query('email');
 
         if (!$token || !$email) return response()->json(['error' => 'Invalid token'], 400);
@@ -166,9 +162,9 @@ class AuthController extends Controller
         if (!$row) return response()->json(['error' => 'Invalid or expired token'], 400);
 
         $created = Carbon::parse($row->created_at);
-        if (Carbon::now()->diffInMinutes($created) > 1) {
+        if (Carbon::now()->diffInMinutes($created) > 60) {
             DB::table('password_reset_tokens')->where('email', $email)->delete();
-            return response()->json(['error' => 'Token expired'], 400)->withoutCookie('reset_token');
+            return response()->json(['error' => 'Token expired'], 400);
         }
 
         return response()->json(['message' => 'Token valid']);
@@ -186,9 +182,9 @@ class AuthController extends Controller
         if (!$row) return response()->json(['error' => 'Invalid token'], 400);
 
         $created = Carbon::parse($row->created_at);
-        if (Carbon::now()->diffInMinutes($created) > 1) {
+        if (Carbon::now()->diffInMinutes($created) > 60) {
             DB::table('password_reset_tokens')->where('email', $validated['email'])->delete();
-            return response()->json(['error' => 'Token expired'], 400)->withoutCookie('reset_token');
+            return response()->json(['error' => 'Token expired'], 400);
         }
 
         $user = User::where('email', $validated['email'])->first();
@@ -199,7 +195,7 @@ class AuthController extends Controller
 
         DB::table('password_reset_tokens')->where('email', $validated['email'])->delete();
 
-        return response()->json(['message' => 'Password updated'])->withoutCookie('reset_token');
+        return response()->json(['message' => 'Password updated']);
     }
 
     public function me(Request $request)
@@ -218,5 +214,4 @@ class AuthController extends Controller
             'user' => $user
         ]], 'error' => null]);
     }
-
 }

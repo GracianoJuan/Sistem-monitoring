@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('jenis');
             $table->string('metode');
             $table->bigInteger('rab')->nullable();
+            $table->string('keterangan_rab')->nullable();
             $table->bigInteger('hpe')->nullable();
+            $table->string('keterangan_hpe')->nullable();
             $table->integer('saving_hpe')->nullable();
             $table->date('tgl_kebutuhan')->nullable();
             $table->string('progress')->nullable();
@@ -26,6 +28,7 @@ return new class extends Migration
             $table->date('tgl_kontrak')->nullable();
             $table->string('no_perjanjian');
             $table->bigInteger('nilai_kontrak')->nullable();
+            $table->string('keterangan_nilai_kontrak')->nullable();
             $table->date('mulai_kontrak')->nullable();
             $table->date('akhir_kontrak')->nullable();
             $table->string('jangka_waktu')->nullable();
@@ -36,7 +39,9 @@ return new class extends Migration
             $table->integer('selisih_hari')->nullable();
             $table->boolean('form_idd')->nullable();
             $table->boolean('penilaian_idd')->nullable();
-            // Add penilaian kinerja
+            // $table->boolean('penilaian_kinerja')->nullable();
+            // Add penilaian kinerjas
+            $table->year('tahun')->storedAs('YEAR(created_at)')->index();
             $table->timestamps();
         });
     }

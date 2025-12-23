@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PlusIcon, Sidebar } from 'lucide-react';
+import { PlusIcon } from 'lucide-react';
 import DataTable from '../components/DataTable';
 import { Modal } from '../components/Modal';
 import FormComponent from '../components/FormComponent';
@@ -18,44 +18,83 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
   const [statsData, setStatsData] = useState({});
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
-  const [currentYear, setCurrentYear] = useState(dayjs().year());
+
+  // Year filter states
+  const [selectedYear, setSelectedYear] = useState(dayjs().year().toString());
+  const [availableYears, setAvailableYears] = useState([]);
+
   const [modalState, setModalState] = useState({
     isOpen: false,
     mode: null,
     item: null
-  }); // create , edit, view
+  });
+
   const [alertState, setAlert] = useState({
     show: false,
     message: '',
     type: '',
   });
 
-
+  // Load available years when tab changes
   useEffect(() => {
-    loadData();
+    loadAvailableYears();
   }, [activeTab]);
 
+  // Load data when year or tab changes
+  useEffect(() => {
+    loadData();
+  }, [activeTab, selectedYear]);
+
+  const loadAvailableYears = async () => {
+    try {
+      let years;
+      if (activeTab === 'pengadaan') {
+        years = await apiService.getPengadaanYears();
+      } else {
+        years = await apiService.getAmandemenYears();
+      }
+
+      if (!years || years.length === 0) {
+        years = [dayjs().year()];
+      }
+
+      setAvailableYears(years);
+
+      if (!years.includes(parseInt(selectedYear))) {
+        setSelectedYear(years[0].toString());
+      }
+    } catch (error) {
+      console.error('Error loading available years:', error);
+      const currentYear = dayjs().year();
+      setAvailableYears([currentYear]);
+      setSelectedYear(currentYear.toString());
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const stats = await apiService.getStats();
+      const stats = await apiService.getStats(selectedYear);
       setStatsData(stats);
+
       if (activeTab === 'pengadaan') {
-        const data = await apiService.getPengadaanData();
+        const data = await apiService.getPengadaanData(selectedYear);
         setPengadaanData(data);
       } else {
-        const data = await apiService.getAmandemenData();
+        const data = await apiService.getAmandemenData(selectedYear);
         setAmandemenData(data);
       }
     } catch (error) {
       console.error('Error loading data:', error);
+      showAlert('Error loading data', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-
+  const handleYearChange = (e) => {
+    setSelectedYear(e.target.value);
+  };
 
   const handleCreate = () => {
     setModalState({
@@ -108,8 +147,6 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
 
       setModalState({ isOpen: false, mode: null, item: null });
       showAlert('Data saved successfully!', 'success');
-
-      // Refresh data to ensure consistency
       await loadData();
 
     } catch (error) {
@@ -120,50 +157,38 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
     }
   };
 
-
   const handleDelete = async (item) => {
     const confirmed = await confirm('Apakah anda yakin anda akan menghapus data ini?');
     if (confirmed) {
       setLoading(true);
 
       try {
-        console.log(`Attempting to delete ${activeTab} with ID:`, item.id);
-
         let deleteResponse;
         if (activeTab === 'pengadaan') {
           deleteResponse = await apiService.deletePengadaan(item.id);
-          console.log('Delete response:', deleteResponse);
-
           if (deleteResponse) {
             setPengadaanData(prev => prev.filter(p => p.id !== item.id));
           }
         } else {
           deleteResponse = await apiService.deleteAmandemen(item.id);
-          console.log('Delete response:', deleteResponse);
-
           if (deleteResponse) {
             setAmandemenData(prev => prev.filter(a => a.id !== item.id));
           }
         }
         showAlert('Berhasil dihapus!', 'success');
-
         await loadData();
 
       } catch (error) {
         console.error('Delete error:', error);
-
         let errorMessage = 'Error deleting item. ';
         if (error.response) {
-          errorMessage += `Server responded with status ${error.response.status}: ${error.response.data?.message || error.response.statusText}`;
+          errorMessage += `Server responded with status ${error.response.status}`;
         } else if (error.request) {
           errorMessage += 'No response from server. Please check your connection.';
         } else {
           errorMessage += error.message;
         }
-
         showAlert(errorMessage, 'error');
-
-        // Refresh data anyway to show current state
         await loadData();
       } finally {
         setLoading(false);
@@ -171,27 +196,23 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
     }
   };
 
-
   const handleCloseModal = () => {
     setModalState({ isOpen: false, mode: null, item: null });
   };
 
   const showAlert = (message, type) => {
     setAlert({ show: true, message, type });
-  }
-
-
+  };
 
   const currentData = activeTab === 'pengadaan' ? pengadaanData : amandemenData;
   const currentFormFields = activeTab === 'pengadaan' ? pengadaanFormFields : amandemenFormFields;
 
-  // Create columns with action handlers
   const pengadaanColumns = createPengadaanColumns(canEdit, handleEdit, handleDelete, handleView);
   const amandemenColumns = createAmandemenColumns(canEdit, handleEdit, handleDelete, handleView);
   const currentColumns = activeTab === 'pengadaan' ? pengadaanColumns : amandemenColumns;
 
   return (
-    <div>
+    <div className="min-h-full">
       <CustomAlert
         message={alertState.message}
         type={alertState.type}
@@ -199,50 +220,94 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
         onClose={() => setAlert({ show: false, message: '', type: '' })}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Stats Section */}
         {statsData?.data && <StatsComponent data={statsData.data} />}
-        <div className="mb-6">
 
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-lg shadow-sm mb-6">
           <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
+            <nav className="flex -mb-px" aria-label="Tabs">
               <button
                 onClick={() => setActiveTab('pengadaan')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'pengadaan'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm transition-colors ${activeTab === 'pengadaan'
+                    ? 'border-gray-900 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
               >
                 Data Pengadaan
               </button>
               <button
                 onClick={() => setActiveTab('amandemen')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'amandemen'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                className={`flex-1 py-4 px-6 text-center border-b-2 font-medium text-sm transition-colors ${activeTab === 'amandemen'
+                    ? 'border-gray-900 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
               >
                 Data Amandemen
               </button>
             </nav>
           </div>
-        </div>
-        <div className="mb-4 flex justify-between">
-          {canEdit ?
 
-            <button
-              onClick={handleCreate}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center space-x-2"
-              disabled={loading}
-            >
-              <PlusIcon size={20} />
-              <span>Tambah {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
-            </button>
-            : ''}
-            {/* filter tanggal */}
-            <select name="" id="" className='bg-white border rounded-xl px-2'>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-            </select>
+          {/* Filters and Actions Bar */}
+          <div className="p-4 bg-gray-50">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* Left side - Filters */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <select
+                  name="year"
+                  id="year"
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                  className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent min-w-[120px]"
+                >
+                  {availableYears.length > 0 ? (
+                    availableYears.map(year => (
+                      <option key={year} value={year}>
+                        Tahun {year}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={dayjs().year()}>
+                      Tahun {dayjs().year()}
+                    </option>
+                  )}
+                </select>
+              </div>
+
+              {/* Right side - Actions */}
+              <div className="flex items-center gap-3 justify-end">
+                <div className="flex gap-2">
+                  <ExportButton
+                    data={currentData}
+                    fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${selectedYear}_${dayjs().format('YYYYMMDD')}.xlsx`}
+                    fields={currentFormFields}
+                    showAlert={showAlert}
+                  />
+
+                  <ExportAll
+                    PengadaanData={() => apiService.getPengadaanData(selectedYear)}
+                    AmandemenData={() => apiService.getAmandemenData(selectedYear)}
+                    fileName={`Data_Pengadaan_dan_Amandemen_${selectedYear}_${dayjs().format('YYYYMMDD')}.xlsx`}
+                    PengadaanFormFields={pengadaanFormFields}
+                    AmandemenFormFields={amandemenFormFields}
+                    showAlert={showAlert}
+                  />
+                </div>
+
+                {canEdit && (
+                  <button
+                    onClick={handleCreate}
+                    className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg shadow-sm font-medium text-sm transition-colors"
+                    disabled={loading}
+                  >
+                    <PlusIcon size={18} />
+                    <span>Tambah {activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Table */}
@@ -257,7 +322,7 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
         <Modal
           isOpen={modalState.isOpen}
           onClose={handleCloseModal}
-          title={`${modalState.mode === 'create' ? 'Create' : modalState.mode === 'edit' ? 'Edit' : 'View'} ${activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}`}
+          title={`${modalState.mode === 'create' ? 'Tambah' : modalState.mode === 'edit' ? 'Edit' : 'Detail'} ${activeTab === 'pengadaan' ? 'Pengadaan' : 'Amandemen'}`}
         >
           {modalState.mode === 'view' ? (
             <div className="space-y-4">
@@ -267,17 +332,27 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       {field.label}
                     </label>
-                    <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                    <div
+                      className={`text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md border border-gray-200 ${field.type === 'textarea' ? 'whitespace-pre-wrap' : ''
+                        }`}
+                      style={field.type === 'textarea' ? { whiteSpace: 'pre-wrap', wordBreak: 'break-word' } : {}}
+                    >
                       {field.type === 'number' && field.note === 'percent' && modalState.item?.[field.key] ?
                         new Intl.NumberFormat('en-EN', {
                           style: 'percent'
-                        }).format(modalState.item[field.key] / 100) : field.type === 'number' && modalState.item?.[field.key] ?
+                        }).format(modalState.item[field.key] / 100)
+                        : field.type === 'number' && field.note === 'currency' && modalState.item?.[field.key] ?
                           new Intl.NumberFormat('id-ID', {
                             style: 'currency',
                             currency: 'IDR'
-                          }).format(modalState.item[field.key]) : field.type === 'date' && modalState.item?.[field.key] ?
-                            dayjs(modalState.item[field.key]).format('DD-MM-YYYY') : field.type === 'checkbox' ?
-                              modalState.item?.[field.key] ? 'Sudah' : 'Belum' : modalState.item?.[field.key] || '-'
+                          }).format(modalState.item[field.key])
+                          : field.type === 'date' && modalState.item?.[field.key] ?
+                            dayjs(modalState.item[field.key]).format('DD-MM-YYYY')
+                            : field.type === 'checkbox' ?
+                              modalState.item?.[field.key] ? 'Sudah' : 'Belum'
+                              : field.type === 'textarea' && modalState.item?.[field.key] ?
+                                modalState.item[field.key]
+                                : modalState.item?.[field.key] || '-'
                       }
                     </div>
                   </div>
@@ -295,24 +370,6 @@ const Dashboard = ({ canEdit, user, session, handleLogout }) => {
             />
           )}
         </Modal>
-        <div className='flex gap-2'>
-          <ExportButton
-            data={currentData}
-            fileName={`${activeTab === 'pengadaan' ? 'Data_Pengadaan' : 'Data_Amandemen'}_${dayjs().format('YYYYMMDD')}.xlsx`}
-            fields={currentFormFields}
-            showAlert={showAlert}
-          />
-
-          <ExportAll
-            PengadaanData={apiService.getPengadaanData}
-            AmandemenData={apiService.getAmandemenData}
-            fileName={`Data_Pengadaan_dan_Amandemen_${dayjs().format('YYYYMMDD')}.xlsx`}
-            PengadaanFormFields={pengadaanFormFields}
-            AmandemenFormFields={amandemenFormFields}
-            showAlert={showAlert}
-          />
-        </div>
-
       </div>
     </div>
   );

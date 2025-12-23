@@ -47,7 +47,6 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401) {
       console.warn('Unauthorized request - user may need to login again');
-      // Optionally trigger a logout or redirect
     }
 
     return Promise.reject(error);
@@ -56,12 +55,23 @@ apiClient.interceptors.response.use(
 
 export const apiService = {
   // Pengadaan endpoints
-  async getPengadaanData() {
+  async getPengadaanData(year = null) {
     try {
-      const response = await apiClient.get('/pengadaan');
+      const params = year ? { year } : {};
+      const response = await apiClient.get('/pengadaan', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching pengadaan data:', error);
+      throw error;
+    }
+  },
+
+  async getPengadaanYears() {
+    try {
+      const response = await apiClient.get('/pengadaan-years');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching pengadaan years:', error);
       throw error;
     }
   },
@@ -99,14 +109,21 @@ export const apiService = {
   // Amandemen endpoints
   async getAmandemenData(year = null) {
     try {
-      if (!year) {
-        const response = await apiClient.get('/amandemen');
-      } else {
-        const response = await apiClient.get(`/amandemen?year=${year}`);
-      }
+      const params = year ? { year } : {};
+      const response = await apiClient.get('/amandemen', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching amandemen data:', error);
+      throw error;
+    }
+  },
+
+  async getAmandemenYears() {
+    try {
+      const response = await apiClient.get('/amandemen-years');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching amandemen years:', error);
       throw error;
     }
   },
@@ -142,9 +159,10 @@ export const apiService = {
   },
 
   // Stats endpoint
-  async getStats() {
+  async getStats(year = null) {
     try {
-      const response = await apiClient.get('/stats');
+      const params = year ? { year } : {};
+      const response = await apiClient.get('/stats', { params });
       return response.data;
     } catch (error) {
       console.error('Error processing the statistic:', error);
@@ -152,8 +170,7 @@ export const apiService = {
     }
   },
 
-  // User Management endpoints (Admin only)
-  // These should be proxied through your backend API, not called directly
+  // User Management endpoints
   async getAllUsers() {
     try {
       const response = await apiClient.get('/users');
@@ -199,7 +216,6 @@ export const apiService = {
   async getSummary(){
     try {
       const response = await apiClient.get('/datasum');
-      // console.log(response.data.charts)
       return response.data;
     } catch (error) {
       console.error('Error fetching the data');
