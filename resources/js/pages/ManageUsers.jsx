@@ -195,7 +195,7 @@ const ManageUsers = ({ handleLogout }) => {
                       <td className="px-6 py-4">
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
                           user.is_confirmed
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-green-1 00 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
                           {user.is_confirmed ? 'Confirmed' : 'Pending'}

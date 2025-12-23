@@ -113,7 +113,7 @@ const StatsComponent = (rawData) => {
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
                 <div className="h-96">
                     <Bar options={options} data={chartData} />
-                </div>
+                </div>  
             </div>
         </div>
     );

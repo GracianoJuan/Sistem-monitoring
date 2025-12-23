@@ -28,7 +28,7 @@ class DataVizController extends Controller
                 'total_done'        => DB::table('pengadaan')->where('status', 'Done')->count(),
                 'total_selesai'     => DB::table('pengadaan')->where('progress', 'Selesai')->count(),
             ];
-
+            
             // Chart: Metode Pengadaan
             $metode_pengadaan = DB::table('pengadaan')
                 ->select('metode as label', DB::raw('COUNT(*) as count'))

@@ -54,7 +54,7 @@ const ExcelImport = () => {
           console.warn(`Skipping invalid date for ${field.key}: ${value}`);
           return null;
 
-        case 'checkbox':
+        case 'checkbox':  
           if (typeof value === 'boolean') return value;
           if (typeof value === 'string') {
             const lower = value.toLowerCase().trim();
