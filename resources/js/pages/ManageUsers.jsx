@@ -63,7 +63,7 @@ const ManageUsers = ({ handleLogout }) => {
     }
 
     try {
-      await apiService.Role(modalState.user.id, selectedRole);
+      await apiService.updateUserRole(modalState.user.id, selectedRole);
       setUsers(users.map(u =>
         u.id === modalState.user.id ? { ...u, role: selectedRole } : u
       ));

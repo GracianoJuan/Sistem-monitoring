@@ -15,47 +15,71 @@ class DBAuth
         $token = $request->cookie('session_token') ?? $request->bearerToken();
 
         if (!$token) {
-            return response()->json(['error' => 'Unauthorized', 'message' => 'No authentication token provided'], 401);
+            return response()->json([
+                'error' => 'Unauthorized', 
+                'message' => 'No authentication token provided'
+            ], 401);
         }
 
         try {
+            // Get session
             $session = DB::table('sessions')->where('id', $token)->first();
+            
             if (!$session) {
-                return response()->json(['error' => 'Unauthorized', 'message' => 'Invalid session token'], 401);
+                return response()->json([
+                    'error' => 'Unauthorized', 
+                    'message' => 'Invalid session token'
+                ], 401);
             }
 
-            // If payload contains expires_at, enforce it
-            $expiresAt = null;
+            // Check expiration from payload
             if (isset($session->payload)) {
                 $payload = @json_decode($session->payload, true) ?? [];
                 $expiresAt = $payload['expires_at'] ?? null;
-            }
 
-            if ($expiresAt && Carbon::now()->greaterThan(Carbon::parse($expiresAt))) {
-                DB::table('sessions')->where('id', $token)->delete();
-                return response()->json(['error' => 'Unauthorized', 'message' => 'Session expired'], 401);
-            }
-
-            $user = DB::table('users')->where('id', $session->user_id)->first();
-            $userRole = 'viewer';
-            if ($user) {
-                if (!empty($user->role)) {
-                    $userRole = $user->role;
-                } elseif (isset($user->user_metadata)) {
-                    $meta = json_decode($user->user_metadata, true) ?? [];
-                    $userRole = $meta['role'] ?? 'viewer';
+                if ($expiresAt && Carbon::now()->greaterThan(Carbon::parse($expiresAt))) {
+                    DB::table('sessions')->where('id', $token)->delete();
+                    return response()->json([
+                        'error' => 'Unauthorized', 
+                        'message' => 'Session expired'
+                    ], 401);
                 }
             }
 
+            // Get user data
+            $user = DB::table('users')->where('id', $session->user_id)->first();
+            
+            if (!$user) {
+                return response()->json([
+                    'error' => 'Unauthorized', 
+                    'message' => 'User not found'
+                ], 401);
+            }
+
+            // Get user role - prioritas dari kolom role
+            $userRole = $user->role ?? 'viewer';
+
+            // Update last_sign_in_at jika perlu (optional)
+            // DB::table('users')->where('id', $user->id)->update(['last_sign_in_at' => Carbon::now()]);
+
+            // Attach user data to request
             $request->merge([
                 'auth_user' => $user,
-                'auth_user_id' => $user->id ?? null,
-                'auth_user_email' => $user->email ?? null,
+                'auth_user_id' => $user->id,
+                'auth_user_email' => $user->email,
+                'auth_user_name' => $user->name,
                 'auth_user_role' => $userRole
             ]);
+
         } catch (\Exception $e) {
-            Log::error('DB authentication error', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Authentication failed'], 401);
+            Log::error('DB authentication error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'error' => 'Authentication failed',
+                'message' => 'An error occurred during authentication'
+            ], 401);
         }
 
         return $next($request);
